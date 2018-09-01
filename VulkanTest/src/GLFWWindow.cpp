@@ -45,16 +45,27 @@ bool VulkanTest::GLFWWindow::initialize() {
 
 }
 
-bool VulkanTest::GLFWWindow::createVulkanSurface( const VkInstance& instance ) {
+vk::SurfaceKHR VulkanTest::GLFWWindow::createVulkanSurface( const vk::Instance& instance ) {
 
-  VkResult err = glfwCreateWindowSurface( instance, glfw_window, nullptr, &vulkan_surface );
-  if( err ) {
-    // TODO
-    return false;
+  VkSurfaceKHR surface;
+  VkResult err = glfwCreateWindowSurface( instance, glfw_window, nullptr, &surface );
+  if( err != VK_SUCCESS ) {
+    throw std::runtime_error( "Could not create Vulkan surface" );
   }
 
-  return true;
+  return surface;
 
+}
+
+const std::vector< const char* > VulkanTest::GLFWWindow::getRequiredVulkanInstanceExtensions() {
+  uint32_t num_extensions;
+  const char** extension_names;
+  extension_names = glfwGetRequiredInstanceExtensions( &num_extensions );
+  std::vector< const char* > extensions; 
+  for( uint32_t i = 0; i < num_extensions; ++i ) {
+    extensions.push_back( extension_names[i] );
+  }
+  return extensions;
 }
 
 bool VulkanTest::GLFWWindow::shouldClose() {

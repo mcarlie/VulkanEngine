@@ -3,7 +3,6 @@
 
 #include <VulkanTest/Window.h>
 
-#include <vulkan/vulkan.hpp>
 #include <GLFW/glfw3.h>
 
 namespace VulkanTest {
@@ -26,10 +25,14 @@ namespace VulkanTest {
     /// Initialize the window
     virtual bool initialize();
 
+    /// Do anything needed to update the window.
     virtual void update();
 
     /// Create a Vulkan surface using the GLFW API 
-    bool createVulkanSurface( const VkInstance& instance );
+    virtual vk::SurfaceKHR createVulkanSurface( const vk::Instance& instance );
+
+    /// Gives the required vulkan extensions
+    virtual const std::vector< const char* > getRequiredVulkanInstanceExtensions();
 
     /// Returns true if the window should close
     virtual bool shouldClose();
@@ -38,9 +41,6 @@ namespace VulkanTest {
 
     /// Internal instance of the glfw window
     GLFWwindow* glfw_window;
-
-    /// Vulkan surface. Use createVulkanSurface to initialize
-    VkSurfaceKHR vulkan_surface;
 
     /// Callback which is called by glfw to indicate errors
     /// Prints the error to std::err

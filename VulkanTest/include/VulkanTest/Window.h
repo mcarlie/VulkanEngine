@@ -1,11 +1,13 @@
 #ifndef WINDOW_H
 #define WINDOW_H
 
+#include <vulkan/vulkan.hpp>
+
 #include <string>
 
 namespace VulkanTest {
   
-  /// Provides an abstract interface for various window implementations
+  /// Provides an abstract interface for window implementations
   class Window {
 
   public:
@@ -23,6 +25,12 @@ namespace VulkanTest {
     /// Initialize the window
     virtual bool initialize() = 0;
 
+    /// Create and return a vk::SurfaceKHR instance
+    virtual vk::SurfaceKHR createVulkanSurface( const vk::Instance& instance ) = 0;
+
+    /// Return a list of vulkan extensions required by the underlying windowing system
+    virtual const std::vector< const char* > getRequiredVulkanInstanceExtensions() = 0;
+
     /// Do anything needed to update the window
     virtual void update() {};
 
@@ -35,6 +43,7 @@ namespace VulkanTest {
     /// Get the height of the window
     virtual int getHeight();
 
+    /// Get the window's title
     virtual const std::string& getTitle();
 
     /// Returns true if the window is in full screen mode
