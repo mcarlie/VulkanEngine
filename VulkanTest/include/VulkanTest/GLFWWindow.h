@@ -1,15 +1,15 @@
-#ifndef GLFW_WINDOW_H
-#define GLFW_WINDOW_H
+#ifndef GLFWWINDOW_H
+#define GLFWWINDOW_H
 
-#include <VulkanTest/window.h>
+#include <VulkanTest/Window.h>
 
-#include <vulkan/vulkan.h>
+#include <vulkan/vulkan.hpp>
 #include <GLFW/glfw3.h>
 
 namespace VulkanTest {
 
   /// An implementation of VulkanTest::Window which uses the GLFW library
-  class GLFW_Window : public Window {
+  class GLFWWindow : public Window {
 
   public:
 
@@ -18,22 +18,28 @@ namespace VulkanTest {
     /// \param _height The desired initial height of the window
     /// \param _title The title of the window
     /// \param _full_screen If true the window will be initialized to full screen
-    GLFW_Window( int width, int height, const std::string& title, bool _full_screen );
+    GLFWWindow( int width, int height, const std::string& title, bool _full_screen );
     
     /// Desctructor.
-    ~GLFW_Window();
+    ~GLFWWindow();
 
     /// Initialize the window
     virtual bool initialize();
 
+    virtual void update();
+
     /// Create a Vulkan surface using the GLFW API 
     bool createVulkanSurface( const VkInstance& instance );
+
+    /// Returns true if the window should close
+    virtual bool shouldClose();
 
   private:
 
     /// Internal instance of the glfw window
     GLFWwindow* glfw_window;
 
+    /// Vulkan surface. Use createVulkanSurface to initialize
     VkSurfaceKHR vulkan_surface;
 
     /// Callback which is called by glfw to indicate errors
@@ -44,4 +50,4 @@ namespace VulkanTest {
 
 }
 
-#endif /* GLFW_WINDOW_H */
+#endif /* GLFWWINDOW_H */

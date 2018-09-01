@@ -1,10 +1,9 @@
-#include <VulkanTest/glfw_window.h>
+#include <VulkanTest/GLFWWindow.h>
 
 #include <iostream>
 #include <vector>
 
-int main()
-{
+int main() {
     // Use validation layers if this is a debug build
     std::vector<const char*> layers;
 #if defined(_DEBUG)
@@ -39,8 +38,12 @@ int main()
         return 1;
     }
 
-    // Normally, a program would do something with the instance here. This, however, is just a
-    // simple demo program, so we just finish up right away.
+    VulkanTest::GLFWWindow window( 800, 600, "VulkanTest", false );
+    window.initialize();
+    window.createVulkanSurface( instance );
+    while( !window.shouldClose() ) {
+      window.update();
+    }
 
     instance.destroy();
 

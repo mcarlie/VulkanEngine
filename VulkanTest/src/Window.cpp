@@ -1,4 +1,4 @@
-#include <VulkanTest/window.h>
+#include <VulkanTest/Window.h>
 
 VulkanTest::Window::Window( int _width, int _height, const std::string& _title, bool _full_screen ) 
   : width( _width ), height( _height ), title( _title ), full_screen( _full_screen ) {

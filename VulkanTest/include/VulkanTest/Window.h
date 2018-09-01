@@ -23,6 +23,12 @@ namespace VulkanTest {
     /// Initialize the window
     virtual bool initialize() = 0;
 
+    /// Do anything needed to update the window
+    virtual void update() {};
+
+    /// Returns true if the window should close
+    virtual bool shouldClose() = 0;
+
     /// Get the width of the window
     virtual int getWidth();
 

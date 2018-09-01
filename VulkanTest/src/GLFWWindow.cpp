@@ -1,17 +1,22 @@
-#include <VulkanTest/glfw_window.h>
+#include <VulkanTest/GLFWWindow.h>
 
 #include <iostream>
 
-VulkanTest::GLFW_Window::GLFW_Window( int _width, int _height, const std::string& _title, bool _full_screen ) 
+VulkanTest::GLFWWindow::GLFWWindow( int _width, int _height, const std::string& _title, bool _full_screen ) 
   : Window( _width, _height, _title, _full_screen ) {
   glfwSetErrorCallback( errorCallback );
 }
 
-VulkanTest::GLFW_Window::~GLFW_Window() {
+VulkanTest::GLFWWindow::~GLFWWindow() {
+  glfwDestroyWindow( glfw_window );
   glfwTerminate();
 }
 
-bool VulkanTest::GLFW_Window::initialize() {
+void VulkanTest::GLFWWindow::update() {
+  glfwPollEvents();
+}
+
+bool VulkanTest::GLFWWindow::initialize() {
 
   if( !glfwInit() ) {
     return false;
@@ -29,28 +34,33 @@ bool VulkanTest::GLFW_Window::initialize() {
     getWidth(),
     getHeight(),
     getTitle().c_str(),
-    full_screen ? glfwGetPrimaryMonitor() : nullptr,
+    isFullScreen() ? glfwGetPrimaryMonitor() : nullptr,
     nullptr );
   
   if( !glfw_window ) {
     return false;
   }
 
-  //VkResult result = glfwCreateWindowSurface(  )
+  return true;
+
+}
+
+bool VulkanTest::GLFWWindow::createVulkanSurface( const VkInstance& instance ) {
+
+  VkResult err = glfwCreateWindowSurface( instance, glfw_window, nullptr, &vulkan_surface );
+  if( err ) {
+    // TODO
+    return false;
+  }
 
   return true;
 
 }
 
-bool VulkanTest::GLFW_Window::createVulkanSurface( const VkInstance& instance ) {
-
-  VkResult err = glfwCreateWindowSurface( instance, glfw_window, nullptr, &vulkan_surface );
-  if( err ) {
-    // TODO
-  }
-
+bool VulkanTest::GLFWWindow::shouldClose() {
+  return glfwWindowShouldClose( glfw_window );
 }
 
-void VulkanTest::GLFW_Window::errorCallback( int error, const char* description ) {
+void VulkanTest::GLFWWindow::errorCallback( int error, const char* description ) {
   std::cerr << "GLFW error: " << description << " error code:" << error << std::endl;
 }
