@@ -1,17 +1,17 @@
 #include <VulkanTest/Window.h>
 
-VulkanTest::Window::Window( int _width, int _height, const std::string& _title, bool _full_screen ) 
+VulkanTest::Window::Window( uint32_t _width, uint32_t _height, const std::string& _title, bool _full_screen ) 
   : width( _width ), height( _height ), title( _title ), full_screen( _full_screen ) {
 }
 
 VulkanTest::Window::~Window() {
 }
 
-int VulkanTest::Window::getWidth() { 
+uint32_t VulkanTest::Window::getWidth() { 
   return width;
 }
 
-int VulkanTest::Window::getHeight() { 
+uint32_t VulkanTest::Window::getHeight() { 
   return height; 
 }
 

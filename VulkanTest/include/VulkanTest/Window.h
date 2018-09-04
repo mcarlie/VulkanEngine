@@ -17,45 +17,48 @@ namespace VulkanTest {
     /// \param _height The desired initial height of the window
     /// \param _title The title of the window
     /// \param _full_screen If true the window will be initialized to full screen
-    Window( int _width, int _height, const std::string& _title, bool _full_screen );
+    Window( uint32_t _width, uint32_t _height, const std::string& _title, bool _full_screen );
 
     /// Desctructor
     ~Window();
 
     /// Initialize the window
+    /// \return True on success
     virtual bool initialize() = 0;
 
     /// Create and return a vk::SurfaceKHR instance
+    /// \param instance The vk::Instance to create the surface for
+    /// \return The created vk::SurfaceKHR
     virtual vk::SurfaceKHR createVulkanSurface( const vk::Instance& instance ) = 0;
 
-    /// Return a list of vulkan extensions required by the underlying windowing system
+    /// \return A list of vulkan extensions required by the underlying windowing system
     virtual const std::vector< const char* > getRequiredVulkanInstanceExtensions() = 0;
 
     /// Do anything needed to update the window
     virtual void update() {};
 
-    /// Returns true if the window should close
+    /// \return True if the window should close
     virtual bool shouldClose() = 0;
 
-    /// Get the width of the window
-    virtual int getWidth();
+    /// \return The width of the window
+    virtual uint32_t getWidth();
 
-    /// Get the height of the window
-    virtual int getHeight();
+    /// \return The height of the window
+    virtual uint32_t getHeight();
 
-    /// Get the window's title
+    /// \return The window's title
     virtual const std::string& getTitle();
 
-    /// Returns true if the window is in full screen mode
+    /// \return True if the window is in full screen mode
     virtual bool isFullScreen();
 
-  protected:
+  private:
 
     /// The current width of the window
-    int width;
+    uint32_t width;
 
     /// The current height of the window
-    int height;
+    uint32_t height;
 
     /// The title of the window
     std::string title;

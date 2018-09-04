@@ -17,7 +17,7 @@ namespace VulkanTest {
     /// \param _height The desired initial height of the window
     /// \param _title The title of the window
     /// \param _full_screen If true the window will be initialized to full screen
-    GLFWWindow( int width, int height, const std::string& title, bool _full_screen );
+    GLFWWindow( int _width, int _height, const std::string& _title, bool _full_screen );
     
     /// Desctructor.
     ~GLFWWindow();
@@ -28,13 +28,14 @@ namespace VulkanTest {
     /// Do anything needed to update the window.
     virtual void update();
 
-    /// Create a Vulkan surface using the GLFW API 
+    /// Create a Vulkan surface using the GLFW API
+    /// \param instance The vk::Instance to use with the window
     virtual vk::SurfaceKHR createVulkanSurface( const vk::Instance& instance );
 
-    /// Gives the required vulkan extensions
+    /// \return The required vulkan extensions for using GLFW
     virtual const std::vector< const char* > getRequiredVulkanInstanceExtensions();
 
-    /// Returns true if the window should close
+    /// \return True if the window should close
     virtual bool shouldClose();
 
   private:
@@ -44,6 +45,8 @@ namespace VulkanTest {
 
     /// Callback which is called by glfw to indicate errors
     /// Prints the error to std::err
+    /// \param error The error code
+    /// \param description Text describing the error
     static void errorCallback( int error, const char* description );
 
   };
