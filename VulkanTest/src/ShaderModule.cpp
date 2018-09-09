@@ -1,5 +1,5 @@
 #include <VulkanTest/ShaderModule.h>
-#include <VulkanTest/Renderer.h>
+#include <VulkanTest/VulkanManager.h>
 
 #include <fstream>
 #include <iostream>
@@ -14,12 +14,12 @@ VulkanTest::ShaderModule::ShaderModule( const std::string& file_path, vk::Shader
     .setPCode( reinterpret_cast< const uint32_t* >( bytecode.data() ) )
     .setCodeSize( bytecode.size() );
 
-  vk_shader_module = Renderer::get()->getVkDevice().createShaderModule( shader_module_info );
+  vk_shader_module = VulkanManager::getInstance()->getVkDevice().createShaderModule( shader_module_info );
 
 }
 
 VulkanTest::ShaderModule::~ShaderModule() {
-  Renderer::get()->getVkDevice().destroyShaderModule( vk_shader_module );
+  VulkanManager::getInstance()->getVkDevice().destroyShaderModule( vk_shader_module );
 }
 
 const vk::ShaderStageFlagBits VulkanTest::ShaderModule::getVkShaderStageFlag() {

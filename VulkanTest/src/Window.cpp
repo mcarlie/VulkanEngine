@@ -1,7 +1,7 @@
 #include <VulkanTest/Window.h>
 
 VulkanTest::Window::Window( uint32_t _width, uint32_t _height, const std::string& _title, bool _full_screen ) 
-  : width( _width ), height( _height ), title( _title ), full_screen( _full_screen ) {
+  : width( _width ), height( _height ), title( _title ), full_screen( _full_screen ), size_changed( false ) {
 }
 
 VulkanTest::Window::~Window() {
@@ -37,4 +37,10 @@ const std::string& VulkanTest::Window::getTitle() {
 
 bool VulkanTest::Window::isFullScreen() {
   return full_screen;
+}
+
+bool VulkanTest::Window::sizeHasChanged() {
+  bool tmp_size_changed = size_changed;
+  size_changed = false;
+  return tmp_size_changed;
 }

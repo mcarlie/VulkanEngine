@@ -1,9 +1,9 @@
-#include <VulkanTest/Renderer.h>
+#include <VulkanTest/VulkanManager.h>
 
-VulkanTest::Renderer::Renderer() : window_fb_width( 0 ), window_fb_height( 0 ) {
+VulkanTest::VulkanManager::VulkanManager() {
 }
 
-VulkanTest::Renderer::~Renderer() {
+VulkanTest::VulkanManager::~VulkanManager() {
   vk_device.waitIdle();
   position.reset();
   index.reset();
@@ -11,16 +11,14 @@ VulkanTest::Renderer::~Renderer() {
   cleanup();
 }
 
-std::shared_ptr< VulkanTest::Renderer >& VulkanTest::Renderer::get() {
-  static std::shared_ptr< VulkanTest::Renderer > singleton_renderer_instance( new Renderer() );
-  return singleton_renderer_instance;
+std::shared_ptr< VulkanTest::VulkanManager >& VulkanTest::VulkanManager::getInstance() {
+  static std::shared_ptr< VulkanTest::VulkanManager > singleton_vulkan_manager_instance( new VulkanManager() );
+  return singleton_vulkan_manager_instance;
 }
 
-void VulkanTest::Renderer::initialize( const std::shared_ptr< Window >& _window ) {
+void VulkanTest::VulkanManager::initialize( const std::shared_ptr< Window >& _window ) {
 
   window = _window;
-  window_fb_width = window->getFramebufferWidth();
-  window_fb_height = window->getFramebufferHeight();
 
   std::vector< const char* > instance_extensions( window->getRequiredVulkanInstanceExtensions() );
 
@@ -128,7 +126,7 @@ void VulkanTest::Renderer::initialize( const std::shared_ptr< Window >& _window 
 
 }
 
-uint32_t VulkanTest::Renderer::findMemoryTypeIndex( uint32_t type_filter, vk::MemoryPropertyFlags flags ) {
+uint32_t VulkanTest::VulkanManager::findMemoryTypeIndex( uint32_t type_filter, vk::MemoryPropertyFlags flags ) {
 
   vk::PhysicalDeviceMemoryProperties vk_memory_properties = vk_physical_device.getMemoryProperties();
   for( uint32_t i = 0; i < vk_memory_properties.memoryTypeCount; ++i ) {
@@ -141,21 +139,10 @@ uint32_t VulkanTest::Renderer::findMemoryTypeIndex( uint32_t type_filter, vk::Me
 
 }
 
-void VulkanTest::Renderer::drawImage() {
+void VulkanTest::VulkanManager::drawImage() {
 
   uint32_t image_index;
   while( true ) {
-  
-    // Check if the window's framebuffer size has changed
-    // If it has we need to recreate the swapchain
-    bool framebuffer_size_changed = false;
-    const uint32_t temp_fb_width = window->getFramebufferWidth();
-    const uint32_t temp_fb_height = window->getFramebufferHeight();
-    if( ( temp_fb_width != window_fb_width ) || ( temp_fb_height != window_fb_height ) ) {
-      framebuffer_size_changed = true;
-      window_fb_width = temp_fb_width;
-      window_fb_height = temp_fb_height;
-    }
 
     /// Acquire the next available swapchain image that we can write to
     vk::Result result = vk_device.acquireNextImageKHR( 
@@ -167,7 +154,7 @@ void VulkanTest::Renderer::drawImage() {
 
     // If the window size has changed or the image view is out of date according to Vulkan
     // then recreate the pipeline from the swapchain stage
-    if( result == vk::Result::eErrorOutOfDateKHR || framebuffer_size_changed ) {
+    if( result == vk::Result::eErrorOutOfDateKHR || window->sizeHasChanged() ) {
       cleanupSwapchain();
       createSwapchain();
       createImageViews();
@@ -216,11 +203,11 @@ void VulkanTest::Renderer::drawImage() {
 
 }
 
-vk::Device& VulkanTest::Renderer::getVkDevice() {
+vk::Device& VulkanTest::VulkanManager::getVkDevice() {
   return vk_device;
 };
 
-void VulkanTest::Renderer::createSwapchain() {
+void VulkanTest::VulkanManager::createSwapchain() {
 
   auto swapchain_info = vk::SwapchainCreateInfoKHR()
     .setSurface( vk_surface )
@@ -244,7 +231,7 @@ void VulkanTest::Renderer::createSwapchain() {
 
 }
 
-void VulkanTest::Renderer::createImageViews() {
+void VulkanTest::VulkanManager::createImageViews() {
 
   vk_image_views.resize( vk_swapchain_images.size() );
 
@@ -267,7 +254,7 @@ void VulkanTest::Renderer::createImageViews() {
 
 }
 
-void VulkanTest::Renderer::createRenderPass() {
+void VulkanTest::VulkanManager::createRenderPass() {
 
   auto attachment_description = vk::AttachmentDescription()
     .setFormat( vk::Format::eB8G8R8A8Unorm )
@@ -308,7 +295,7 @@ void VulkanTest::Renderer::createRenderPass() {
 
 }
 
-void VulkanTest::Renderer::createGraphicsPipeline() {
+void VulkanTest::VulkanManager::createGraphicsPipeline() {
 
   std::shared_ptr< ShaderModule > fragment_shader( new ShaderModule( "C:/Users/Michael/Desktop/VK/VulkanTest/shaders/frag.spv", vk::ShaderStageFlagBits::eFragment ) );
   std::shared_ptr< ShaderModule > vertex_shader( new ShaderModule( "C:/Users/Michael/Desktop/VK/VulkanTest/shaders/vert.spv", vk::ShaderStageFlagBits::eVertex ) );
@@ -327,7 +314,7 @@ void VulkanTest::Renderer::createGraphicsPipeline() {
     { -0.5f, 0.5f, 0.0f } 
   };
 
-  position.reset( new VertexAttribute< float, 3, 1 >( data, 0 ) );
+  position.reset( new VertexAttribute< Eigen::Vector3f >( data, 0 ) );
 
   auto position_description = vk::VertexInputAttributeDescription()
     .setBinding( 0 )
@@ -421,7 +408,7 @@ void VulkanTest::Renderer::createGraphicsPipeline() {
 
 }
 
-void VulkanTest::Renderer::createSwapchainFramebuffers() {
+void VulkanTest::VulkanManager::createSwapchainFramebuffers() {
 
   vk_swapchain_framebuffers.resize( vk_image_views.size() );
   for( size_t i = 0; i < vk_image_views.size(); ++i ) {
@@ -440,7 +427,7 @@ void VulkanTest::Renderer::createSwapchainFramebuffers() {
 
 }
 
-void VulkanTest::Renderer::createCommandBuffers() {
+void VulkanTest::VulkanManager::createCommandBuffers() {
 
   auto command_pool_info = vk::CommandPoolCreateInfo()
     .setQueueFamilyIndex( graphics_queue_family_index );
@@ -493,7 +480,7 @@ void VulkanTest::Renderer::createCommandBuffers() {
 
 }
 
-void VulkanTest::Renderer::cleanup() {
+void VulkanTest::VulkanManager::cleanup() {
 
   cleanupSwapchain();
 
@@ -510,7 +497,7 @@ void VulkanTest::Renderer::cleanup() {
 
 }
 
-void VulkanTest::Renderer::cleanupSwapchain() {
+void VulkanTest::VulkanManager::cleanupSwapchain() {
 
   for( size_t i = 0; i < vk_swapchain_framebuffers.size(); ++i ) {
     vk_device.destroyFramebuffer( vk_swapchain_framebuffers[i] );
@@ -524,4 +511,13 @@ void VulkanTest::Renderer::cleanupSwapchain() {
   }
   vk_device.destroySwapchainKHR( vk_swapchain );
 
+}
+
+VKAPI_ATTR VkBool32 VKAPI_CALL VulkanTest::VulkanManager::debugCallback(
+  VkDebugUtilsMessageSeverityFlagBitsEXT message_severity,
+  VkDebugUtilsMessageTypeFlagsEXT message_type,
+  const VkDebugUtilsMessengerCallbackDataEXT* callback_data,
+  void* user_data ) {
+  std::cerr << "validation layer: " << callback_data->pMessage << std::endl;
+  return VK_FALSE;
 }

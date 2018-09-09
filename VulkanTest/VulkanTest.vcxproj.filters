@@ -24,9 +24,6 @@
     <ClCompile Include="src\Window.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Renderer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\ShaderModule.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -42,15 +39,15 @@
     <ClCompile Include="src\IndexAttribute.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\VulkanManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\VulkanTest\GLFWWindow.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\VulkanTest\Window.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\VulkanTest\Renderer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\VulkanTest\ShaderModule.h">
@@ -66,6 +63,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\VulkanTest\Attribute.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\VulkanTest\VulkanManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

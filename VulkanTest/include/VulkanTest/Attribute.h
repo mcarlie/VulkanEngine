@@ -5,7 +5,7 @@
 
 namespace VulkanTest {
 
-  /// Abstract base class for geometry attributes
+  /// Abstract base class for shader attributes
   class Attribute {
 
   public:

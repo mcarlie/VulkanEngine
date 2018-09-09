@@ -98,12 +98,20 @@ void VulkanTest::GLFWWindow::errorCallback( int error, const char* description )
 
 void VulkanTest::GLFWWindow::framebufferResizeCallback( GLFWwindow* _glfw_window, int _width, int _height ) {
   GLFWWindow* window = static_cast< GLFWWindow* >( glfwGetWindowUserPointer( _glfw_window ) );
+  if( ( window->framebuffer_width != static_cast< uint32_t >( _width ) ) 
+    || ( window->framebuffer_height != static_cast< uint32_t >( _height ) ) ) {
+    window->size_changed = true;
+  }
   window->framebuffer_width = static_cast< uint32_t >( _width );
   window->framebuffer_height = static_cast< uint32_t >( _height );
 }
 
 void VulkanTest::GLFWWindow::windowResizeCallback( GLFWwindow* _glfw_window, int _width, int _height ) {
   GLFWWindow* window = static_cast< GLFWWindow* >( glfwGetWindowUserPointer( _glfw_window ) );
+  if( ( window->width != static_cast< uint32_t >( _width ) ) 
+    || ( window->height != static_cast< uint32_t >( _height ) ) ) {
+    window->size_changed = true;
+  }
   window->width = static_cast< uint32_t >( _width );
   window->height = static_cast< uint32_t >( _height );
 }

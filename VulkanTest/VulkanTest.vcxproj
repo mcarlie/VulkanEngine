@@ -23,20 +23,20 @@
     <ClCompile Include="src\GLFWWindow.cpp" />
     <ClCompile Include="src\IndexAttribute.cpp" />
     <ClCompile Include="src\main.cpp" />
-    <ClCompile Include="src\Renderer.cpp" />
     <ClCompile Include="src\Shader.cpp" />
     <ClCompile Include="src\ShaderModule.cpp" />
     <ClCompile Include="src\VertexAttribute.cpp" />
+    <ClCompile Include="src\VulkanManager.cpp" />
     <ClCompile Include="src\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\VulkanTest\Attribute.h" />
     <ClInclude Include="include\VulkanTest\GLFWWindow.h" />
     <ClInclude Include="include\VulkanTest\IndexAttribute.h" />
-    <ClInclude Include="include\VulkanTest\Renderer.h" />
     <ClInclude Include="include\VulkanTest\Shader.h" />
     <ClInclude Include="include\VulkanTest\ShaderModule.h" />
     <ClInclude Include="include\VulkanTest\VertexAttribute.h" />
+    <ClInclude Include="include\VulkanTest\VulkanManager.h" />
     <ClInclude Include="include\VulkanTest\Window.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

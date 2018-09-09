@@ -47,22 +47,25 @@ namespace VulkanTest {
     virtual void setHeight( uint32_t _height );
 
     /// \return The width of the window
-    virtual uint32_t getWidth();
+    uint32_t getWidth();
 
     /// \return The height of the window
-    virtual uint32_t getHeight();
+    uint32_t getHeight();
 
     /// \return The width of the window's framebuffer
-    virtual uint32_t getFramebufferWidth();
+    uint32_t getFramebufferWidth();
 
     /// \return The width of the window's framebuffer
-    virtual uint32_t getFramebufferHeight();
+    uint32_t getFramebufferHeight();
 
     /// \return The window's title
-    virtual const std::string& getTitle();
+    const std::string& getTitle();
 
     /// \return True if the window is in full screen mode
-    virtual bool isFullScreen();
+    bool isFullScreen();
+
+    /// \return True if the size has changed
+    bool sizeHasChanged();
 
   protected:
 
@@ -83,6 +86,10 @@ namespace VulkanTest {
 
     /// Whether or not the window is set to full screen
     bool full_screen;
+
+    /// If true the window or framebuffer size has changed
+    /// Reset when calling sizeHasChanged()
+    bool size_changed;
 
   };
 

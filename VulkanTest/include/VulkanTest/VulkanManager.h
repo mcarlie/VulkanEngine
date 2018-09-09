@@ -1,5 +1,5 @@
-#ifndef RENDERER_H
-#define RENDERER_H
+#ifndef VULKANMANAGER_H
+#define VULKANMANAGER_H
 
 #include <VulkanTest/Window.h>
 
@@ -13,38 +13,44 @@
 
 namespace VulkanTest {
   
-  class Renderer {
+  class VulkanManager {
   
   private:
 
     /// Constructor
     /// Private so that an instance may only be created from getInstance()
-    Renderer();
+    VulkanManager();
 
   public:
 
     /// Destructor
-    ~Renderer();
+    ~VulkanManager();
 
     /// Delete copy constructor to disallow duplicates
-    Renderer( Renderer const& ) = delete;
+    VulkanManager( VulkanManager const& ) = delete;
 
     /// Delete assignment operator to disallow duplicates
-    void operator=( Renderer const& ) = delete;
+    void operator=( VulkanManager const& ) = delete;
 
-    /// Get the singleton instance of the renderer
+    /// Get the singleton instance of the VulkanManager
     /// Creates the instance when first called
-    /// \return The singleton renderer instance
-    static std::shared_ptr< Renderer >& get();
+    /// \return The singleton VulkanManager instance
+    static std::shared_ptr< VulkanManager >& getInstance();
 
-    /// Initialize the renderer
-    /// \param window The Window instance to use with the renderer
+    /// Initialize the VulkanManager
+    /// \param window The Window instance to use with the manager
     void initialize( const std::shared_ptr< Window >& _window );
 
+    /// Gives the index of the memory type in vk::PhysicalDeviceMemoryProperties::memoryTypes
+    /// Which fulfills the requirements given by the flags
+    /// \param type_filter vk::MemoryRequirement::memoryTypeBits retrieved for the buffer which will use the memory
+    /// \param vk::MemoryPropertyFlags indicating desired properties of the buffer 
     uint32_t findMemoryTypeIndex( uint32_t type_filter, vk::MemoryPropertyFlags flags );
 
+    /// Executes all command buffers and swaps buffers
     void drawImage();
 
+    /// Get the manager's vk::Device instance
     vk::Device& getVkDevice();
 
   private:
@@ -59,13 +65,7 @@ namespace VulkanTest {
     void cleanup();
     void cleanupSwapchain();
 
-    /// The current width of the window's framebuffer
-    uint32_t window_fb_width;
-
-    /// The current height of the window's framebuffer
-    uint32_t window_fb_height;
-
-    /// The window instance used with the renderer
+    /// The window instance used with the manager
     std::shared_ptr< Window > window;
 
     /// The main Vulkan instance
@@ -103,7 +103,7 @@ namespace VulkanTest {
     std::vector< vk::Framebuffer > vk_swapchain_framebuffers;
 
     std::shared_ptr< Shader > shader;
-    std::shared_ptr< VertexAttribute< float, 3, 1 > > position;
+    std::shared_ptr< VertexAttribute< Eigen::Vector3f > > position;
     std::shared_ptr< IndexAttribute< uint16_t > > index;
 
     vk::Semaphore vk_image_available_semaphore;
@@ -117,16 +117,13 @@ namespace VulkanTest {
 #endif
 
     static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
-      VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
-      VkDebugUtilsMessageTypeFlagsEXT messageType,
-      const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
-      void* pUserData ) {
-      std::cerr << "validation layer: " << pCallbackData->pMessage << std::endl;
-      return VK_FALSE;
-    }
+      VkDebugUtilsMessageSeverityFlagBitsEXT message_severity,
+      VkDebugUtilsMessageTypeFlagsEXT message_type,
+      const VkDebugUtilsMessengerCallbackDataEXT* callback_data,
+      void* user_data );
 
   };
 
 }
 
-#endif /* RENDERER_H */
+#endif /* VULKANMANAGER_H */

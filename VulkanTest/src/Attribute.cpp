@@ -1,11 +1,11 @@
 #include <VulkanTest/Attribute.h>
-#include <VulkanTest/Renderer.h>
+#include <VulkanTest/VulkanManager.h>
 
 VulkanTest::Attribute::Attribute() : num_elements( 0 ) {
 }
 
 VulkanTest::Attribute::~Attribute() {
-  auto device = Renderer::get()->getVkDevice();
+  auto device = VulkanManager::getInstance()->getVkDevice();
   device.destroyBuffer( vk_buffer );
   device.freeMemory( vk_device_memory );
 }
@@ -20,8 +20,8 @@ const vk::Buffer& VulkanTest::Attribute::getVkBuffer() {
 
 void VulkanTest::Attribute::createBuffer( const void* data, size_t data_size, vk::BufferUsageFlags usage_flags ) {
 
-  auto renderer = Renderer::get();
-  vk::Device& vk_device = renderer->getVkDevice();
+  auto vulkan_manager = VulkanManager::getInstance();
+  vk::Device& vk_device = vulkan_manager->getVkDevice();
 
   auto buffer_info = vk::BufferCreateInfo()
     .setSize( data_size )
@@ -33,7 +33,7 @@ void VulkanTest::Attribute::createBuffer( const void* data, size_t data_size, vk
 
   auto vk_allocate_info = vk::MemoryAllocateInfo()
     .setAllocationSize( vk_memory_requirements.size )
-    .setMemoryTypeIndex( renderer->findMemoryTypeIndex( vk_memory_requirements.memoryTypeBits,
+    .setMemoryTypeIndex( vulkan_manager->findMemoryTypeIndex( vk_memory_requirements.memoryTypeBits,
       vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent ) );
 
   vk_device_memory = vk_device.allocateMemory( vk_allocate_info );

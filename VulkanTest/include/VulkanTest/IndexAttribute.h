@@ -7,13 +7,16 @@
 
 namespace VulkanTest {
 
+  /// Represents an index attribute for indexed rendering
+  /// \tparam T The type to use for index elements
   template< typename T >
   class IndexAttribute : public Attribute {
 
   public:
 
     /// Constructor
-    IndexAttribute( const std::vector< T >& _data );
+    /// \param _data The index data
+    IndexAttribute( const std::vector< T >& data );
 
     /// Destructor
     ~IndexAttribute();
