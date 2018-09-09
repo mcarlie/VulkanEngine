@@ -5,6 +5,8 @@
 
 #include <VulkanTest/Shader.h>
 
+#include <VulkanTest/VertexAttribute.h>
+
 #include <iostream>
 #include <memory>
 
@@ -38,9 +40,11 @@ namespace VulkanTest {
     /// \param window The Window instance to use with the renderer
     void initialize( const std::shared_ptr< Window >& _window );
 
+    uint32_t findMemoryTypeIndex( uint32_t type_filter, vk::MemoryPropertyFlags flags );
+
     void drawImage();
 
-    vk::Device& getDevice();
+    vk::Device& getVkDevice();
 
   private:
 
@@ -98,6 +102,7 @@ namespace VulkanTest {
     std::vector< vk::Framebuffer > vk_swapchain_framebuffers;
 
     std::shared_ptr< Shader > shader;
+    std::shared_ptr< VertexAttribute< float, 3, 1 > > position;
 
     vk::Semaphore vk_image_available_semaphore;
     vk::Semaphore vk_rendering_finished_semaphore;

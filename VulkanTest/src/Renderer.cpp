@@ -1,5 +1,4 @@
 #include <VulkanTest/Renderer.h>
-#include <VulkanTest/VertexAttribute.h>
 
 VulkanTest::Renderer::Renderer() : window_fb_width( 0 ), window_fb_height( 0 ) {
 }
@@ -126,6 +125,19 @@ void VulkanTest::Renderer::initialize( const std::shared_ptr< Window >& _window 
 
 }
 
+uint32_t VulkanTest::Renderer::findMemoryTypeIndex( uint32_t type_filter, vk::MemoryPropertyFlags flags ) {
+
+  vk::PhysicalDeviceMemoryProperties vk_memory_properties = vk_physical_device.getMemoryProperties();
+  for( uint32_t i = 0; i < vk_memory_properties.memoryTypeCount; ++i ) {
+    if( ( type_filter & ( 1 << i ) ) && ( vk_memory_properties.memoryTypes[i].propertyFlags & flags ) == flags ) {
+      return i;
+    }
+  }
+
+  throw std::runtime_error( "Could not find suitable memory type" );
+
+}
+
 void VulkanTest::Renderer::drawImage() {
 
   uint32_t image_index;
@@ -201,7 +213,7 @@ void VulkanTest::Renderer::drawImage() {
 
 }
 
-vk::Device& VulkanTest::Renderer::getDevice() {
+vk::Device& VulkanTest::Renderer::getVkDevice() {
   return vk_device;
 };
 
@@ -308,7 +320,7 @@ void VulkanTest::Renderer::createGraphicsPipeline() {
     { -0.5f, 0.5f, 0.0f } 
   };
 
-  std::shared_ptr< VertexAttribute< float, 3, 1 > > position( new VertexAttribute< float, 3, 1 >( data ) );
+  position.reset( new VertexAttribute< float, 3, 1 >( data, 0 ) );
 
   auto position_description = vk::VertexInputAttributeDescription()
     .setBinding( 0 )
@@ -318,9 +330,9 @@ void VulkanTest::Renderer::createGraphicsPipeline() {
 
   auto vertex_input_info = vk::PipelineVertexInputStateCreateInfo()
     .setPVertexBindingDescriptions( &position->getVkVertexInputBindingDescription() )
-    .setVertexBindingDescriptionCount( 0 )
-    .setPVertexAttributeDescriptions( nullptr )
-    .setVertexAttributeDescriptionCount( 0 );
+    .setVertexBindingDescriptionCount( 1 )
+    .setPVertexAttributeDescriptions( &position_description )
+    .setVertexAttributeDescriptionCount( 1 );
 
   auto input_assembly_info = vk::PipelineInputAssemblyStateCreateInfo()
     .setPrimitiveRestartEnable( false )
@@ -457,7 +469,10 @@ void VulkanTest::Renderer::createCommandBuffers() {
     vk_command_buffers[i].beginRenderPass( render_pass_info, vk::SubpassContents::eInline );
     vk_command_buffers[i].bindPipeline( vk::PipelineBindPoint::eGraphics, vk_graphics_pipeline );
 
-    vk_command_buffers[i].draw( 3, 1, 0, 0 );
+    std::vector< vk::Buffer > buffers = { position->getVkBuffer() };
+    vk_command_buffers[i].bindVertexBuffers( 0, buffers, { 0 } );
+    
+    vk_command_buffers[i].draw( position->getNumVertices(), 1, 0, 0 );
 
     vk_command_buffers[i].endRenderPass();
     vk_command_buffers[i].end();
