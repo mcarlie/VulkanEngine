@@ -5,6 +5,9 @@ VulkanTest::Renderer::Renderer() : window_fb_width( 0 ), window_fb_height( 0 ) {
 
 VulkanTest::Renderer::~Renderer() {
   vk_device.waitIdle();
+  position.reset();
+  index.reset();
+  shader.reset();
   cleanup();
 }
 
@@ -314,6 +317,10 @@ void VulkanTest::Renderer::createGraphicsPipeline() {
   shader_modules.push_back( fragment_shader );
   shader.reset( new Shader( shader_modules ) );
 
+  std::vector< uint16_t > index_data = { 0, 1, 2 };
+
+  index.reset( new IndexAttribute< uint16_t >( index_data ) );
+
   std::vector< Eigen::Matrix< float, 3, 1 > > data = { 
     { 0.0f, -0.5f, 0.0f },
     { 0.5f, 0.5f, 0.0f },
@@ -471,8 +478,9 @@ void VulkanTest::Renderer::createCommandBuffers() {
 
     std::vector< vk::Buffer > buffers = { position->getVkBuffer() };
     vk_command_buffers[i].bindVertexBuffers( 0, buffers, { 0 } );
+    vk_command_buffers[i].bindIndexBuffer( index->getVkBuffer(), 0, vk::IndexType::eUint16 );
     
-    vk_command_buffers[i].draw( position->getNumVertices(), 1, 0, 0 );
+    vk_command_buffers[i].drawIndexed( index->getNumElements(), 1, 0, 0, 0 );
 
     vk_command_buffers[i].endRenderPass();
     vk_command_buffers[i].end();

@@ -6,6 +6,7 @@
 #include <VulkanTest/Shader.h>
 
 #include <VulkanTest/VertexAttribute.h>
+#include <VulkanTest/IndexAttribute.h>
 
 #include <iostream>
 #include <memory>
@@ -103,6 +104,7 @@ namespace VulkanTest {
 
     std::shared_ptr< Shader > shader;
     std::shared_ptr< VertexAttribute< float, 3, 1 > > position;
+    std::shared_ptr< IndexAttribute< uint16_t > > index;
 
     vk::Semaphore vk_image_available_semaphore;
     vk::Semaphore vk_rendering_finished_semaphore;
