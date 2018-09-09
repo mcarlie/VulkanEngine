@@ -4,8 +4,8 @@ VulkanTest::Shader::Shader( const std::vector< std::shared_ptr< ShaderModule > >
 
   for( auto sm : shader_modules ) {
     auto shader_stage_info = vk::PipelineShaderStageCreateInfo()
-      .setModule( sm->getVKShaderModule() )
-      .setStage( sm->getShaderStageFlag() )
+      .setModule( sm->getVkShaderModule() )
+      .setStage( sm->getVkShaderStageFlag() )
       .setPName( "main" );
     shader_stages.push_back( shader_stage_info );
   }
@@ -16,6 +16,6 @@ VulkanTest::Shader::~Shader() {
 
 }
 
-const std::vector< vk::PipelineShaderStageCreateInfo >& VulkanTest::Shader::getShaderStages() {
+const std::vector< vk::PipelineShaderStageCreateInfo >& VulkanTest::Shader::getVkShaderStages() {
   return shader_stages;
 }

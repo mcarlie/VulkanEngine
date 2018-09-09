@@ -16,7 +16,7 @@ namespace VulkanTest {
     /// Destructor
     ~Shader();
 
-    const std::vector< vk::PipelineShaderStageCreateInfo >& getShaderStages();
+    const std::vector< vk::PipelineShaderStageCreateInfo >& getVkShaderStages();
 
   private:
 

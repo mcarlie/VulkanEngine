@@ -38,6 +38,12 @@ namespace VulkanTest {
     /// \return True if the window should close
     virtual bool shouldClose();
 
+    /// Sets the width of the window
+    virtual void setWidth( uint32_t _width );
+
+    /// Sets the height of the window
+    virtual void setHeight( uint32_t _height );
+
   private:
 
     /// Internal instance of the glfw window
@@ -48,6 +54,16 @@ namespace VulkanTest {
     /// \param error The error code
     /// \param description Text describing the error
     static void errorCallback( int error, const char* description );
+
+    /// Callback which is called when the window's size has changed
+    /// \param width The new width of the window
+    /// \param height The new height of the window
+    static void windowResizeCallback( GLFWwindow* _glfw_window, int _width, int _height );
+
+    /// Callback which is called when the window's framebuffer size has changed
+    /// \param width The new width of the framebuffer
+    /// \param height The new height of the framebuffer
+    static void framebufferResizeCallback( GLFWwindow* _glfw_window, int _width, int _height );
 
   };
 

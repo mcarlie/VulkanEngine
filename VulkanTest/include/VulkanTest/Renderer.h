@@ -51,6 +51,15 @@ namespace VulkanTest {
     void createSwapchainFramebuffers();
     void createCommandBuffers();
 
+    void cleanup();
+    void cleanupSwapchain();
+
+    /// The current width of the window's framebuffer
+    uint32_t window_fb_width;
+
+    /// The current height of the window's framebuffer
+    uint32_t window_fb_height;
+
     /// The window instance used with the renderer
     std::shared_ptr< Window > window;
 

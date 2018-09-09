@@ -1,32 +1,12 @@
 #include <VulkanTest/Renderer.h>
+#include <VulkanTest/VertexAttribute.h>
 
-VulkanTest::Renderer::Renderer() {
+VulkanTest::Renderer::Renderer() : window_fb_width( 0 ), window_fb_height( 0 ) {
 }
 
 VulkanTest::Renderer::~Renderer() {
   vk_device.waitIdle();
-  for( size_t i = 0; i < vk_swapchain_framebuffers.size(); ++i ) {
-    vk_device.destroyFramebuffer( vk_swapchain_framebuffers[i] );
-  }
-  vk_device.freeCommandBuffers( vk_command_pool, vk_command_buffers );
-  vk_device.destroyPipeline( vk_graphics_pipeline );
-  vk_device.destroyPipelineLayout( vk_layout );
-  vk_device.destroyRenderPass( vk_render_pass );
-  for( size_t i = 0; i < vk_image_views.size(); ++i ) {
-    vk_device.destroyImageView( vk_image_views[i] );
-  }
-  vk_device.destroySwapchainKHR( vk_swapchain );
-
-  vk_device.destroySemaphore( vk_image_available_semaphore );
-  vk_device.destroySemaphore( vk_rendering_finished_semaphore );
-  vk_device.destroyCommandPool( vk_command_pool );
-
-  vk_device.destroy();
-#if defined( _DEBUG )
-  vk_instance.destroyDebugUtilsMessengerEXT( vk_debug_utils_messenger, nullptr, vk_dispatch_loader_dynamic );
-#endif
-  vk_instance.destroySurfaceKHR( vk_surface );
-  vk_instance.destroy();
+  cleanup();
 }
 
 std::shared_ptr< VulkanTest::Renderer >& VulkanTest::Renderer::get() {
@@ -37,6 +17,8 @@ std::shared_ptr< VulkanTest::Renderer >& VulkanTest::Renderer::get() {
 void VulkanTest::Renderer::initialize( const std::shared_ptr< Window >& _window ) {
 
   window = _window;
+  window_fb_width = window->getFramebufferWidth();
+  window_fb_height = window->getFramebufferHeight();
 
   std::vector< const char* > instance_extensions( window->getRequiredVulkanInstanceExtensions() );
 
@@ -146,9 +128,49 @@ void VulkanTest::Renderer::initialize( const std::shared_ptr< Window >& _window 
 
 void VulkanTest::Renderer::drawImage() {
 
-  vk::ResultValue< uint32_t > image_index 
-    = vk_device.acquireNextImageKHR( vk_swapchain, std::numeric_limits< uint32_t >::max(), vk_image_available_semaphore, nullptr );
+  uint32_t image_index;
+  while( true ) {
+  
+    // Check if the window's framebuffer size has changed
+    // If it has we need to recreate the swapchain
+    bool framebuffer_size_changed = false;
+    const uint32_t temp_fb_width = window->getFramebufferWidth();
+    const uint32_t temp_fb_height = window->getFramebufferHeight();
+    if( ( temp_fb_width != window_fb_width ) || ( temp_fb_height != window_fb_height ) ) {
+      framebuffer_size_changed = true;
+      window_fb_width = temp_fb_width;
+      window_fb_height = temp_fb_height;
+    }
 
+    /// Acquire the next available swapchain image that we can write to
+    vk::Result result = vk_device.acquireNextImageKHR( 
+      vk_swapchain,
+      std::numeric_limits< uint32_t >::max(),
+      vk_image_available_semaphore,
+      nullptr,
+      &image_index );
+
+    // If the window size has changed or the image view is out of date according to Vulkan
+    // then recreate the pipeline from the swapchain stage
+    if( result == vk::Result::eErrorOutOfDateKHR || framebuffer_size_changed ) {
+      cleanupSwapchain();
+      createSwapchain();
+      createImageViews();
+      createRenderPass();
+      createGraphicsPipeline();
+      createSwapchainFramebuffers();
+      createCommandBuffers();
+      continue;
+    } else if ( result != vk::Result::eSuccess &&
+                result != vk::Result::eSuboptimalKHR ) {
+      throw std::runtime_error( "Failed to acquire image!" );
+    } else {
+      break;
+    }
+
+  }
+
+  // Submit commands to the queue
   vk::Semaphore wait_semaphores[] = { vk_image_available_semaphore };
   vk::Semaphore signal_semaphores[] = { vk_rendering_finished_semaphore };
   vk::PipelineStageFlags wait_stages[] = { vk::PipelineStageFlagBits::eColorAttachmentOutput };
@@ -157,7 +179,7 @@ void VulkanTest::Renderer::drawImage() {
     .setPWaitSemaphores( wait_semaphores )
     .setPWaitDstStageMask( wait_stages )
     .setCommandBufferCount( 1 )
-    .setPCommandBuffers( &vk_command_buffers[ image_index.value ] )
+    .setPCommandBuffers( &vk_command_buffers[image_index] )
     .setSignalSemaphoreCount( 1 )
     .setPSignalSemaphores( signal_semaphores );
 
@@ -169,10 +191,12 @@ void VulkanTest::Renderer::drawImage() {
     .setPWaitSemaphores( signal_semaphores )
     .setSwapchainCount( 1 )
     .setPSwapchains( swapchains )
-    .setPImageIndices( &image_index.value );
+    .setPImageIndices( &image_index );
 
   vk_graphics_queue.presentKHR( present_info );
 
+  // Wait for commands to finish
+  // Todo allow writing to next available backbuffer if available
   vk_graphics_queue.waitIdle();
 
 }
@@ -278,8 +302,22 @@ void VulkanTest::Renderer::createGraphicsPipeline() {
   shader_modules.push_back( fragment_shader );
   shader.reset( new Shader( shader_modules ) );
 
+  std::vector< Eigen::Matrix< float, 3, 1 > > data = { 
+    { 0.0f, -0.5f, 0.0f },
+    { 0.5f, 0.5f, 0.0f },
+    { -0.5f, 0.5f, 0.0f } 
+  };
+
+  std::shared_ptr< VertexAttribute< float, 3, 1 > > position( new VertexAttribute< float, 3, 1 >( data ) );
+
+  auto position_description = vk::VertexInputAttributeDescription()
+    .setBinding( 0 )
+    .setLocation( 0 )
+    .setFormat( vk::Format::eR32G32B32Sfloat )
+    .setOffset( 0 );
+
   auto vertex_input_info = vk::PipelineVertexInputStateCreateInfo()
-    .setPVertexBindingDescriptions( nullptr )
+    .setPVertexBindingDescriptions( &position->getVkVertexInputBindingDescription() )
     .setVertexBindingDescriptionCount( 0 )
     .setPVertexAttributeDescriptions( nullptr )
     .setVertexAttributeDescriptionCount( 0 );
@@ -346,8 +384,8 @@ void VulkanTest::Renderer::createGraphicsPipeline() {
   vk_layout = vk_device.createPipelineLayout( layout_info );
 
   auto graphics_pipeline_info = vk::GraphicsPipelineCreateInfo()
-    .setStageCount( static_cast< uint32_t >( shader->getShaderStages().size() ) )
-    .setPStages( shader->getShaderStages().data() )
+    .setStageCount( static_cast< uint32_t >( shader->getVkShaderStages().size() ) )
+    .setPStages( shader->getVkShaderStages().data() )
     .setPVertexInputState( &vertex_input_info )
     .setPInputAssemblyState( &input_assembly_info )
     .setPViewportState( &viewport_info )
@@ -429,5 +467,38 @@ void VulkanTest::Renderer::createCommandBuffers() {
     vk_rendering_finished_semaphore = vk_device.createSemaphore( semaphore_info );
 
   }
+
+}
+
+void VulkanTest::Renderer::cleanup() {
+
+  cleanupSwapchain();
+
+  vk_device.destroySemaphore( vk_image_available_semaphore );
+  vk_device.destroySemaphore( vk_rendering_finished_semaphore );
+  vk_device.destroyCommandPool( vk_command_pool );
+
+  vk_device.destroy();
+#if defined( _DEBUG )
+  vk_instance.destroyDebugUtilsMessengerEXT( vk_debug_utils_messenger, nullptr, vk_dispatch_loader_dynamic );
+#endif
+  vk_instance.destroySurfaceKHR( vk_surface );
+  vk_instance.destroy();
+
+}
+
+void VulkanTest::Renderer::cleanupSwapchain() {
+
+  for( size_t i = 0; i < vk_swapchain_framebuffers.size(); ++i ) {
+    vk_device.destroyFramebuffer( vk_swapchain_framebuffers[i] );
+  }
+  vk_device.freeCommandBuffers( vk_command_pool, vk_command_buffers );
+  vk_device.destroyPipeline( vk_graphics_pipeline );
+  vk_device.destroyPipelineLayout( vk_layout );
+  vk_device.destroyRenderPass( vk_render_pass );
+  for( size_t i = 0; i < vk_image_views.size(); ++i ) {
+    vk_device.destroyImageView( vk_image_views[i] );
+  }
+  vk_device.destroySwapchainKHR( vk_swapchain );
 
 }

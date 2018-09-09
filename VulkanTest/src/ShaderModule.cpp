@@ -22,11 +22,11 @@ VulkanTest::ShaderModule::~ShaderModule() {
   Renderer::get()->getDevice().destroyShaderModule( vk_shader_module );
 }
 
-const vk::ShaderStageFlagBits VulkanTest::ShaderModule::getShaderStageFlag() {
+const vk::ShaderStageFlagBits VulkanTest::ShaderModule::getVkShaderStageFlag() {
   return vk_shader_stage_flag;
 }
 
-const vk::ShaderModule& VulkanTest::ShaderModule::getVKShaderModule() {
+const vk::ShaderModule& VulkanTest::ShaderModule::getVkShaderModule() {
   return vk_shader_module;
 }
 

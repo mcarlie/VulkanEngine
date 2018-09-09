@@ -1,5 +1,6 @@
 #include <VulkanTest/GLFWWindow.h>
 #include <VulkanTest/Renderer.h>
+#include <VulkanTest/VertexAttribute.h>
 
 #include <iostream>
 #include <vector>

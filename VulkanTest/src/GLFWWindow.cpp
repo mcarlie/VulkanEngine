@@ -3,7 +3,7 @@
 #include <iostream>
 
 VulkanTest::GLFWWindow::GLFWWindow( int _width, int _height, const std::string& _title, bool _full_screen ) 
-  : Window( _width, _height, _title, _full_screen ) {
+  : glfw_window( nullptr ), Window( _width, _height, _title, _full_screen ) {
   glfwSetErrorCallback( errorCallback );
 }
 
@@ -34,12 +34,16 @@ bool VulkanTest::GLFWWindow::initialize() {
     getWidth(),
     getHeight(),
     getTitle().c_str(),
-    isFullScreen() ? glfwGetPrimaryMonitor() : nullptr,
+    isFullScreen() ? glfwGetPrimaryMonitor() : nullptr, 
     nullptr );
   
   if( !glfw_window ) {
     return false;
   }
+
+  glfwSetWindowUserPointer( glfw_window, this );
+  glfwSetWindowSizeCallback( glfw_window, &windowResizeCallback );
+  glfwSetFramebufferSizeCallback( glfw_window, &framebufferResizeCallback );
 
   return true;
 
@@ -72,6 +76,34 @@ bool VulkanTest::GLFWWindow::shouldClose() {
   return glfwWindowShouldClose( glfw_window );
 }
 
+void VulkanTest::GLFWWindow::setWidth( uint32_t _width ) {
+  if( glfw_window ) {
+    glfwSetWindowSize( glfw_window, static_cast< int >( _width ), NULL );
+  } else {
+    Window::setWidth( _width );
+  }
+}
+
+void VulkanTest::GLFWWindow::setHeight( uint32_t _height ) {
+  if( glfw_window ) {
+    glfwSetWindowSize( glfw_window, NULL, static_cast< int >( _height ) );
+  } else {
+    Window::setHeight( _height );
+  }
+}
+
 void VulkanTest::GLFWWindow::errorCallback( int error, const char* description ) {
   std::cerr << "GLFW error: " << description << " error code:" << error << std::endl;
+}
+
+void VulkanTest::GLFWWindow::framebufferResizeCallback( GLFWwindow* _glfw_window, int _width, int _height ) {
+  GLFWWindow* window = static_cast< GLFWWindow* >( glfwGetWindowUserPointer( _glfw_window ) );
+  window->framebuffer_width = static_cast< uint32_t >( _width );
+  window->framebuffer_height = static_cast< uint32_t >( _height );
+}
+
+void VulkanTest::GLFWWindow::windowResizeCallback( GLFWwindow* _glfw_window, int _width, int _height ) {
+  GLFWWindow* window = static_cast< GLFWWindow* >( glfwGetWindowUserPointer( _glfw_window ) );
+  window->width = static_cast< uint32_t >( _width );
+  window->height = static_cast< uint32_t >( _height );
 }

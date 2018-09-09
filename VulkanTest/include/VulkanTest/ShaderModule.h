@@ -22,10 +22,10 @@ namespace VulkanTest {
     ~ShaderModule();
 
     /// \return The vk::ShaderStageFlagBits flag for the ShaderModule
-    const vk::ShaderStageFlagBits getShaderStageFlag();
+    const vk::ShaderStageFlagBits getVkShaderStageFlag();
 
     /// \return The internal vk::ShaderModule instance
-    const vk::ShaderModule& getVKShaderModule();
+    const vk::ShaderModule& getVkShaderModule();
 
   private:
 

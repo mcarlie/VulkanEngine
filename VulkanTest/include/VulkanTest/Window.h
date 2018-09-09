@@ -40,11 +40,23 @@ namespace VulkanTest {
     /// \return True if the window should close
     virtual bool shouldClose() = 0;
 
+    /// Sets the width of the window
+    virtual void setWidth( uint32_t _width );
+
+    /// Sets the height of the window
+    virtual void setHeight( uint32_t _height );
+
     /// \return The width of the window
     virtual uint32_t getWidth();
 
     /// \return The height of the window
     virtual uint32_t getHeight();
+
+    /// \return The width of the window's framebuffer
+    virtual uint32_t getFramebufferWidth();
+
+    /// \return The width of the window's framebuffer
+    virtual uint32_t getFramebufferHeight();
 
     /// \return The window's title
     virtual const std::string& getTitle();
@@ -52,13 +64,19 @@ namespace VulkanTest {
     /// \return True if the window is in full screen mode
     virtual bool isFullScreen();
 
-  private:
+  protected:
 
     /// The current width of the window
     uint32_t width;
 
     /// The current height of the window
     uint32_t height;
+
+    /// The width of the window's framebuffer
+    uint32_t framebuffer_width;
+
+    /// The height of the window's framebuffer
+    uint32_t framebuffer_height;
 
     /// The title of the window
     std::string title;
