@@ -1,6 +1,7 @@
 #include <VulkanTest/GLFWWindow.h>
 #include <VulkanTest/VulkanManager.h>
 #include <VulkanTest/VertexAttribute.h>
+#include <VulkanTest/Camera.h>
 
 #include <iostream>
 #include <vector>

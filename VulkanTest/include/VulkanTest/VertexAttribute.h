@@ -5,8 +5,6 @@
 
 #include <vulkan/vulkan.hpp>
 
-#include <Eigen/Eigen>
-
 #include <vector>
 
 namespace VulkanTest {

@@ -11,9 +11,10 @@ VulkanTest::VertexAttribute< T >::VertexAttribute(
   num_elements = static_cast< uint32_t >( data.size() );
 
   createBuffer( 
-    data.data(),
     sizeof( T ) * data.size(),
     vk::BufferUsageFlagBits::eVertexBuffer );
+
+  updateBuffer( data.data(), sizeof( T ) * data.size() );
 
 }
 

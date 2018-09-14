@@ -15,6 +15,9 @@ VulkanTest::ShaderModule::ShaderModule( const std::string& file_path, vk::Shader
     .setCodeSize( bytecode.size() );
 
   vk_shader_module = VulkanManager::getInstance()->getVkDevice().createShaderModule( shader_module_info );
+  if( !vk_shader_module ) {
+    throw std::runtime_error( "Could not create ShaderModule!" );
+  }
 
 }
 

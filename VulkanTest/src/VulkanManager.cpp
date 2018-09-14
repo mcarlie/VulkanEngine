@@ -1,6 +1,6 @@
 #include <VulkanTest/VulkanManager.h>
 
-VulkanTest::VulkanManager::VulkanManager() {
+VulkanTest::VulkanManager::VulkanManager() : frames_in_flight( 2 ), current_frame( 0 ) {
 }
 
 VulkanTest::VulkanManager::~VulkanManager() {
@@ -141,6 +141,9 @@ uint32_t VulkanTest::VulkanManager::findMemoryTypeIndex( uint32_t type_filter, v
 
 void VulkanTest::VulkanManager::drawImage() {
 
+  vk_device.waitForFences( vk_in_flight_fences[current_frame], VK_TRUE, std::numeric_limits< uint32_t >::max() );
+  vk_device.resetFences( vk_in_flight_fences[current_frame] );
+
   uint32_t image_index;
   while( true ) {
 
@@ -148,7 +151,7 @@ void VulkanTest::VulkanManager::drawImage() {
     vk::Result result = vk_device.acquireNextImageKHR( 
       vk_swapchain,
       std::numeric_limits< uint32_t >::max(),
-      vk_image_available_semaphore,
+      vk_image_available_semaphores[current_frame],
       nullptr,
       &image_index );
 
@@ -173,8 +176,8 @@ void VulkanTest::VulkanManager::drawImage() {
   }
 
   // Submit commands to the queue
-  vk::Semaphore wait_semaphores[] = { vk_image_available_semaphore };
-  vk::Semaphore signal_semaphores[] = { vk_rendering_finished_semaphore };
+  vk::Semaphore wait_semaphores[] = { vk_image_available_semaphores[current_frame] };
+  vk::Semaphore signal_semaphores[] = { vk_rendering_finished_semaphores[current_frame] };
   vk::PipelineStageFlags wait_stages[] = { vk::PipelineStageFlagBits::eColorAttachmentOutput };
   auto submit_info = vk::SubmitInfo()
     .setWaitSemaphoreCount( 1 )
@@ -185,7 +188,7 @@ void VulkanTest::VulkanManager::drawImage() {
     .setSignalSemaphoreCount( 1 )
     .setPSignalSemaphores( signal_semaphores );
 
-  vk_graphics_queue.submit( submit_info, nullptr );
+  vk_graphics_queue.submit( submit_info, vk_in_flight_fences[current_frame] );
 
   vk::SwapchainKHR swapchains[] = { vk_swapchain };
   auto present_info = vk::PresentInfoKHR()
@@ -197,9 +200,7 @@ void VulkanTest::VulkanManager::drawImage() {
 
   vk_graphics_queue.presentKHR( present_info );
 
-  // Wait for commands to finish
-  // Todo allow writing to next available backbuffer if available
-  vk_graphics_queue.waitIdle();
+  current_frame = ( current_frame + 1 ) % frames_in_flight;
 
 }
 
@@ -223,7 +224,7 @@ void VulkanTest::VulkanManager::createSwapchain() {
     .setPreTransform( vk::SurfaceTransformFlagBitsKHR::eIdentity )
     .setCompositeAlpha( vk::CompositeAlphaFlagBitsKHR::eOpaque )
     .setPresentMode( vk::PresentModeKHR::eMailbox )
-    .setClipped( true )
+    .setClipped( VK_TRUE )
     .setOldSwapchain( nullptr );
 
   vk_swapchain = vk_device.createSwapchainKHR( swapchain_info );
@@ -304,6 +305,13 @@ void VulkanTest::VulkanManager::createGraphicsPipeline() {
   shader_modules.push_back( fragment_shader );
   shader.reset( new Shader( shader_modules ) );
 
+  camera.reset( new Camera< float >() );
+
+  uniform_buffers.resize( vk_swapchain_images.size() );
+  for( auto& ub : uniform_buffers ) {
+    ub.reset( new UniformBuffer< UniformBufferObject >( 0 ) );
+  }
+
   std::vector< uint16_t > index_data = { 0, 1, 2 };
 
   index.reset( new IndexAttribute< uint16_t >( index_data ) );
@@ -329,7 +337,7 @@ void VulkanTest::VulkanManager::createGraphicsPipeline() {
     .setVertexAttributeDescriptionCount( 1 );
 
   auto input_assembly_info = vk::PipelineInputAssemblyStateCreateInfo()
-    .setPrimitiveRestartEnable( false )
+    .setPrimitiveRestartEnable( VK_FALSE )
     .setTopology( vk::PrimitiveTopology::eTriangleList );
 
   auto viewport = vk::Viewport()
@@ -351,15 +359,15 @@ void VulkanTest::VulkanManager::createGraphicsPipeline() {
     .setViewportCount( 1 );
 
   auto rasterization_info = vk::PipelineRasterizationStateCreateInfo()
-    .setRasterizerDiscardEnable( false )
+    .setRasterizerDiscardEnable( VK_FALSE )
     .setLineWidth( 1.0f )
     .setPolygonMode( vk::PolygonMode::eFill )
-    .setCullMode( vk::CullModeFlagBits::eBack )
-    .setFrontFace( vk::FrontFace::eClockwise )
-    .setDepthBiasEnable( false );
+    .setCullMode( vk::CullModeFlagBits::eNone )
+    .setFrontFace( vk::FrontFace::eCounterClockwise )
+    .setDepthBiasEnable( VK_FALSE );
 
   auto multisampling_info = vk::PipelineMultisampleStateCreateInfo()
-    .setSampleShadingEnable( false )
+    .setSampleShadingEnable( VK_FALSE )
     .setRasterizationSamples( vk::SampleCountFlagBits::e1 );
 
   auto colorblend_attachment_info = vk::PipelineColorBlendAttachmentState()
@@ -368,7 +376,7 @@ void VulkanTest::VulkanManager::createGraphicsPipeline() {
       | vk::ColorComponentFlagBits::eG
       | vk::ColorComponentFlagBits::eB
       | vk::ColorComponentFlagBits::eA )
-    .setBlendEnable( false )
+    .setBlendEnable( VK_FALSE )
     .setSrcColorBlendFactor( vk::BlendFactor::eOne )
     .setDstColorBlendFactor( vk::BlendFactor::eZero )
     .setColorBlendOp( vk::BlendOp::eAdd )
@@ -377,15 +385,59 @@ void VulkanTest::VulkanManager::createGraphicsPipeline() {
     .setAlphaBlendOp( vk::BlendOp::eAdd );
 
   auto colorblend_info = vk::PipelineColorBlendStateCreateInfo()
-    .setLogicOpEnable( false )
+    .setLogicOpEnable( VK_FALSE )
     .setAttachmentCount( 1 )
     .setPAttachments( &colorblend_attachment_info );
 
+  auto pool_size = vk::DescriptorPoolSize()
+    .setDescriptorCount( static_cast< uint32_t >( vk_swapchain_images.size() ) )
+    .setType( vk::DescriptorType::eUniformBuffer );
+
+  auto pool_create_info = vk::DescriptorPoolCreateInfo()
+    .setPoolSizeCount( 1 )
+    .setPPoolSizes( &pool_size )
+    .setMaxSets( static_cast< uint32_t >( vk_swapchain_images.size() ) );
+
+  vk_descriptor_pool = vk_device.createDescriptorPool( pool_create_info );
+
+  auto descriptor_set_info = vk::DescriptorSetLayoutCreateInfo()
+    .setBindingCount( 1 )
+    .setPBindings( &uniform_buffers[0]->getVkDescriptorSetLayoutBinding() );
+
+  auto descriptor_set = vk_device.createDescriptorSetLayout( descriptor_set_info );
+
   auto layout_info = vk::PipelineLayoutCreateInfo()
-    .setSetLayoutCount( 0 )
-    .setPSetLayouts( nullptr )
+    .setSetLayoutCount( 1 )
+    .setPSetLayouts( &descriptor_set )
     .setPushConstantRangeCount( 0 )
     .setPPushConstantRanges( nullptr );
+
+  std::vector< vk::DescriptorSetLayout > descriptor_set_layouts( vk_swapchain_images.size(), descriptor_set );
+  auto descriptor_set_allocate_info = vk::DescriptorSetAllocateInfo()
+    .setDescriptorPool( vk_descriptor_pool )
+    .setDescriptorSetCount( static_cast< uint32_t >( vk_swapchain_images.size() ) )
+    .setPSetLayouts( descriptor_set_layouts.data() );
+
+  vk_descriptor_sets = vk_device.allocateDescriptorSets( descriptor_set_allocate_info );
+
+  for( size_t i = 0; i < uniform_buffers.size(); ++i ) {
+
+    auto descriptor_buffer_info = vk::DescriptorBufferInfo()
+      .setBuffer( uniform_buffers[i]->getVkBuffer() )
+      .setOffset( 0 )
+      .setRange( sizeof( UniformBufferObject ) );
+
+    auto write_descriptor_set = vk::WriteDescriptorSet()
+      .setDstBinding( 0 )
+      .setDstArrayElement( 0 )
+      .setDstSet( vk_descriptor_sets[i] )
+      .setDescriptorType( vk::DescriptorType::eUniformBuffer )
+      .setDescriptorCount( 1 )
+      .setPBufferInfo( &descriptor_buffer_info );
+
+    vk_device.updateDescriptorSets( write_descriptor_set, nullptr );
+
+  }
 
   vk_layout = vk_device.createPipelineLayout( layout_info );
 
@@ -463,18 +515,36 @@ void VulkanTest::VulkanManager::createCommandBuffers() {
     vk_command_buffers[i].beginRenderPass( render_pass_info, vk::SubpassContents::eInline );
     vk_command_buffers[i].bindPipeline( vk::PipelineBindPoint::eGraphics, vk_graphics_pipeline );
 
+    UniformBufferObject vp_data;
+    vp_data.projection = camera->getProjectionMatrix();
+    vp_data.view = camera->getViewMatrix();
+    for( auto& ub : uniform_buffers ) {
+      ub->updateUniformBuffer( &vp_data, 1 );
+    }
+
     std::vector< vk::Buffer > buffers = { position->getVkBuffer() };
     vk_command_buffers[i].bindVertexBuffers( 0, buffers, { 0 } );
     vk_command_buffers[i].bindIndexBuffer( index->getVkBuffer(), 0, vk::IndexType::eUint16 );
-    
+    vk_command_buffers[i].bindDescriptorSets( vk::PipelineBindPoint::eGraphics, vk_layout, 0, vk_descriptor_sets[i], nullptr );
+
     vk_command_buffers[i].drawIndexed( index->getNumElements(), 1, 0, 0, 0 );
 
     vk_command_buffers[i].endRenderPass();
     vk_command_buffers[i].end();
 
     auto semaphore_info = vk::SemaphoreCreateInfo();
-    vk_image_available_semaphore = vk_device.createSemaphore( semaphore_info );
-    vk_rendering_finished_semaphore = vk_device.createSemaphore( semaphore_info );
+    auto fence_info = vk::FenceCreateInfo()
+      .setFlags( vk::FenceCreateFlagBits::eSignaled );
+    for( size_t i = 0; i < frames_in_flight; ++i ) {
+      vk_image_available_semaphores.push_back( vk_device.createSemaphore( semaphore_info ) );
+      vk_rendering_finished_semaphores.push_back( vk_device.createSemaphore( semaphore_info ) );
+      vk_in_flight_fences.push_back( vk_device.createFence( fence_info ) );
+      if( !vk_image_available_semaphores.back() 
+        || !vk_rendering_finished_semaphores.back() 
+        || !vk_in_flight_fences.back() ) {
+        throw std::runtime_error( "Could not create sync objects for rendering!" );
+      }
+    }
 
   }
 
@@ -484,8 +554,12 @@ void VulkanTest::VulkanManager::cleanup() {
 
   cleanupSwapchain();
 
-  vk_device.destroySemaphore( vk_image_available_semaphore );
-  vk_device.destroySemaphore( vk_rendering_finished_semaphore );
+  vk_device.destroyDescriptorPool( vk_descriptor_pool );
+  for( size_t i = 0; i < frames_in_flight; ++i ) {
+    vk_device.destroySemaphore( vk_image_available_semaphores[i] );
+    vk_device.destroySemaphore( vk_rendering_finished_semaphores[i] );  
+    vk_device.destroyFence( vk_in_flight_fences[i] );
+  }
   vk_device.destroyCommandPool( vk_command_pool );
 
   vk_device.destroy();

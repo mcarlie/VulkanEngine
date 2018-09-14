@@ -7,7 +7,8 @@ template< typename T >
 VulkanTest::IndexAttribute< T >::IndexAttribute( const std::vector< T >& data ) {
 
   num_elements = static_cast< uint32_t >( data.size() );
-  createBuffer( data.data(), sizeof( T ) * data.size(), vk::BufferUsageFlagBits::eIndexBuffer );
+  createBuffer( sizeof( T ) * num_elements, vk::BufferUsageFlagBits::eIndexBuffer );
+  updateBuffer( data.data(), sizeof( T ) * num_elements );
 
 }
 

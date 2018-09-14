@@ -23,6 +23,7 @@ namespace VulkanTest {
     ~GLFWWindow();
 
     /// Initialize the window
+    /// \return True if initialization succeded without error
     virtual bool initialize();
 
     /// Do anything needed to update the window.
@@ -30,6 +31,7 @@ namespace VulkanTest {
 
     /// Create a Vulkan surface using the GLFW API
     /// \param instance The vk::Instance to use with the window
+    /// \return The created vulkan surface instance
     virtual vk::SurfaceKHR createVulkanSurface( const vk::Instance& instance );
 
     /// \return The required vulkan extensions for using GLFW
@@ -56,14 +58,22 @@ namespace VulkanTest {
     static void errorCallback( int error, const char* description );
 
     /// Callback which is called when the window's size has changed
+    /// \param _glfw_window The window which was resized
     /// \param width The new width of the window
     /// \param height The new height of the window
     static void windowResizeCallback( GLFWwindow* _glfw_window, int _width, int _height );
 
     /// Callback which is called when the window's framebuffer size has changed
+    /// \param _glfw_window The window which was resized
     /// \param width The new width of the framebuffer
     /// \param height The new height of the framebuffer
     static void framebufferResizeCallback( GLFWwindow* _glfw_window, int _width, int _height );
+
+    /// Callback which is called when the mouse is over the window
+    /// \param _glfw_window The window which recieved the event
+    /// \param x_pos The position of the mouse along the x-axis relative to the top left
+    /// \param y_pos The position of the mouse along the y-axis relative to the top left
+    static void cursorPositionCallback( GLFWwindow* _glfw_window, double x_pos, double y_pos );
 
   };
 

@@ -2,11 +2,13 @@
 #define VULKANMANAGER_H
 
 #include <VulkanTest/Window.h>
-
 #include <VulkanTest/Shader.h>
-
 #include <VulkanTest/VertexAttribute.h>
 #include <VulkanTest/IndexAttribute.h>
+#include <VulkanTest/UniformBuffer.h>
+#include <VulkanTest/Camera.h>
+
+#include <Eigen/Eigen>
 
 #include <iostream>
 #include <memory>
@@ -38,19 +40,19 @@ namespace VulkanTest {
     static std::shared_ptr< VulkanManager >& getInstance();
 
     /// Initialize the VulkanManager
-    /// \param window The Window instance to use with the manager
+    /// \param _window The Window instance to use with the manager
     void initialize( const std::shared_ptr< Window >& _window );
 
     /// Gives the index of the memory type in vk::PhysicalDeviceMemoryProperties::memoryTypes
     /// Which fulfills the requirements given by the flags
     /// \param type_filter vk::MemoryRequirement::memoryTypeBits retrieved for the buffer which will use the memory
-    /// \param vk::MemoryPropertyFlags indicating desired properties of the buffer 
+    /// \param flags vk::MemoryPropertyFlags indicating desired properties of the buffer 
     uint32_t findMemoryTypeIndex( uint32_t type_filter, vk::MemoryPropertyFlags flags );
 
     /// Executes all command buffers and swaps buffers
     void drawImage();
 
-    /// Get the manager's vk::Device instance
+    /// \return The manager's vk::Device instance
     vk::Device& getVkDevice();
 
   private:
@@ -100,14 +102,31 @@ namespace VulkanTest {
 
     vk::Pipeline vk_graphics_pipeline;
 
+    vk::DescriptorSetLayout vk_descriptor_set_layout;
+
     std::vector< vk::Framebuffer > vk_swapchain_framebuffers;
 
+    vk::DescriptorPool vk_descriptor_pool;
+    std::vector< vk::DescriptorSet > vk_descriptor_sets;
+
+    struct UniformBufferObject {
+      Eigen::Matrix< float, 4, 4 > view;
+      Eigen::Matrix< float, 4, 4 > projection;
+    };
+
     std::shared_ptr< Shader > shader;
+    std::vector< std::shared_ptr< UniformBuffer< UniformBufferObject > > > uniform_buffers;
     std::shared_ptr< VertexAttribute< Eigen::Vector3f > > position;
     std::shared_ptr< IndexAttribute< uint16_t > > index;
 
-    vk::Semaphore vk_image_available_semaphore;
-    vk::Semaphore vk_rendering_finished_semaphore;
+    std::shared_ptr< Camera< float > > camera;
+
+    size_t frames_in_flight;
+    size_t current_frame;
+
+    std::vector< vk::Semaphore > vk_image_available_semaphores;
+    std::vector< vk::Semaphore > vk_rendering_finished_semaphores;
+    std::vector< vk::Fence > vk_in_flight_fences;
 
     /// Class which allows for dynamic loading of certain functions within Vulkan classes
     vk::DispatchLoaderDynamic vk_dispatch_loader_dynamic;
