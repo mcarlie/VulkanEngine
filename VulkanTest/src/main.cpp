@@ -2,6 +2,8 @@
 #include <VulkanTest/VulkanManager.h>
 #include <VulkanTest/VertexAttribute.h>
 #include <VulkanTest/Camera.h>
+#include <VulkanTest/Mesh.h>
+#include <VulkanTest/OBJLoader.h>
 
 #include <iostream>
 #include <vector>
@@ -18,6 +20,9 @@ int main() {
       vulkan_manager->drawImage();
       window->update();
     }
+
+    VulkanTest::loadOBJ( "load" );
+    VulkanTest::Mesh< float, short, Eigen::Vector3f > a;
 
     return 0;
 }

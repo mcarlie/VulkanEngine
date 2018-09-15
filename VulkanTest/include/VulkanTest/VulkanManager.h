@@ -43,17 +43,14 @@ namespace VulkanTest {
     /// \param _window The Window instance to use with the manager
     void initialize( const std::shared_ptr< Window >& _window );
 
-    /// Gives the index of the memory type in vk::PhysicalDeviceMemoryProperties::memoryTypes
-    /// Which fulfills the requirements given by the flags
-    /// \param type_filter vk::MemoryRequirement::memoryTypeBits retrieved for the buffer which will use the memory
-    /// \param flags vk::MemoryPropertyFlags indicating desired properties of the buffer 
-    uint32_t findMemoryTypeIndex( uint32_t type_filter, vk::MemoryPropertyFlags flags );
-
     /// Executes all command buffers and swaps buffers
     void drawImage();
 
     /// \return The manager's vk::Device instance
     vk::Device& getVkDevice();
+
+    /// \return The manager's vk::PhysicalDevice instance
+    vk::PhysicalDevice& getVKPhysicalDevice();
 
   private:
 

@@ -126,19 +126,6 @@ void VulkanTest::VulkanManager::initialize( const std::shared_ptr< Window >& _wi
 
 }
 
-uint32_t VulkanTest::VulkanManager::findMemoryTypeIndex( uint32_t type_filter, vk::MemoryPropertyFlags flags ) {
-
-  vk::PhysicalDeviceMemoryProperties vk_memory_properties = vk_physical_device.getMemoryProperties();
-  for( uint32_t i = 0; i < vk_memory_properties.memoryTypeCount; ++i ) {
-    if( ( type_filter & ( 1 << i ) ) && ( vk_memory_properties.memoryTypes[i].propertyFlags & flags ) == flags ) {
-      return i;
-    }
-  }
-
-  throw std::runtime_error( "Could not find suitable memory type" );
-
-}
-
 void VulkanTest::VulkanManager::drawImage() {
 
   vk_device.waitForFences( vk_in_flight_fences[current_frame], VK_TRUE, std::numeric_limits< uint32_t >::max() );
@@ -206,6 +193,10 @@ void VulkanTest::VulkanManager::drawImage() {
 
 vk::Device& VulkanTest::VulkanManager::getVkDevice() {
   return vk_device;
+};
+
+vk::PhysicalDevice& VulkanTest::VulkanManager::getVKPhysicalDevice() {
+  return vk_physical_device;
 };
 
 void VulkanTest::VulkanManager::createSwapchain() {
@@ -305,7 +296,7 @@ void VulkanTest::VulkanManager::createGraphicsPipeline() {
   shader_modules.push_back( fragment_shader );
   shader.reset( new Shader( shader_modules ) );
 
-  camera.reset( new Camera< float >() );
+  camera.reset( new Camera< float >( { 2.0, 2.0, 2.0 } ) );
 
   uniform_buffers.resize( vk_swapchain_images.size() );
   for( auto& ub : uniform_buffers ) {
@@ -317,9 +308,9 @@ void VulkanTest::VulkanManager::createGraphicsPipeline() {
   index.reset( new IndexAttribute< uint16_t >( index_data ) );
 
   std::vector< Eigen::Matrix< float, 3, 1 > > data = { 
-    { 0.0f, -0.5f, 0.0f },
-    { 0.5f, 0.5f, 0.0f },
-    { -0.5f, 0.5f, 0.0f } 
+    { 0.0f, -0.5f, 0 },
+    { 0.5f, 0.5f, 0 },
+    { -0.5f, 0.5f, 0 } 
   };
 
   position.reset( new VertexAttribute< Eigen::Vector3f >( data, 0 ) );
@@ -516,7 +507,7 @@ void VulkanTest::VulkanManager::createCommandBuffers() {
     vk_command_buffers[i].bindPipeline( vk::PipelineBindPoint::eGraphics, vk_graphics_pipeline );
 
     UniformBufferObject vp_data;
-    vp_data.projection = camera->getProjectionMatrix();
+    vp_data.projection = camera->getPerspectiveProjectionMatrix();
     vp_data.view = camera->getViewMatrix();
     for( auto& ub : uniform_buffers ) {
       ub->updateUniformBuffer( &vp_data, 1 );

@@ -14,9 +14,7 @@ VulkanTest::Buffer::~Buffer() {
 }
 
 const vk::Buffer& VulkanTest::Buffer::getVkBuffer() {
-
   return vk_buffer;
-
 }
 
 void VulkanTest::Buffer::createBuffer( size_t data_size, vk::BufferUsageFlags usage_flags ) {
@@ -34,7 +32,7 @@ void VulkanTest::Buffer::createBuffer( size_t data_size, vk::BufferUsageFlags us
 
   auto vk_allocate_info = vk::MemoryAllocateInfo()
     .setAllocationSize( vk_memory_requirements.size )
-    .setMemoryTypeIndex( vulkan_manager->findMemoryTypeIndex( vk_memory_requirements.memoryTypeBits,
+    .setMemoryTypeIndex( findMemoryTypeIndex( vk_memory_requirements.memoryTypeBits,
       vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent ) );
 
   vk_device_memory = vk_device.allocateMemory( vk_allocate_info );
@@ -48,5 +46,19 @@ void VulkanTest::Buffer::updateBuffer( const void* data, size_t data_size ) {
   void* data_ptr = device.mapMemory( vk_device_memory, 0, data_size );
   std::memcpy( data_ptr, data, data_size );
   device.unmapMemory( vk_device_memory );
+
+}
+
+int32_t VulkanTest::Buffer::findMemoryTypeIndex( uint32_t type_filter, vk::MemoryPropertyFlags flags ) {
+
+  auto& physical_device = VulkanManager::getInstance()->getVKPhysicalDevice();
+  vk::PhysicalDeviceMemoryProperties vk_memory_properties = physical_device.getMemoryProperties();
+  for( uint32_t i = 0; i < vk_memory_properties.memoryTypeCount; ++i ) {
+    if( ( type_filter & ( 1 << i ) ) && ( vk_memory_properties.memoryTypes[i].propertyFlags & flags ) == flags ) {
+      return i;
+    }
+  }
+
+  throw std::runtime_error( "Could not find suitable memory type" );
 
 }

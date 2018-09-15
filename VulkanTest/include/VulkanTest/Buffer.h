@@ -39,6 +39,10 @@ namespace VulkanTest {
     /// vk::DeviceMemory instance used handle buffer memory
     vk::DeviceMemory vk_device_memory;
 
+  protected:
+
+    int32_t findMemoryTypeIndex( uint32_t type_filter, vk::MemoryPropertyFlags flags );
+
   };
 
 }

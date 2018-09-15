@@ -25,6 +25,9 @@
     <ClCompile Include="src\GLFWWindow.cpp" />
     <ClCompile Include="src\IndexAttribute.cpp" />
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\Mesh.cpp" />
+    <ClCompile Include="src\OBJLoader.cpp" />
+    <ClCompile Include="src\Renderable.cpp" />
     <ClCompile Include="src\Shader.cpp" />
     <ClCompile Include="src\ShaderModule.cpp" />
     <ClCompile Include="src\UniformBuffer.cpp" />
@@ -38,9 +41,13 @@
     <ClInclude Include="include\VulkanTest\Camera.h" />
     <ClInclude Include="include\VulkanTest\GLFWWindow.h" />
     <ClInclude Include="include\VulkanTest\IndexAttribute.h" />
+    <ClInclude Include="include\VulkanTest\Mesh.h" />
+    <ClInclude Include="include\VulkanTest\OBJLoader.h" />
+    <ClInclude Include="include\VulkanTest\Renderable.h" />
     <ClInclude Include="include\VulkanTest\Shader.h" />
     <ClInclude Include="include\VulkanTest\ShaderModule.h" />
     <ClInclude Include="include\VulkanTest\UniformBuffer.h" />
+    <ClInclude Include="include\VulkanTest\Utils.h" />
     <ClInclude Include="include\VulkanTest\VertexAttribute.h" />
     <ClInclude Include="include\VulkanTest\VulkanManager.h" />
     <ClInclude Include="include\VulkanTest\Window.h" />
@@ -131,7 +138,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ProjectDir)\include;$(VULKAN_SDK)\Include;$(ProjectDir)\src;C:\Users\Michael\Desktop\VK\Libs\eigen-3.3.5\;$(SolutionDir)\Libs\glfw-3.2.1\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\Libs\tinyobjloader-1.0.6;$(ProjectDir)\include;$(VULKAN_SDK)\Include;$(ProjectDir)\src;C:\Users\Michael\Desktop\VK\Libs\eigen-3.3.5\;$(SolutionDir)\Libs\glfw-3.2.1\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -171,7 +178,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ProjectDir)\include;$(VULKAN_SDK)\Include;$(ProjectDir)\src;C:\Users\Michael\Desktop\VK\Libs\eigen-3.3.5\;$(SolutionDir)\Libs\glfw-3.2.1\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\Libs\tinyobjloader-1.0.6;$(ProjectDir)\include;$(VULKAN_SDK)\Include;$(ProjectDir)\src;C:\Users\Michael\Desktop\VK\Libs\eigen-3.3.5\;$(SolutionDir)\Libs\glfw-3.2.1\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
