@@ -4,11 +4,10 @@
 #include <VulkanTest/IndexAttribute.h>
 
 template< typename T >
-VulkanTest::IndexAttribute< T >::IndexAttribute( const std::vector< T >& data ) {
+VulkanTest::IndexAttribute< T >::IndexAttribute( const T* data, size_t num_elements ) 
+  : Attribute( num_elements, sizeof( T ), vk::BufferUsageFlagBits::eIndexBuffer ) {
 
-  num_elements = static_cast< uint32_t >( data.size() );
-  createBuffer( sizeof( T ) * num_elements, vk::BufferUsageFlagBits::eIndexBuffer );
-  updateBuffer( data.data(), sizeof( T ) * num_elements );
+  updateBuffer( data, sizeof( T ) * num_elements );
 
 }
 

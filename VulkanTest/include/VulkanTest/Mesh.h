@@ -1,21 +1,25 @@
 #ifndef MESH_H
 #define MESH_H
 
-#include <VulkanTest/Renderable.h>
+#include <VulkanTest/MeshBase.h>
 #include <VulkanTest/VertexAttribute.h>
 #include <VulkanTest/IndexAttribute.h>
-#include <VulkanTest/Shader.h>
 
 #include <Eigen/Eigen>
 
 namespace VulkanTest {
 
   /// Represents a mesh consisting of VertexAttribute instances
+  /// The mesh will at the very least support 3D positions and indices. Any additional
+  /// types that should be supported can be specified as template arguments.
+  /// Example: Mesh< float, uint32_t, Eigen::Vector3f, Eigen::Vector3f > represents a mesh which supports
+  /// Eigen::Matrix< float, 3, 1 > positions, uint32_t indices as well as additional Vector3f and Eigen::Vector2f
+  /// vertex attributes which could for example represent normals and texture coordinates
   /// \tparam PositionType The scalar type to use for the positions, e.g float, double
   /// \tparam IndexType The type to use for storing indices, e.g uint16_t or uint32_t
   /// \tparam AdditionalAttributeTypes A variadic list of additional VertexAttribute types supported by the mesh
   template< typename PositionType, typename IndexType, class ... AdditionalAttributeTypes >
-  class Mesh : public Renderable {
+  class Mesh : public MeshBase {
 
   public:
 
@@ -41,8 +45,6 @@ namespace VulkanTest {
     /// Destructor
     ~Mesh();
 
-  protected:
-
     /// Sets the positions of the Mesh
     /// \param _positions A VertexAttribute giving the positions of the vertices of the Mesh
     void setPositions( const std::shared_ptr< VertexAttribute< Eigen::Matrix< PositionType, 3, 1 > > >& _positions );
@@ -55,9 +57,25 @@ namespace VulkanTest {
     /// \param _attribute A list of additional VertexAttribute instances which will be used when rendering the Mesh
     void setAttributes( const std::tuple< AttributeContainer< AdditionalAttributeTypes > ... >& _attributes );
 
-    /// Sets the Mesh's shader
-    /// \param _shader The shader to use when rendering the Mesh
-    void setShader( const std::shared_ptr< Shader >& _shader );
+    /// \return The vk::PipelineVertexInputStateCreateInfo instance describing the attributes that constitute the Mesh
+    virtual const vk::PipelineVertexInputStateCreateInfo getVkPipelineVertexInputStateCreateInfo();
+
+    /// Start transfer of data belonging all associated VertexAttribute instances
+    /// from staging buffer to vertex buffer memory
+    /// \param command_buffer The vk::CommandBuffer to insert the commands into
+    virtual void transferBuffers();
+
+    /// Bind VertexBuffers in this Mesh which will be used for rendering
+    /// \param command_buffer The vk::CommandBuffer to insert the commands into
+    virtual void bindVertexBuffers( const vk::CommandBuffer& command_buffer );
+
+    /// Bind the index buffer of this Mesh
+    /// \param command_buffer The vk::CommandBuffer to insert the commands into
+    virtual void bindIndexBuffer( const vk::CommandBuffer& command_buffer );
+
+    /// Insert drawing commands
+    /// \param command_buffer The vk::CommandBuffer to insert the commands into
+    virtual void draw( const vk::CommandBuffer& command_buffer );
 
   private:
 
@@ -68,10 +86,13 @@ namespace VulkanTest {
     std::shared_ptr< IndexAttribute< IndexType > > indices;
 
     /// Any additional attributes such as color and so on
-    std::tuple< AttributeContainer< AdditionalAttributeTypes > ... > attributes;
+    std::tuple< AttributeContainer< AdditionalAttributeTypes > ... > additional_attributes;
 
-    /// The shader to use when rendering this Mesh
-    std::shared_ptr< Shader > shader;
+    /// vk::VertexInputBindingDescription for each attribute
+    std::vector< vk::VertexInputBindingDescription > binding_descriptions;
+    
+    /// vk::VertexInputAttributeDescription for each attribute
+    std::vector< vk::VertexInputAttributeDescription > attribute_descriptions;
 
   };
 

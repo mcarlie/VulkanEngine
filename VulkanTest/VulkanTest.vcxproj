@@ -26,6 +26,7 @@
     <ClCompile Include="src\IndexAttribute.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\Mesh.cpp" />
+    <ClCompile Include="src\MeshBase.cpp" />
     <ClCompile Include="src\OBJLoader.cpp" />
     <ClCompile Include="src\Renderable.cpp" />
     <ClCompile Include="src\Shader.cpp" />
@@ -42,6 +43,7 @@
     <ClInclude Include="include\VulkanTest\GLFWWindow.h" />
     <ClInclude Include="include\VulkanTest\IndexAttribute.h" />
     <ClInclude Include="include\VulkanTest\Mesh.h" />
+    <ClInclude Include="include\VulkanTest\MeshBase.h" />
     <ClInclude Include="include\VulkanTest\OBJLoader.h" />
     <ClInclude Include="include\VulkanTest\Renderable.h" />
     <ClInclude Include="include\VulkanTest\Shader.h" />

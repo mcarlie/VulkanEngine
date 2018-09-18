@@ -7,6 +7,7 @@
 #include <VulkanTest/IndexAttribute.h>
 #include <VulkanTest/UniformBuffer.h>
 #include <VulkanTest/Camera.h>
+#include <VulkanTest/MeshBase.h>
 
 #include <Eigen/Eigen>
 
@@ -51,6 +52,12 @@ namespace VulkanTest {
 
     /// \return The manager's vk::PhysicalDevice instance
     vk::PhysicalDevice& getVKPhysicalDevice();
+
+    /// \return The manager's vk::CommandPool for allocating command buffers
+    vk::CommandPool& getVkCommandPool();
+
+    /// \return The manager's vk::Queue for submitting graphics related command buffers
+    vk::Queue& getVkGraphicsQueue();
 
   private:
 
@@ -117,6 +124,7 @@ namespace VulkanTest {
     std::shared_ptr< IndexAttribute< uint16_t > > index;
 
     std::shared_ptr< Camera< float > > camera;
+    std::shared_ptr< MeshBase > mesh;
 
     size_t frames_in_flight;
     size_t current_frame;

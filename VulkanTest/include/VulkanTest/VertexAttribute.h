@@ -19,7 +19,7 @@ namespace VulkanTest {
     /// Constructor
     /// \param data The vertex data which will be represented by this VertexAttribute instance
     /// \param binding The binding index of the vertex attribute
-    VertexAttribute( const std::vector< T >& data, uint32_t _binding );
+    VertexAttribute( const T* data, size_t _num_elements, uint32_t _location, vk::Format _format );
 
     /// Destructor
     ~VertexAttribute();
@@ -27,10 +27,19 @@ namespace VulkanTest {
     /// \return The Vulkan VertexInputBindingDescription for this VertexAttribute instance
     const vk::VertexInputBindingDescription getVkVertexInputBindingDescription();
 
+    /// \return All vk::VertexInputAttributeDescription instances describing the 
+    const vk::VertexInputAttributeDescription getVkVertexInputAttributeDescriptions();
+
+    /// \return The vk::Format of the VertexAttribute describing the format of the vertex data
+    vk::Format getVkFormat();
+
   private:
 
-    /// The binding index of the vertex buffer
-    uint32_t binding;
+    /// Number representing the shader location of the VertexAttribute
+    uint32_t location;
+
+    /// The format of the attribute's data
+    vk::Format format;
 
   };
 

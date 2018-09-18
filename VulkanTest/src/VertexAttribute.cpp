@@ -5,16 +5,12 @@
 
 template< typename T >
 VulkanTest::VertexAttribute< T >::VertexAttribute( 
-  const std::vector< T >& data, uint32_t _binding ) 
-  : binding( _binding ), Attribute() {
-
-  num_elements = static_cast< uint32_t >( data.size() );
-
-  createBuffer( 
-    sizeof( T ) * data.size(),
-    vk::BufferUsageFlagBits::eVertexBuffer );
-
-  updateBuffer( data.data(), sizeof( T ) * data.size() );
+  const T* data, size_t _num_elements, uint32_t _location, vk::Format _format ) : 
+  Attribute( _num_elements, sizeof( T ), vk::BufferUsageFlagBits::eVertexBuffer ),
+  location( _location ),
+  format( _format ) {
+  
+  updateBuffer( data, sizeof( T ) * num_elements );
 
 }
 
@@ -26,10 +22,25 @@ template< typename T >
 const vk::VertexInputBindingDescription VulkanTest::VertexAttribute< T >::getVkVertexInputBindingDescription() {
 
   return vk::VertexInputBindingDescription()
-    .setBinding( binding )
+    .setBinding( 0 )
     .setInputRate( vk::VertexInputRate::eVertex )
     .setStride( sizeof( T ) );
 
+}
+
+template< typename T >
+const vk::VertexInputAttributeDescription VulkanTest::VertexAttribute< T >::getVkVertexInputAttributeDescriptions() {
+
+  return vk::VertexInputAttributeDescription()
+    .setBinding( 0 )
+    .setLocation( location )
+    .setFormat( getVkFormat() )
+    .setOffset( 0 );
+}
+
+template< typename T >
+vk::Format VulkanTest::VertexAttribute< T >::getVkFormat() {
+  return format;
 }
 
 #endif /* VERTEXATTRIBUTE_CPP */

@@ -16,7 +16,7 @@ namespace VulkanTest {
 
     /// Constructor
     /// \param _data The index data
-    IndexAttribute( const std::vector< T >& data );
+    IndexAttribute( const T* data, size_t num_elements );
 
     /// Destructor
     ~IndexAttribute();

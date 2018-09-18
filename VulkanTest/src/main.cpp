@@ -1,3 +1,5 @@
+#define TINYOBJLOADER_IMPLEMENTATION
+
 #include <VulkanTest/GLFWWindow.h>
 #include <VulkanTest/VulkanManager.h>
 #include <VulkanTest/VertexAttribute.h>
@@ -20,9 +22,6 @@ int main() {
       vulkan_manager->drawImage();
       window->update();
     }
-
-    VulkanTest::loadOBJ( "load" );
-    VulkanTest::Mesh< float, short, Eigen::Vector3f > a;
 
     return 0;
 }

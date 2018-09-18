@@ -13,18 +13,38 @@ namespace VulkanTest {
   public:
 
     /// Constructor
-    Attribute();
+    Attribute( size_t _num_elements, size_t _element_size, vk::BufferUsageFlags flags );
     
     /// Destructor
     ~Attribute();
 
     /// \return The number of elements in this Attribute
-    uint32_t getNumElements();
+    size_t getNumElements();
+
+    /// Start transfer of buffer data from staging buffer to vertex buffer
+    void transferBuffer();
 
   protected:
 
+    /// Copy the data to the buffer
+    /// Overriden to update staging buffer
+    /// \param data Pointer to the data
+    /// \param data_size The size of the data in bytes
+    virtual void updateBuffer( const void* data, size_t data_size );
+
     /// The number of elements in this attribute
-    uint32_t num_elements;
+    size_t num_elements;
+
+    /// The data size of the elements which this attribute is represented by
+    size_t element_size;
+
+  private:
+
+    /// Buffer used for staging before transferring to device local location
+    vk::Buffer vk_staging_buffer;
+
+    /// Device memory used for staging
+    vk::DeviceMemory vk_staging_device_memory;
 
   };
 

@@ -41,9 +41,11 @@ namespace VulkanTest {
     virtual bool shouldClose() = 0;
 
     /// Sets the width of the window
+    /// \param _width The desired width
     virtual void setWidth( uint32_t _width );
 
     /// Sets the height of the window
+    /// \param _height The desired height
     virtual void setHeight( uint32_t _height );
 
     /// \return The width of the window

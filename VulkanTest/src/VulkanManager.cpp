@@ -1,5 +1,7 @@
 #include <VulkanTest/VulkanManager.h>
 
+#include <VulkanTest/OBJLoader.h>
+
 VulkanTest::VulkanManager::VulkanManager() : frames_in_flight( 2 ), current_frame( 0 ) {
 }
 
@@ -116,6 +118,7 @@ void VulkanTest::VulkanManager::initialize( const std::shared_ptr< Window >& _wi
   // TODO Use these
   auto surface_formats = vk_physical_device.getSurfaceFormatsKHR( vk_surface );
   auto present_modes = vk_physical_device.getSurfacePresentModesKHR( vk_surface );
+  auto surface_support = vk_physical_device.getSurfaceSupportKHR( graphics_queue_family_index, vk_surface );
 
   createSwapchain();
   createImageViews();
@@ -128,8 +131,8 @@ void VulkanTest::VulkanManager::initialize( const std::shared_ptr< Window >& _wi
 
 void VulkanTest::VulkanManager::drawImage() {
 
-  vk_device.waitForFences( vk_in_flight_fences[current_frame], VK_TRUE, std::numeric_limits< uint32_t >::max() );
-  vk_device.resetFences( vk_in_flight_fences[current_frame] );
+  //auto fence_result = vk_device.waitForFences( vk_in_flight_fences[current_frame], VK_TRUE, std::numeric_limits< uint32_t >::max() );
+  //vk_device.resetFences( vk_in_flight_fences[current_frame] );
 
   uint32_t image_index;
   while( true ) {
@@ -175,7 +178,8 @@ void VulkanTest::VulkanManager::drawImage() {
     .setSignalSemaphoreCount( 1 )
     .setPSignalSemaphores( signal_semaphores );
 
-  vk_graphics_queue.submit( submit_info, vk_in_flight_fences[current_frame] );
+  /// Todo, why are there six fences?
+  vk_graphics_queue.submit( submit_info, nullptr );
 
   vk::SwapchainKHR swapchains[] = { vk_swapchain };
   auto present_info = vk::PresentInfoKHR()
@@ -186,6 +190,7 @@ void VulkanTest::VulkanManager::drawImage() {
     .setPImageIndices( &image_index );
 
   vk_graphics_queue.presentKHR( present_info );
+  vk_graphics_queue.waitIdle();
 
   current_frame = ( current_frame + 1 ) % frames_in_flight;
 
@@ -198,6 +203,14 @@ vk::Device& VulkanTest::VulkanManager::getVkDevice() {
 vk::PhysicalDevice& VulkanTest::VulkanManager::getVKPhysicalDevice() {
   return vk_physical_device;
 };
+
+vk::CommandPool& VulkanTest::VulkanManager::getVkCommandPool() {
+  return vk_command_pool;
+}
+
+vk::Queue& VulkanTest::VulkanManager::getVkGraphicsQueue() {
+  return vk_graphics_queue;
+}
 
 void VulkanTest::VulkanManager::createSwapchain() {
 
@@ -296,16 +309,19 @@ void VulkanTest::VulkanManager::createGraphicsPipeline() {
   shader_modules.push_back( fragment_shader );
   shader.reset( new Shader( shader_modules ) );
 
-  camera.reset( new Camera< float >( { 2.0, 2.0, 2.0 } ) );
+  camera.reset( new Camera< float >( { 3, 2, 5 } ) );
 
   uniform_buffers.resize( vk_swapchain_images.size() );
   for( auto& ub : uniform_buffers ) {
     ub.reset( new UniformBuffer< UniformBufferObject >( 0 ) );
   }
 
+  auto meshes = VulkanTest::loadOBJ( "C:/Users/Michael/Desktop/VK/VulkanTest/models/cow-nonormals.obj", "" );
+  mesh = meshes[0];
+
   std::vector< uint16_t > index_data = { 0, 1, 2 };
 
-  index.reset( new IndexAttribute< uint16_t >( index_data ) );
+  index.reset( new IndexAttribute< uint16_t >( index_data.data(), index_data.size() ) );
 
   std::vector< Eigen::Matrix< float, 3, 1 > > data = { 
     { 0.0f, -0.5f, 0 },
@@ -313,7 +329,7 @@ void VulkanTest::VulkanManager::createGraphicsPipeline() {
     { -0.5f, 0.5f, 0 } 
   };
 
-  position.reset( new VertexAttribute< Eigen::Vector3f >( data, 0 ) );
+  position.reset( new VertexAttribute< Eigen::Vector3f >( data.data(), data.size(), 0, vk::Format::eR32G32B32Sfloat ) );
 
   auto position_description = vk::VertexInputAttributeDescription()
     .setBinding( 0 )
@@ -321,8 +337,13 @@ void VulkanTest::VulkanManager::createGraphicsPipeline() {
     .setFormat( vk::Format::eR32G32B32Sfloat )
     .setOffset( 0 );
 
+  auto a = vk::VertexInputBindingDescription()
+    .setBinding( 0 )
+    .setInputRate( vk::VertexInputRate::eVertex )
+    .setStride( sizeof( Eigen::Vector3f ) );
+
   auto vertex_input_info = vk::PipelineVertexInputStateCreateInfo()
-    .setPVertexBindingDescriptions( &position->getVkVertexInputBindingDescription() )
+    .setPVertexBindingDescriptions( &a )
     .setVertexBindingDescriptionCount( 1 )
     .setPVertexAttributeDescriptions( &position_description )
     .setVertexAttributeDescriptionCount( 1 );
@@ -435,6 +456,7 @@ void VulkanTest::VulkanManager::createGraphicsPipeline() {
   auto graphics_pipeline_info = vk::GraphicsPipelineCreateInfo()
     .setStageCount( static_cast< uint32_t >( shader->getVkShaderStages().size() ) )
     .setPStages( shader->getVkShaderStages().data() )
+    //.setPVertexInputState( &mesh->getVkPipelineVertexInputStateCreateInfo() )
     .setPVertexInputState( &vertex_input_info )
     .setPInputAssemblyState( &input_assembly_info )
     .setPViewportState( &viewport_info )
@@ -477,6 +499,8 @@ void VulkanTest::VulkanManager::createCommandBuffers() {
 
   vk_command_pool = vk_device.createCommandPool( command_pool_info );
 
+  mesh->transferBuffers();
+
   auto command_buffer_allocate_info = vk::CommandBufferAllocateInfo()
     .setCommandBufferCount( static_cast< uint32_t >( vk_swapchain_framebuffers.size() ) )
     .setCommandPool( vk_command_pool )
@@ -514,11 +538,15 @@ void VulkanTest::VulkanManager::createCommandBuffers() {
     }
 
     std::vector< vk::Buffer > buffers = { position->getVkBuffer() };
-    vk_command_buffers[i].bindVertexBuffers( 0, buffers, { 0 } );
-    vk_command_buffers[i].bindIndexBuffer( index->getVkBuffer(), 0, vk::IndexType::eUint16 );
+    //vk_command_buffers[i].bindVertexBuffers( 0, buffers, { 0 } );
+    //vk_command_buffers[i].bindIndexBuffer( index->getVkBuffer(), 0, vk::IndexType::eUint16 );
+    mesh->bindVertexBuffers( vk_command_buffers[i] );
+    mesh->bindIndexBuffer( vk_command_buffers[i] );
+
     vk_command_buffers[i].bindDescriptorSets( vk::PipelineBindPoint::eGraphics, vk_layout, 0, vk_descriptor_sets[i], nullptr );
 
-    vk_command_buffers[i].drawIndexed( index->getNumElements(), 1, 0, 0, 0 );
+    mesh->draw( vk_command_buffers[i] );
+    //vk_command_buffers[i].drawIndexed( static_cast< uint32_t >( index->getNumElements() ), 1, 0, 0, 0 );
 
     vk_command_buffers[i].endRenderPass();
     vk_command_buffers[i].end();
