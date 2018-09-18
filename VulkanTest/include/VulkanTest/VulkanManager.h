@@ -10,12 +10,13 @@
 #include <VulkanTest/MeshBase.h>
 
 #include <Eigen/Eigen>
+#include <vk_mem_alloc.h>
 
 #include <iostream>
 #include <memory>
 
 namespace VulkanTest {
-  
+
   class VulkanManager {
   
   private:
@@ -48,16 +49,18 @@ namespace VulkanTest {
     void drawImage();
 
     /// \return The manager's vk::Device instance
-    vk::Device& getVkDevice();
+    const vk::Device& getVkDevice();
 
     /// \return The manager's vk::PhysicalDevice instance
-    vk::PhysicalDevice& getVKPhysicalDevice();
+    const vk::PhysicalDevice& getVKPhysicalDevice();
 
     /// \return The manager's vk::CommandPool for allocating command buffers
-    vk::CommandPool& getVkCommandPool();
+    const vk::CommandPool& getVkCommandPool();
 
     /// \return The manager's vk::Queue for submitting graphics related command buffers
-    vk::Queue& getVkGraphicsQueue();
+    const vk::Queue& getVkGraphicsQueue();
+
+    const VmaAllocator& getVmaAllocator();
 
   private:
 
@@ -89,6 +92,8 @@ namespace VulkanTest {
 
     /// The logical device used to interface with the physice_device
     vk::Device vk_device;
+
+    VmaAllocator vma_allocator;
 
     vk::Queue vk_graphics_queue;
 

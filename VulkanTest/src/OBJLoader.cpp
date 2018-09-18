@@ -81,7 +81,7 @@ namespace VulkanTest {
       };
 
     indices.clear();
-    for( size_t i = 0; i < 3000; ++i ) {
+    for( size_t i = 0; i < 6000; ++i ) {
       indices.push_back( i );
     }
 

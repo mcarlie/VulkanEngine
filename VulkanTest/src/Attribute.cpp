@@ -4,21 +4,28 @@
 VulkanTest::Attribute::Attribute( size_t _num_elements, size_t _element_size, vk::BufferUsageFlags flags ) 
   : Buffer(), num_elements( _num_elements ), element_size( _element_size ) {
 
-  vk_staging_buffer = createBuffer( num_elements * element_size, vk::BufferUsageFlagBits::eTransferSrc );
-  vk_staging_device_memory = allocateBufferMemory( 
-    vk_staging_buffer,
-    vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent );
+  vk_staging_buffer = createBuffer( 
+    num_elements * element_size,
+    vk::BufferUsageFlagBits::eTransferSrc,
+    vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent,
+    VMA_MEMORY_USAGE_CPU_ONLY,
+    vma_staging_allocation );
 
-  vk_buffer = createBuffer( num_elements * element_size, flags | vk::BufferUsageFlagBits::eTransferDst );
-  vk_device_memory = allocateBufferMemory( vk_buffer, vk::MemoryPropertyFlagBits::eDeviceLocal );
+  vk_buffer = createBuffer( 
+    num_elements * element_size,
+    flags | vk::BufferUsageFlagBits::eTransferDst,
+    vk::MemoryPropertyFlagBits::eDeviceLocal,
+    VMA_MEMORY_USAGE_GPU_ONLY,
+    vma_allocation );
 
 }
 
 VulkanTest::Attribute::~Attribute() {
 
-  auto device = VulkanManager::getInstance()->getVkDevice();
-  device.destroyBuffer( vk_staging_buffer );
-  device.freeMemory( vk_staging_device_memory );
+  vmaDestroyBuffer( 
+    VulkanManager::getInstance()->getVmaAllocator(),
+    static_cast< VkBuffer >( vk_staging_buffer ), 
+    vma_staging_allocation );
 
 }
 
@@ -58,14 +65,17 @@ void VulkanTest::Attribute::transferBuffer() {
   VulkanManager::getInstance()->getVkGraphicsQueue().waitIdle();
 
   auto device = VulkanManager::getInstance()->getVkDevice();
-  device.destroyBuffer( vk_staging_buffer );
-  device.freeMemory( vk_staging_device_memory );
+  vmaDestroyBuffer( 
+    VulkanManager::getInstance()->getVmaAllocator(),
+    static_cast< VkBuffer >( vk_staging_buffer ),
+    vma_staging_allocation );
+
   device.freeCommandBuffers( VulkanManager::getInstance()->getVkCommandPool(), command_buffers );
 
 }
 
-void VulkanTest::Attribute::updateBuffer( const void* data, size_t data_size ) {
+void VulkanTest::Attribute::updateBuffer( const void* data, size_t _data_size ) {
 
-  Buffer::updateBuffer( data, data_size, vk_staging_device_memory );
+  Buffer::updateBuffer( data, _data_size, vma_staging_allocation );
 
 }

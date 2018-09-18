@@ -1,6 +1,8 @@
 #include <VulkanTest/VulkanManager.h>
-
 #include <VulkanTest/OBJLoader.h>
+
+#define VMA_IMPLEMENTATION
+#include "vk_mem_alloc.h"
 
 VulkanTest::VulkanManager::VulkanManager() : frames_in_flight( 2 ), current_frame( 0 ) {
 }
@@ -113,6 +115,15 @@ void VulkanTest::VulkanManager::initialize( const std::shared_ptr< Window >& _wi
     .setEnabledExtensionCount( static_cast< uint32_t >( physical_device_extension_names.size() ) );
 
   vk_device = vk_physical_device.createDevice( device_info );
+  
+  VmaAllocatorCreateInfo vma_allocator_create_info = {};
+  vma_allocator_create_info.device = vk_device;
+  vma_allocator_create_info.physicalDevice = vk_physical_device;
+
+  if( vmaCreateAllocator( &vma_allocator_create_info, &vma_allocator ) != VK_SUCCESS ) {
+    throw std::runtime_error( "Failed to create VmaAllocator!" );
+  }
+  
   vk_graphics_queue = vk_device.getQueue( graphics_queue_family_index, 0 );
 
   // TODO Use these
@@ -131,8 +142,8 @@ void VulkanTest::VulkanManager::initialize( const std::shared_ptr< Window >& _wi
 
 void VulkanTest::VulkanManager::drawImage() {
 
-  //auto fence_result = vk_device.waitForFences( vk_in_flight_fences[current_frame], VK_TRUE, std::numeric_limits< uint32_t >::max() );
-  //vk_device.resetFences( vk_in_flight_fences[current_frame] );
+  auto fence_result = vk_device.waitForFences( vk_in_flight_fences[current_frame], VK_TRUE, std::numeric_limits< uint32_t >::max() );
+  vk_device.resetFences( vk_in_flight_fences[current_frame] );
 
   uint32_t image_index;
   while( true ) {
@@ -179,7 +190,7 @@ void VulkanTest::VulkanManager::drawImage() {
     .setPSignalSemaphores( signal_semaphores );
 
   /// Todo, why are there six fences?
-  vk_graphics_queue.submit( submit_info, nullptr );
+  vk_graphics_queue.submit( submit_info, vk_in_flight_fences[current_frame] );
 
   vk::SwapchainKHR swapchains[] = { vk_swapchain };
   auto present_info = vk::PresentInfoKHR()
@@ -190,26 +201,29 @@ void VulkanTest::VulkanManager::drawImage() {
     .setPImageIndices( &image_index );
 
   vk_graphics_queue.presentKHR( present_info );
-  vk_graphics_queue.waitIdle();
 
   current_frame = ( current_frame + 1 ) % frames_in_flight;
 
 }
 
-vk::Device& VulkanTest::VulkanManager::getVkDevice() {
+const vk::Device& VulkanTest::VulkanManager::getVkDevice() {
   return vk_device;
 };
 
-vk::PhysicalDevice& VulkanTest::VulkanManager::getVKPhysicalDevice() {
+const vk::PhysicalDevice& VulkanTest::VulkanManager::getVKPhysicalDevice() {
   return vk_physical_device;
 };
 
-vk::CommandPool& VulkanTest::VulkanManager::getVkCommandPool() {
+const vk::CommandPool& VulkanTest::VulkanManager::getVkCommandPool() {
   return vk_command_pool;
 }
 
-vk::Queue& VulkanTest::VulkanManager::getVkGraphicsQueue() {
+const vk::Queue& VulkanTest::VulkanManager::getVkGraphicsQueue() {
   return vk_graphics_queue;
+}
+
+const VmaAllocator& VulkanTest::VulkanManager::getVmaAllocator() {
+  return vma_allocator;
 }
 
 void VulkanTest::VulkanManager::createSwapchain() {
@@ -580,6 +594,8 @@ void VulkanTest::VulkanManager::cleanup() {
     vk_device.destroyFence( vk_in_flight_fences[i] );
   }
   vk_device.destroyCommandPool( vk_command_pool );
+
+  vmaDestroyAllocator( vma_allocator );
 
   vk_device.destroy();
 #if defined( _DEBUG )

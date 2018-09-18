@@ -140,7 +140,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)\Libs\tinyobjloader-1.0.6;$(ProjectDir)\include;$(VULKAN_SDK)\Include;$(ProjectDir)\src;C:\Users\Michael\Desktop\VK\Libs\eigen-3.3.5\;$(SolutionDir)\Libs\glfw-3.2.1\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\Libs\VulkanMemoryAllocator-2.1.0\src;$(SolutionDir)\Libs\tinyobjloader-1.0.6;$(ProjectDir)\include;$(VULKAN_SDK)\Include;$(ProjectDir)\src;C:\Users\Michael\Desktop\VK\Libs\eigen-3.3.5\;$(SolutionDir)\Libs\glfw-3.2.1\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -180,7 +180,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)\Libs\tinyobjloader-1.0.6;$(ProjectDir)\include;$(VULKAN_SDK)\Include;$(ProjectDir)\src;C:\Users\Michael\Desktop\VK\Libs\eigen-3.3.5\;$(SolutionDir)\Libs\glfw-3.2.1\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\Libs\VulkanMemoryAllocator-2.1.0\src;$(SolutionDir)\Libs\tinyobjloader-1.0.6;$(ProjectDir)\include;$(VULKAN_SDK)\Include;$(ProjectDir)\src;C:\Users\Michael\Desktop\VK\Libs\eigen-3.3.5\;$(SolutionDir)\Libs\glfw-3.2.1\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

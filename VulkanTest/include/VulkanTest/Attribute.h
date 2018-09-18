@@ -30,7 +30,7 @@ namespace VulkanTest {
     /// Overriden to update staging buffer
     /// \param data Pointer to the data
     /// \param data_size The size of the data in bytes
-    virtual void updateBuffer( const void* data, size_t data_size );
+    virtual void updateBuffer( const void* data, size_t _data_size );
 
     /// The number of elements in this attribute
     size_t num_elements;
@@ -43,8 +43,7 @@ namespace VulkanTest {
     /// Buffer used for staging before transferring to device local location
     vk::Buffer vk_staging_buffer;
 
-    /// Device memory used for staging
-    vk::DeviceMemory vk_staging_device_memory;
+    VmaAllocation vma_staging_allocation;
 
   };
 

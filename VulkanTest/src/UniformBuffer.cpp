@@ -7,10 +7,11 @@ template< typename T >
 VulkanTest::UniformBuffer< T >::UniformBuffer( uint32_t _binding, uint32_t _array_size, vk::ShaderStageFlags _stage_flags ) 
   : Buffer(), binding( _binding ), array_size( _array_size ), stage_flags( _stage_flags ) {
 
-  vk_buffer = createBuffer( sizeof( T ) * array_size, vk::BufferUsageFlagBits::eUniformBuffer );
-  vk_device_memory = allocateBufferMemory( 
-    vk_buffer,
-    vk::MemoryPropertyFlagBits::eHostCoherent | vk::MemoryPropertyFlagBits::eHostVisible );
+  vk_buffer = createBuffer( 
+    sizeof( T ) * array_size, vk::BufferUsageFlagBits::eUniformBuffer,
+    vk::MemoryPropertyFlagBits::eHostCoherent | vk::MemoryPropertyFlagBits::eHostVisible,
+    VMA_MEMORY_USAGE_CPU_ONLY,
+    vma_allocation );
 
 }
 

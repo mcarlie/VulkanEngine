@@ -1,5 +1,4 @@
 #include <VulkanTest/Buffer.h>
-
 #include <VulkanTest/VulkanManager.h>
 
 VulkanTest::Buffer::Buffer() {
@@ -7,9 +6,10 @@ VulkanTest::Buffer::Buffer() {
 
 VulkanTest::Buffer::~Buffer() {
 
-  auto device = VulkanManager::getInstance()->getVkDevice();
-  device.destroyBuffer( vk_buffer );
-  device.freeMemory( vk_device_memory );
+  vmaDestroyBuffer( 
+    VulkanManager::getInstance()->getVmaAllocator(),
+    static_cast< VkBuffer >( vk_buffer ), 
+    vma_allocation );
 
 }
 
@@ -19,20 +19,39 @@ const vk::Buffer& VulkanTest::Buffer::getVkBuffer() {
 
 const vk::Buffer VulkanTest::Buffer::createBuffer( 
   size_t _data_size,
-  vk::BufferUsageFlags usage_flags ) {
+  vk::BufferUsageFlags usage_flags,
+  vk::MemoryPropertyFlags memory_property_flags,
+  VmaMemoryUsage vma_memory_usage,
+  VmaAllocation& _vma_allocation ) {
 
   data_size = _data_size;
 
   auto vulkan_manager = VulkanManager::getInstance();
-  vk::Device& vk_device = vulkan_manager->getVkDevice();
+  const vk::Device& vk_device = vulkan_manager->getVkDevice();
 
   auto buffer_info = vk::BufferCreateInfo()
     .setSize( data_size )
     .setUsage( usage_flags )
     .setSharingMode( vk::SharingMode::eExclusive );
 
-  vk::Buffer buffer = vk_device.createBuffer( buffer_info );
-  if( !buffer ) {
+  VmaAllocationCreateInfo vma_allocation_create_info = {};
+  vma_allocation_create_info.usage = vma_memory_usage;
+  vma_allocation_create_info.requiredFlags = static_cast< VkMemoryPropertyFlags >( memory_property_flags );
+
+  vk::Buffer buffer;
+
+  VkBuffer* buffer_c_handle = ( VkBuffer* )&buffer;
+  VkBufferCreateInfo buffer_create_info_c_handle = static_cast< VkBufferCreateInfo >( buffer_info );
+
+  auto result = vmaCreateBuffer( 
+    vulkan_manager->getVmaAllocator(),
+    &buffer_create_info_c_handle,
+    &vma_allocation_create_info,
+    buffer_c_handle,
+    &_vma_allocation,
+    nullptr );
+
+  if( result != VK_SUCCESS ) {
     throw std::runtime_error( "Could not create buffer!" );
   }
 
@@ -40,28 +59,25 @@ const vk::Buffer VulkanTest::Buffer::createBuffer(
 
 }
 
-void VulkanTest::Buffer::updateBuffer( const void* data, size_t data_size ) {
+void VulkanTest::Buffer::updateBuffer( const void* data, size_t _data_size ) {
 
-  updateBuffer( data, data_size, vk_device_memory );
+  updateBuffer( data, data_size, vma_allocation );
 
 }
 
-void VulkanTest::Buffer::updateBuffer( 
-  const void* data,
-  size_t data_size,
-  vk::DeviceMemory device_memory ) {
+void VulkanTest::Buffer::updateBuffer( const void* data, size_t _data_size, VmaAllocation& _vma_allocation ) {
 
-  auto& device = VulkanManager::getInstance()->getVkDevice();
-  void* data_ptr = device.mapMemory( device_memory, 0, data_size );
-  std::memcpy( data_ptr, data, data_size );
-  device.unmapMemory( device_memory );
+  void* mapped_memory = nullptr;
+  vmaMapMemory( VulkanManager::getInstance()->getVmaAllocator(), _vma_allocation, &mapped_memory );
+  memcpy( mapped_memory, data, _data_size );
+  vmaUnmapMemory( VulkanManager::getInstance()->getVmaAllocator(), _vma_allocation );
 
 }
 
 const vk::DeviceMemory VulkanTest::Buffer::allocateBufferMemory( const vk::Buffer& buffer, vk::MemoryPropertyFlags flags ) {
 
   auto vulkan_manager = VulkanManager::getInstance();
-  vk::Device& vk_device = vulkan_manager->getVkDevice();
+  const vk::Device& vk_device = vulkan_manager->getVkDevice();
 
   vk::MemoryRequirements vk_memory_requirements = vk_device.getBufferMemoryRequirements( buffer );
 
