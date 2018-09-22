@@ -34,11 +34,6 @@ namespace VulkanTest {
       VmaMemoryUsage vma_memory_usage,
       VmaAllocation& _vma_allocation );
 
-    /// Handle allocation of buffer memory
-    /// \param buffer The buffer to allocate memory for
-    /// \param flags Flags specifying desired features of the allocated memory
-    const vk::DeviceMemory allocateBufferMemory( const vk::Buffer& buffer, vk::MemoryPropertyFlags flags );
-
     /// Copy the data to the buffer
     /// \param data Pointer to the data
     /// \param data_size The size of the data in bytes
@@ -57,11 +52,6 @@ namespace VulkanTest {
     VmaAllocation vma_allocation;
 
   private:
-
-    /// \param type_filter The vk::MemoryRequirements::memoryTypeBits member
-    /// \param flags vk::MemoryPropertyFlags for the desired index
-    /// \return The memory type index for vk::MemoryAllocateInfo based on desired features
-    uint32_t findMemoryTypeIndex( uint32_t type_filter, vk::MemoryPropertyFlags flags );
 
     /// The size of the data
     size_t data_size;

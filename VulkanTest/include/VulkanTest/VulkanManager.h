@@ -31,10 +31,10 @@ namespace VulkanTest {
     ~VulkanManager();
 
     /// Delete copy constructor to disallow duplicates
-    VulkanManager( VulkanManager const& ) = delete;
+    VulkanManager( const VulkanManager& ) = delete;
 
     /// Delete assignment operator to disallow duplicates
-    void operator=( VulkanManager const& ) = delete;
+    void operator=( const VulkanManager& ) = delete;
 
     /// Get the singleton instance of the VulkanManager
     /// Creates the instance when first called
@@ -70,6 +70,7 @@ namespace VulkanTest {
     void createRenderPass();
     void createSwapchainFramebuffers();
     void createCommandBuffers();
+    void createSyncObjects();
 
     void cleanup();
     void cleanupSwapchain();
@@ -119,8 +120,9 @@ namespace VulkanTest {
     std::vector< vk::DescriptorSet > vk_descriptor_sets;
 
     struct UniformBufferObject {
-      Eigen::Matrix< float, 4, 4 > view;
-      Eigen::Matrix< float, 4, 4 > projection;
+      Eigen::Matrix4f model;
+      Eigen::Matrix4f view;
+      Eigen::Matrix4f projection;
     };
 
     std::shared_ptr< Shader > shader;

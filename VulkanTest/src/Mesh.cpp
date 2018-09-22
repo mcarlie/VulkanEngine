@@ -63,10 +63,11 @@ const vk::PipelineVertexInputStateCreateInfo VulkanTest::Mesh<
 }
 
 template< typename PositionType, typename IndexType, class ... AdditionalAttributeTypes >
-void VulkanTest::Mesh< PositionType, IndexType, AdditionalAttributeTypes ... >::transferBuffers() {
+void VulkanTest::Mesh< PositionType, IndexType, AdditionalAttributeTypes ... >::transferBuffers(
+  const vk::CommandBuffer& command_buffer ) {
 
   if( !positions.get() ) {
-    throw std::runtime_error( "No position vertex buffer to bind for mesh!" );
+    throw std::runtime_error( "No position vertex buffer to transfer for mesh!" );
   }
   
   positions->transferBuffer();
@@ -111,6 +112,7 @@ template< typename PositionType, typename IndexType, class ... AdditionalAttribu
 void VulkanTest::Mesh< PositionType, IndexType, AdditionalAttributeTypes ... >::bindIndexBuffer( const vk::CommandBuffer& command_buffer ) {
 
   if( indices.get() ) {
+    assert( sizeof( IndexType ) == sizeof( uint16_t ) || sizeof( IndexType ) == sizeof( uint32_t ) );
     command_buffer.bindIndexBuffer( 
       indices->getVkBuffer(), 0, sizeof( IndexType ) == sizeof( uint16_t ) ? vk::IndexType::eUint16 : vk::IndexType::eUint32 );
   }

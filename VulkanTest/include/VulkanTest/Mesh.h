@@ -13,7 +13,7 @@ namespace VulkanTest {
   /// The mesh will at the very least support 3D positions and indices. Any additional
   /// types that should be supported can be specified as template arguments.
   /// Example: Mesh< float, uint32_t, Eigen::Vector3f, Eigen::Vector3f > represents a mesh which supports
-  /// Eigen::Matrix< float, 3, 1 > positions, uint32_t indices as well as additional Vector3f and Eigen::Vector2f
+  /// Eigen::Matrix< float, 3, 1 > positions, uint32_t indices as well as additional Eigen::Vector3f and Eigen::Vector2f
   /// vertex attributes which could for example represent normals and texture coordinates
   /// \tparam PositionType The scalar type to use for the positions, e.g float, double
   /// \tparam IndexType The type to use for storing indices, e.g uint16_t or uint32_t
@@ -63,7 +63,7 @@ namespace VulkanTest {
     /// Start transfer of data belonging all associated VertexAttribute instances
     /// from staging buffer to vertex buffer memory
     /// \param command_buffer The vk::CommandBuffer to insert the commands into
-    virtual void transferBuffers();
+    virtual void transferBuffers( const vk::CommandBuffer& command_buffer = nullptr );
 
     /// Bind VertexBuffers in this Mesh which will be used for rendering
     /// \param command_buffer The vk::CommandBuffer to insert the commands into

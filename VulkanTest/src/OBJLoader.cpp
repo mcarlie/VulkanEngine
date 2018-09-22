@@ -36,28 +36,28 @@ namespace VulkanTest {
 
     std::vector< IndexType > indices;
 
-    for( const auto& i : s.mesh.indices ) {
+    for( size_t i = 0; i < s.mesh.indices.size(); ++i ) {
       
       positions.push_back( {
-        attrib.vertices[ 3 * i.vertex_index + 0 ],
-        attrib.vertices[ 3 * i.vertex_index + 1 ],
-        attrib.vertices[ 3 * i.vertex_index + 2 ]
+        attrib.vertices[ 3 * s.mesh.indices[i].vertex_index + 0 ],
+        attrib.vertices[ 3 * s.mesh.indices[i].vertex_index + 1 ],
+        attrib.vertices[ 3 * s.mesh.indices[i].vertex_index + 2 ]
       } );
 
-      if( i.normal_index > 0 ) {
-        normals.push_back( {
-          attrib.normals[ 3 * i.normal_index + 0 ],
-          attrib.normals[ 3 * i.normal_index + 1 ],
-          attrib.normals[ 3 * i.normal_index + 2 ]
-        } );      
-      }
+      //if( i.normal_index > 0 ) {
+      //  normals.push_back( {
+      //    attrib.normals[ 3 * i.normal_index + 0 ],
+      //    attrib.normals[ 3 * i.normal_index + 1 ],
+      //    attrib.normals[ 3 * i.normal_index + 2 ]
+      //  } );
+      //}
 
-      if( i.texcoord_index > 0 ) {
-        tex_coords.push_back( {
-          attrib.texcoords[ 2 * i.texcoord_index + 0 ],
-          attrib.texcoords[ 2 * i.texcoord_index + 1 ]
-        } );
-      }
+      //if( i.texcoord_index > 0 ) {
+      //  tex_coords.push_back( {
+      //    attrib.texcoords[ 2 * i.texcoord_index + 0 ],
+      //    attrib.texcoords[ 2 * i.texcoord_index + 1 ]
+      //  } );
+      //}
 
       Vertex vertex = std::forward_as_tuple( 
         positions.back(),
@@ -72,17 +72,6 @@ namespace VulkanTest {
 
       indices.push_back( static_cast< IndexType >( unique_vertices[ vertex ] ) );
 
-    }
-
-    positions = { 
-        { 0.0f, -0.5f, 0 },
-        { 0.5f, 0.5f, 0 },
-        { -0.5f, 0.5f, 0 } 
-      };
-
-    indices.clear();
-    for( size_t i = 0; i < 6000; ++i ) {
-      indices.push_back( i );
     }
 
     std::shared_ptr< VertexAttribute< Eigen::Vector3f > > position_attribute( 

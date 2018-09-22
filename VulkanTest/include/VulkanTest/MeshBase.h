@@ -22,10 +22,12 @@ namespace VulkanTest {
     /// \return The vk::PipelineVertexInputStateCreateInfo instance describing the attributes that consitute the Mesh
     virtual const vk::PipelineVertexInputStateCreateInfo getVkPipelineVertexInputStateCreateInfo() = 0;
 
-    /// Start transfer of data belonging all associated VertexAttribute instances
+    /// Start transfer of data belonging to all associated VertexAttribute instances
     /// from staging buffer to vertex buffer memory
-    /// \param command_buffer The vk::CommandBuffer to insert the commands into
-    virtual void transferBuffers() = 0;
+    /// \param command_buffer The vk::CommandBuffer to insert the commands into. 
+    ///                       If none is provided a vk::CommandBuffer 
+    ///                       will be allocated and executed automatically.
+    virtual void transferBuffers( const vk::CommandBuffer& command_buffer = nullptr ) = 0;
 
     /// Bind VertexBuffers in this Mesh which will be used for rendering
     /// \param command_buffer The vk::CommandBuffer to insert the commands into

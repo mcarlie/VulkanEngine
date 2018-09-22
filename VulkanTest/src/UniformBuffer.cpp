@@ -10,7 +10,7 @@ VulkanTest::UniformBuffer< T >::UniformBuffer( uint32_t _binding, uint32_t _arra
   vk_buffer = createBuffer( 
     sizeof( T ) * array_size, vk::BufferUsageFlagBits::eUniformBuffer,
     vk::MemoryPropertyFlagBits::eHostCoherent | vk::MemoryPropertyFlagBits::eHostVisible,
-    VMA_MEMORY_USAGE_CPU_ONLY,
+    VMA_MEMORY_USAGE_CPU_TO_GPU,
     vma_allocation );
 
 }

@@ -38,7 +38,7 @@ void VulkanTest::VulkanManager::initialize( const std::shared_ptr< Window >& _wi
     .setApplicationVersion( 1 )
     .setPEngineName( "No engine" )
     .setEngineVersion( 1 )
-    .setApiVersion( VK_API_VERSION_1_1 );
+    .setApiVersion( VK_API_VERSION_1_0 );
 
   auto inst_info = vk::InstanceCreateInfo()
     .setFlags( vk::InstanceCreateFlags() )
@@ -101,7 +101,8 @@ void VulkanTest::VulkanManager::initialize( const std::shared_ptr< Window >& _wi
     .setQueueCount( 1 )
     .setQueueFamilyIndex( graphics_queue_family_index );
 
-  auto physical_device_features = vk::PhysicalDeviceFeatures();
+  auto physical_device_features = vk::PhysicalDeviceFeatures().
+    setFragmentStoresAndAtomics( VK_TRUE );
 
   auto device_info = vk::DeviceCreateInfo()
 #if defined( _DEBUG )
@@ -137,13 +138,13 @@ void VulkanTest::VulkanManager::initialize( const std::shared_ptr< Window >& _wi
   createGraphicsPipeline();
   createSwapchainFramebuffers();
   createCommandBuffers();
+  createSyncObjects();
 
 }
 
 void VulkanTest::VulkanManager::drawImage() {
 
   auto fence_result = vk_device.waitForFences( vk_in_flight_fences[current_frame], VK_TRUE, std::numeric_limits< uint32_t >::max() );
-  vk_device.resetFences( vk_in_flight_fences[current_frame] );
 
   uint32_t image_index;
   while( true ) {
@@ -166,6 +167,7 @@ void VulkanTest::VulkanManager::drawImage() {
       createGraphicsPipeline();
       createSwapchainFramebuffers();
       createCommandBuffers();
+      createSyncObjects();
       continue;
     } else if ( result != vk::Result::eSuccess &&
                 result != vk::Result::eSuboptimalKHR ) {
@@ -176,7 +178,7 @@ void VulkanTest::VulkanManager::drawImage() {
 
   }
 
-  // Submit commands to the queue
+  //// Submit commands to the queue
   vk::Semaphore wait_semaphores[] = { vk_image_available_semaphores[current_frame] };
   vk::Semaphore signal_semaphores[] = { vk_rendering_finished_semaphores[current_frame] };
   vk::PipelineStageFlags wait_stages[] = { vk::PipelineStageFlagBits::eColorAttachmentOutput };
@@ -189,6 +191,8 @@ void VulkanTest::VulkanManager::drawImage() {
     .setSignalSemaphoreCount( 1 )
     .setPSignalSemaphores( signal_semaphores );
 
+  vk_device.resetFences( vk_in_flight_fences[current_frame] );
+
   /// Todo, why are there six fences?
   vk_graphics_queue.submit( submit_info, vk_in_flight_fences[current_frame] );
 
@@ -200,7 +204,7 @@ void VulkanTest::VulkanManager::drawImage() {
     .setPSwapchains( swapchains )
     .setPImageIndices( &image_index );
 
-  vk_graphics_queue.presentKHR( present_info );
+  auto present_result = vk_graphics_queue.presentKHR( present_info );
 
   current_frame = ( current_frame + 1 ) % frames_in_flight;
 
@@ -294,13 +298,13 @@ void VulkanTest::VulkanManager::createRenderPass() {
     .setColorAttachmentCount( 1 )
     .setPColorAttachments( &attachment_reference );
 
-  auto subpass_dependency = vk::SubpassDependency()
-    .setSrcSubpass( VK_SUBPASS_EXTERNAL )
-    .setDstSubpass( 0 )
-    .setSrcStageMask( vk::PipelineStageFlagBits::eColorAttachmentOutput )
-    .setSrcAccessMask( vk::AccessFlagBits::eColorAttachmentRead )
-    .setDstStageMask( vk::PipelineStageFlagBits::eColorAttachmentOutput )
-    .setDstAccessMask( vk::AccessFlagBits::eColorAttachmentRead | vk::AccessFlagBits::eColorAttachmentWrite );
+  VkSubpassDependency dependency = {};
+          dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
+          dependency.dstSubpass = 0;
+          dependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+          dependency.srcAccessMask = 0;
+          dependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+          dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
 
   auto render_pass_info = vk::RenderPassCreateInfo()
     .setAttachmentCount( 1 )
@@ -308,7 +312,7 @@ void VulkanTest::VulkanManager::createRenderPass() {
     .setSubpassCount( 1 )
     .setPSubpasses( &subpass_description )
     .setDependencyCount( 1 )
-    .setPDependencies( &subpass_dependency );
+    .setPDependencies( &static_cast< vk::SubpassDependency >( dependency ) );
 
   vk_render_pass = vk_device.createRenderPass( render_pass_info );
 
@@ -323,14 +327,14 @@ void VulkanTest::VulkanManager::createGraphicsPipeline() {
   shader_modules.push_back( fragment_shader );
   shader.reset( new Shader( shader_modules ) );
 
-  camera.reset( new Camera< float >( { 3, 2, 5 } ) );
+  camera.reset( new Camera< float >() );
 
   uniform_buffers.resize( vk_swapchain_images.size() );
   for( auto& ub : uniform_buffers ) {
     ub.reset( new UniformBuffer< UniformBufferObject >( 0 ) );
   }
 
-  auto meshes = VulkanTest::loadOBJ( "C:/Users/Michael/Desktop/VK/VulkanTest/models/cow-nonormals.obj", "" );
+  auto meshes = VulkanTest::loadOBJ( "C:/Users/Michael/Desktop/VK/VulkanTest/models/teapot.obj", "" );
   mesh = meshes[0];
 
   std::vector< uint16_t > index_data = { 0, 1, 2 };
@@ -470,8 +474,7 @@ void VulkanTest::VulkanManager::createGraphicsPipeline() {
   auto graphics_pipeline_info = vk::GraphicsPipelineCreateInfo()
     .setStageCount( static_cast< uint32_t >( shader->getVkShaderStages().size() ) )
     .setPStages( shader->getVkShaderStages().data() )
-    //.setPVertexInputState( &mesh->getVkPipelineVertexInputStateCreateInfo() )
-    .setPVertexInputState( &vertex_input_info )
+    .setPVertexInputState( &mesh->getVkPipelineVertexInputStateCreateInfo() )
     .setPInputAssemblyState( &input_assembly_info )
     .setPViewportState( &viewport_info )
     .setPRasterizationState( &rasterization_info )
@@ -565,20 +568,24 @@ void VulkanTest::VulkanManager::createCommandBuffers() {
     vk_command_buffers[i].endRenderPass();
     vk_command_buffers[i].end();
 
-    auto semaphore_info = vk::SemaphoreCreateInfo();
-    auto fence_info = vk::FenceCreateInfo()
-      .setFlags( vk::FenceCreateFlagBits::eSignaled );
-    for( size_t i = 0; i < frames_in_flight; ++i ) {
-      vk_image_available_semaphores.push_back( vk_device.createSemaphore( semaphore_info ) );
-      vk_rendering_finished_semaphores.push_back( vk_device.createSemaphore( semaphore_info ) );
-      vk_in_flight_fences.push_back( vk_device.createFence( fence_info ) );
-      if( !vk_image_available_semaphores.back() 
-        || !vk_rendering_finished_semaphores.back() 
-        || !vk_in_flight_fences.back() ) {
-        throw std::runtime_error( "Could not create sync objects for rendering!" );
-      }
-    }
+  }
 
+}
+
+void VulkanTest::VulkanManager::createSyncObjects() {
+
+  auto semaphore_info = vk::SemaphoreCreateInfo();
+  auto fence_info = vk::FenceCreateInfo()
+    .setFlags( vk::FenceCreateFlagBits::eSignaled );
+  for( size_t i = 0; i < frames_in_flight; ++i ) {
+    vk_image_available_semaphores.push_back( vk_device.createSemaphore( semaphore_info ) );
+    vk_rendering_finished_semaphores.push_back( vk_device.createSemaphore( semaphore_info ) );
+    vk_in_flight_fences.push_back( vk_device.createFence( fence_info ) );
+    if( !vk_image_available_semaphores.back() 
+      || !vk_rendering_finished_semaphores.back() 
+      || !vk_in_flight_fences.back() ) {
+      throw std::runtime_error( "Could not create sync objects for rendering!" );
+    }
   }
 
 }
