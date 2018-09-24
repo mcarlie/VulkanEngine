@@ -3,7 +3,7 @@
 
 #include <VulkanTest/OBJLoader.h>
 #include <VulkanTest/VertexAttribute.h>
-#include <VulkanTest/Utils.h>
+#include <VulkanTest/Utilities.h>
 #include <VulkanTest/Mesh.h>
 
 #include <Eigen/Eigen>
@@ -84,7 +84,7 @@ namespace VulkanTest {
     std::shared_ptr< VertexAttribute< Eigen::Vector2f > > uv_coordinate_attribute;
 
     using MeshType = Mesh< 
-      float,
+      Eigen::Vector3f,
       IndexType,
       Eigen::Vector3f,
       Eigen::Vector3f,

@@ -12,16 +12,17 @@
 
 int main() {
 
-    std::shared_ptr< VulkanTest::Window > window( new VulkanTest::GLFWWindow( 800, 600, "VulkanTest", false ) );
-    window->initialize();
+  std::shared_ptr< VulkanTest::Window > window( new VulkanTest::GLFWWindow( 800, 600, "VulkanTest", false ) );
+  window->initialize();
 
-    auto vulkan_manager = VulkanTest::VulkanManager::getInstance();
-    vulkan_manager->initialize( window );
+  auto vulkan_manager = VulkanTest::VulkanManager::getInstance();
+  vulkan_manager->initialize( window );
 
-    while( !window->shouldClose() ) {
-      vulkan_manager->drawImage();
-      window->update();
-    }
+  while( !window->shouldClose() ) {
+    vulkan_manager->drawImage();
+    window->update();
+  }
 
-    return 0;
+  return 0;
+
 }

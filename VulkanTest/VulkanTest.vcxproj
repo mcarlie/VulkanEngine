@@ -21,8 +21,10 @@
   <ItemGroup>
     <ClCompile Include="src\Attribute.cpp" />
     <ClCompile Include="src\Buffer.cpp" />
+    <ClCompile Include="src\BufferBase.cpp" />
     <ClCompile Include="src\Camera.cpp" />
     <ClCompile Include="src\GLFWWindow.cpp" />
+    <ClCompile Include="src\Image.cpp" />
     <ClCompile Include="src\IndexAttribute.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\Mesh.cpp" />
@@ -31,6 +33,8 @@
     <ClCompile Include="src\Renderable.cpp" />
     <ClCompile Include="src\Shader.cpp" />
     <ClCompile Include="src\ShaderModule.cpp" />
+    <ClCompile Include="src\StagedBuffer.cpp" />
+    <ClCompile Include="src\Texture.cpp" />
     <ClCompile Include="src\UniformBuffer.cpp" />
     <ClCompile Include="src\VertexAttribute.cpp" />
     <ClCompile Include="src\VulkanManager.cpp" />
@@ -39,8 +43,11 @@
   <ItemGroup>
     <ClInclude Include="include\VulkanTest\Attribute.h" />
     <ClInclude Include="include\VulkanTest\Buffer.h" />
+    <ClInclude Include="include\VulkanTest\BufferBase.h" />
     <ClInclude Include="include\VulkanTest\Camera.h" />
+    <ClInclude Include="include\VulkanTest\Constants.h" />
     <ClInclude Include="include\VulkanTest\GLFWWindow.h" />
+    <ClInclude Include="include\VulkanTest\Image.h" />
     <ClInclude Include="include\VulkanTest\IndexAttribute.h" />
     <ClInclude Include="include\VulkanTest\Mesh.h" />
     <ClInclude Include="include\VulkanTest\MeshBase.h" />
@@ -48,8 +55,10 @@
     <ClInclude Include="include\VulkanTest\Renderable.h" />
     <ClInclude Include="include\VulkanTest\Shader.h" />
     <ClInclude Include="include\VulkanTest\ShaderModule.h" />
+    <ClInclude Include="include\VulkanTest\StagedBuffer.h" />
+    <ClInclude Include="include\VulkanTest\StagedBufferDestination.h" />
     <ClInclude Include="include\VulkanTest\UniformBuffer.h" />
-    <ClInclude Include="include\VulkanTest\Utils.h" />
+    <ClInclude Include="include\VulkanTest\Utilities.h" />
     <ClInclude Include="include\VulkanTest\VertexAttribute.h" />
     <ClInclude Include="include\VulkanTest\VulkanManager.h" />
     <ClInclude Include="include\VulkanTest\Window.h" />
@@ -140,7 +149,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>C:\Users\Michael\Desktop\VK\Libs\glm-master;$(SolutionDir)\Libs\VulkanMemoryAllocator-2.1.0\src;$(SolutionDir)\Libs\tinyobjloader-1.0.6;$(ProjectDir)\include;$(VULKAN_SDK)\Include;$(ProjectDir)\src;C:\Users\Michael\Desktop\VK\Libs\eigen-3.3.5\;$(SolutionDir)\Libs\glfw-3.2.1\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\Libs\stb;$(SolutionDir)\Libs\VulkanMemoryAllocator-2.1.0\src;$(SolutionDir)\Libs\tinyobjloader-1.0.6;$(ProjectDir)\include;$(VULKAN_SDK)\Include;$(ProjectDir)\src;$(SolutionDir)\Libs\eigen-3.3.5\;$(SolutionDir)\Libs\glfw-3.2.1\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -180,7 +189,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>C:\Users\Michael\Desktop\VK\Libs\glm-master;$(SolutionDir)\Libs\VulkanMemoryAllocator-2.1.0\src;$(SolutionDir)\Libs\tinyobjloader-1.0.6;$(ProjectDir)\include;$(VULKAN_SDK)\Include;$(ProjectDir)\src;C:\Users\Michael\Desktop\VK\Libs\eigen-3.3.5\;$(SolutionDir)\Libs\glfw-3.2.1\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\Libs\stb;$(SolutionDir)\Libs\VulkanMemoryAllocator-2.1.0\src;$(SolutionDir)\Libs\tinyobjloader-1.0.6;$(ProjectDir)\include;$(VULKAN_SDK)\Include;$(ProjectDir)\src;$(SolutionDir)\Libs\eigen-3.3.5\;$(SolutionDir)\Libs\glfw-3.2.1\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

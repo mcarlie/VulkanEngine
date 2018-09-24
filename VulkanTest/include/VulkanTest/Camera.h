@@ -4,13 +4,6 @@
 #include <Eigen/Eigen>
 #include <vulkan/vulkan.hpp>
 
-#define GLM_FORCE_RADIANS
-#define GLM_FORCE_DEPTH_ZERO_TO_ONE
-#define GLM_ENABLE_EXPERIMENTAL
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtx/hash.hpp>
-
 namespace VulkanTest {
 
   /// Represents a camera or viewpoint in the scene
@@ -26,12 +19,11 @@ namespace VulkanTest {
     /// \param _up_vector The up direction of the Camera
     /// \param _z_near The distance from the Camera's position to the near plane
     /// \param _z_far The distance from the Camera's position to the far plane
-    /// \param _aspect_ratio The aspect ratio of the Camera
     /// \param _fov The field of view of the Camera
     Camera( 
       Eigen::Matrix< Scalar, 3, 1 > _position = { 10, 10, 10 },
       Eigen::Matrix< Scalar, 3, 1 > _look_at = { 0, 0, 0 },
-      Eigen::Matrix< Scalar, 3, 1 > _up_vector = { 0, 0, 1 },
+      Eigen::Matrix< Scalar, 3, 1 > _up_vector = { 0, -1, 0 },
       Scalar _z_near = static_cast< Scalar >( 0.1 ),
       Scalar _z_far = 1000,
       Scalar _fov = 45,
@@ -42,10 +34,10 @@ namespace VulkanTest {
     ~Camera();
 
     /// \return The projection matrix of the Camera
-    Eigen::Matrix< Scalar, 4, 4 > getPerspectiveProjectionMatrix();
+    const Eigen::Matrix< Scalar, 4, 4 > getPerspectiveProjectionMatrix();
 
     /// \return The view matrix of the Camera
-    Eigen::Matrix< Scalar, 4, 4 > getViewMatrix();
+    const Eigen::Matrix< Scalar, 4, 4 > getViewMatrix();
 
   private:
 

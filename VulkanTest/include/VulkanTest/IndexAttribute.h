@@ -15,7 +15,8 @@ namespace VulkanTest {
   public:
 
     /// Constructor
-    /// \param _data The index data
+    /// \param data The index data
+    /// \param num_elements The number of indice
     IndexAttribute( const T* data, size_t num_elements );
 
     /// Destructor

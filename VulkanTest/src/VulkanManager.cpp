@@ -4,14 +4,14 @@
 #define VMA_IMPLEMENTATION
 #include "vk_mem_alloc.h"
 
+#define STB_IMAGE_IMPLEMENTATION
+#include <stb_image.h>
+
 VulkanTest::VulkanManager::VulkanManager() : frames_in_flight( 2 ), current_frame( 0 ) {
 }
 
 VulkanTest::VulkanManager::~VulkanManager() {
   vk_device.waitIdle();
-  position.reset();
-  index.reset();
-  shader.reset();
   cleanup();
 }
 
@@ -143,6 +143,13 @@ void VulkanTest::VulkanManager::initialize( const std::shared_ptr< Window >& _wi
 }
 
 void VulkanTest::VulkanManager::drawImage() {
+
+  UniformBufferObject vp_data;
+  vp_data.projection = camera->getPerspectiveProjectionMatrix();
+  vp_data.view = camera->getViewMatrix();
+  for( auto& ub : uniform_buffers ) {
+    ub->updateBuffer( &vp_data, sizeof( vp_data ) );
+  }
 
   auto fence_result = vk_device.waitForFences( vk_in_flight_fences[current_frame], VK_TRUE, std::numeric_limits< uint32_t >::max() );
 
@@ -320,55 +327,43 @@ void VulkanTest::VulkanManager::createRenderPass() {
 
 void VulkanTest::VulkanManager::createGraphicsPipeline() {
 
+  auto meshes = VulkanTest::loadOBJ( "C:/Users/Michael/Desktop/VK/VulkanTest/models/cow-nonormals.obj", "" );
+  mesh = meshes[0];
+
   std::shared_ptr< ShaderModule > fragment_shader( new ShaderModule( "C:/Users/Michael/Desktop/VK/VulkanTest/shaders/frag.spv", vk::ShaderStageFlagBits::eFragment ) );
   std::shared_ptr< ShaderModule > vertex_shader( new ShaderModule( "C:/Users/Michael/Desktop/VK/VulkanTest/shaders/vert.spv", vk::ShaderStageFlagBits::eVertex ) );
   std::vector< std::shared_ptr< ShaderModule > > shader_modules;
   shader_modules.push_back( vertex_shader );
   shader_modules.push_back( fragment_shader );
-  shader.reset( new Shader( shader_modules ) );
+  std::shared_ptr< Shader > shader( new Shader( shader_modules ) );
 
-  camera.reset( new Camera< float >() );
+  mesh->setShader( shader );
+
+  typedef StagedBuffer< Image< 
+    vk::Format::eR8G8B8A8Unorm,
+    vk::ImageType::e2D,
+    vk::ImageTiling::eOptimal,
+    vk::SampleCountFlagBits::e1 > > RGBATexture2D;
+
+  int texture_width;
+  int texture_height;
+  int channels_in_file;
+  unsigned char* image_data = stbi_load( "C:/Users/Michael/Desktop/VK/VulkanTest/models/tex.jpg", &texture_width, &texture_height, &channels_in_file, 4 );
+  texture.reset( new RGBATexture2D( 
+    vk::ImageLayout::eUndefined,
+    vk::ImageUsageFlagBits::eTransferDst | vk::ImageUsageFlagBits::eSampled,
+    VMA_MEMORY_USAGE_GPU_ONLY,
+    static_cast< uint32_t >( texture_width ),
+    static_cast< uint32_t >( texture_height ),
+    1, sizeof( unsigned char ) * 4 ) );
+  texture->setImageData( image_data );
+
+  camera.reset( new Camera< float > );
 
   uniform_buffers.resize( vk_swapchain_images.size() );
   for( auto& ub : uniform_buffers ) {
     ub.reset( new UniformBuffer< UniformBufferObject >( 0 ) );
   }
-
-  auto meshes = VulkanTest::loadOBJ( "C:/Users/Michael/Desktop/VK/VulkanTest/models/teapot.obj", "" );
-  mesh = meshes[0];
-
-  std::vector< uint16_t > index_data = { 0, 1, 2 };
-
-  index.reset( new IndexAttribute< uint16_t >( index_data.data(), index_data.size() ) );
-
-  std::vector< Eigen::Matrix< float, 3, 1 > > data = { 
-    { 0.0f, -0.5f, 0 },
-    { 0.5f, 0.5f, 0 },
-    { -0.5f, 0.5f, 0 } 
-  };
-
-  position.reset( new VertexAttribute< Eigen::Vector3f >( data.data(), data.size(), 0, vk::Format::eR32G32B32Sfloat ) );
-
-  auto position_description = vk::VertexInputAttributeDescription()
-    .setBinding( 0 )
-    .setLocation( 0 )
-    .setFormat( vk::Format::eR32G32B32Sfloat )
-    .setOffset( 0 );
-
-  auto a = vk::VertexInputBindingDescription()
-    .setBinding( 0 )
-    .setInputRate( vk::VertexInputRate::eVertex )
-    .setStride( sizeof( Eigen::Vector3f ) );
-
-  auto vertex_input_info = vk::PipelineVertexInputStateCreateInfo()
-    .setPVertexBindingDescriptions( &a )
-    .setVertexBindingDescriptionCount( 1 )
-    .setPVertexAttributeDescriptions( &position_description )
-    .setVertexAttributeDescriptionCount( 1 );
-
-  auto input_assembly_info = vk::PipelineInputAssemblyStateCreateInfo()
-    .setPrimitiveRestartEnable( VK_FALSE )
-    .setTopology( vk::PrimitiveTopology::eTriangleList );
 
   auto viewport = vk::Viewport()
     .setX( 0 )
@@ -472,10 +467,10 @@ void VulkanTest::VulkanManager::createGraphicsPipeline() {
   vk_layout = vk_device.createPipelineLayout( layout_info );
 
   auto graphics_pipeline_info = vk::GraphicsPipelineCreateInfo()
-    .setStageCount( static_cast< uint32_t >( shader->getVkShaderStages().size() ) )
-    .setPStages( shader->getVkShaderStages().data() )
+    .setStageCount( static_cast< uint32_t >( mesh->getShader()->getVkShaderStages().size() ) )
+    .setPStages( mesh->getShader()->getVkShaderStages().data() )
     .setPVertexInputState( &mesh->getVkPipelineVertexInputStateCreateInfo() )
-    .setPInputAssemblyState( &input_assembly_info )
+    .setPInputAssemblyState( &mesh->getVkPipelineInputAssemblyStateCreateInfo() )
     .setPViewportState( &viewport_info )
     .setPRasterizationState( &rasterization_info )
     .setPMultisampleState( &multisampling_info )
@@ -494,7 +489,7 @@ void VulkanTest::VulkanManager::createSwapchainFramebuffers() {
 
   vk_swapchain_framebuffers.resize( vk_image_views.size() );
   for( size_t i = 0; i < vk_image_views.size(); ++i ) {
-    vk::ImageView attachments [] = { vk_image_views[i] };
+    vk::ImageView attachments[] = { vk_image_views[i] };
 
     auto framebuffer_info = vk::FramebufferCreateInfo()
       .setRenderPass( vk_render_pass )
@@ -517,6 +512,7 @@ void VulkanTest::VulkanManager::createCommandBuffers() {
   vk_command_pool = vk_device.createCommandPool( command_pool_info );
 
   mesh->transferBuffers();
+  texture->transferBuffer();
 
   auto command_buffer_allocate_info = vk::CommandBufferAllocateInfo()
     .setCommandBufferCount( static_cast< uint32_t >( vk_swapchain_framebuffers.size() ) )
@@ -543,27 +539,16 @@ void VulkanTest::VulkanManager::createCommandBuffers() {
       .setRenderArea( vk::Rect2D( { 0, 0 }, { window->getWidth(), window->getHeight() } ) )
       .setClearValueCount( 1 )
       .setPClearValues( &clear_color );
-    
+
     vk_command_buffers[i].beginRenderPass( render_pass_info, vk::SubpassContents::eInline );
     vk_command_buffers[i].bindPipeline( vk::PipelineBindPoint::eGraphics, vk_graphics_pipeline );
 
-    UniformBufferObject vp_data;
-    vp_data.projection = camera->getPerspectiveProjectionMatrix();
-    vp_data.view = camera->getViewMatrix();
-    for( auto& ub : uniform_buffers ) {
-      ub->updateUniformBuffer( &vp_data, 1 );
-    }
-
-    std::vector< vk::Buffer > buffers = { position->getVkBuffer() };
-    //vk_command_buffers[i].bindVertexBuffers( 0, buffers, { 0 } );
-    //vk_command_buffers[i].bindIndexBuffer( index->getVkBuffer(), 0, vk::IndexType::eUint16 );
     mesh->bindVertexBuffers( vk_command_buffers[i] );
     mesh->bindIndexBuffer( vk_command_buffers[i] );
 
     vk_command_buffers[i].bindDescriptorSets( vk::PipelineBindPoint::eGraphics, vk_layout, 0, vk_descriptor_sets[i], nullptr );
 
     mesh->draw( vk_command_buffers[i] );
-    //vk_command_buffers[i].drawIndexed( static_cast< uint32_t >( index->getNumElements() ), 1, 0, 0, 0 );
 
     vk_command_buffers[i].endRenderPass();
     vk_command_buffers[i].end();

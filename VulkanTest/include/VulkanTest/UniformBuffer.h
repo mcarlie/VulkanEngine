@@ -26,8 +26,6 @@ namespace VulkanTest {
     /// Destructor
     ~UniformBuffer();
 
-    void updateUniformBuffer( const T* data, size_t array_size = 1 );
-
     /// \return The vk::DescriptorSetLayoutBinding for this UniformBuffer
     const vk::DescriptorSetLayoutBinding getVkDescriptorSetLayoutBinding();
 

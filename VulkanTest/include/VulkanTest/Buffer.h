@@ -1,18 +1,29 @@
 #ifndef BUFFER_H
 #define BUFFER_H
 
+#include <VulkanTest/StagedBufferDestination.h>
+
 #include <vulkan/vulkan.hpp>
 #include <vk_mem_alloc.h>
 
 namespace VulkanTest {
 
-  /// Base class for all types of buffers
-  class Buffer {
+  /// Class which represents a single buffer using vk::Buffer
+  class Buffer : public StagedBufferDestination {
 
   public:
 
     /// Constructor
-    Buffer();
+    /// Creates the buffer given the parameters
+    /// \param data_size The total size of the data in the buffer
+    /// \param usage_flags vk::BufferUsageFlags for this buffer
+    /// \param memory_property_flags vk::MemoryPropertyFlags for this buffer
+    /// \param vma_memory_usage VmaMemoryUsage flags to use when allocating
+    Buffer( 
+      size_t _data_size,
+      vk::BufferUsageFlags usage_flags,
+      vk::MemoryPropertyFlags memory_property_flags,
+      VmaMemoryUsage vma_memory_usage );
 
     /// Destructor
     ~Buffer();
@@ -20,38 +31,30 @@ namespace VulkanTest {
     /// \return The vk::Buffer instance of this Attribute
     const vk::Buffer& getVkBuffer();
 
-  protected:
+    /// Overriden to handle tranferring data from a StagedBuffer to this buffer
+    /// \param command_buffers The command buffer to insert the command into
+    /// \param source_buffer The source vk::Buffer in the StagedBuffer
+    virtual void insertTransferCommand( const vk::CommandBuffer& command_buffer, const vk::Buffer& source_buffer );
 
-    /// Create a buffer with appropriate settings
-    /// \param data Pointer to the data
-    /// \param data_size The size of the data in number of bytes
-    /// \param usage_flags vk::BufferUsageFlags for the buffer
-    /// \return The created buffer
-    virtual const vk::Buffer createBuffer( 
-      size_t _data_size,
+    /// Override to return the required data size of the staging buffer in order to transfer all data to this buffer
+    /// \return The data size for the staging buffer
+    virtual size_t getStagingBufferSize();
+
+  private:
+
+    /// Creates the buffer given the parameters
+    /// \param usage_flags vk::BufferUsageFlags for this buffer
+    /// \param memory_property_flags vk::MemoryPropertyFlags for this buffer
+    /// \param vma_memory_usage VmaMemoryUsage flags to use when allocating
+    void createBuffer( 
       vk::BufferUsageFlags usage_flags,
       vk::MemoryPropertyFlags memory_property_flags,
-      VmaMemoryUsage vma_memory_usage,
-      VmaAllocation& _vma_allocation );
-
-    /// Copy the data to the buffer
-    /// \param data Pointer to the data
-    /// \param data_size The size of the data in bytes
-    virtual void updateBuffer( const void* data, size_t _data_size );
-
-    /// Copy the data to the buffer
-    /// \param data Pointer to the data
-    /// \param data_size The size of the data in bytes
-    /// \param _vma_allocation The VmaAllocation belonging to the buffer
-    void updateBuffer( const void* data, size_t _data_size, VmaAllocation& _vma_allocation );
+      VmaMemoryUsage vma_memory_usage );
 
     /// vk::Buffer instance which represents this buffer
     vk::Buffer vk_buffer;
-    
-    /// VmaAllocation instance belonging to vk_buffer;
-    VmaAllocation vma_allocation;
 
-  private:
+  protected:
 
     /// The size of the data
     size_t data_size;

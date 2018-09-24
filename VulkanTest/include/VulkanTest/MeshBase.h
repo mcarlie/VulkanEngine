@@ -22,6 +22,9 @@ namespace VulkanTest {
     /// \return The vk::PipelineVertexInputStateCreateInfo instance describing the attributes that consitute the Mesh
     virtual const vk::PipelineVertexInputStateCreateInfo getVkPipelineVertexInputStateCreateInfo() = 0;
 
+    /// \return The vk::PipelineInputAssemblyStateCreateInfo describing how to handle the input assembly stage for the Mesh
+    virtual const vk::PipelineInputAssemblyStateCreateInfo getVkPipelineInputAssemblyStateCreateInfo() = 0;
+
     /// Start transfer of data belonging to all associated VertexAttribute instances
     /// from staging buffer to vertex buffer memory
     /// \param command_buffer The vk::CommandBuffer to insert the commands into. 

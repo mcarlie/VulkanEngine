@@ -41,9 +41,11 @@ namespace VulkanTest {
     virtual bool shouldClose();
 
     /// Sets the width of the window
+    /// \param _width The width value to set
     virtual void setWidth( uint32_t _width );
 
     /// Sets the height of the window
+    /// \param _height The height value to set
     virtual void setHeight( uint32_t _height );
 
   private:
@@ -59,14 +61,14 @@ namespace VulkanTest {
 
     /// Callback which is called when the window's size has changed
     /// \param _glfw_window The window which was resized
-    /// \param width The new width of the window
-    /// \param height The new height of the window
+    /// \param _width The new width of the window
+    /// \param _height The new height of the window
     static void windowResizeCallback( GLFWwindow* _glfw_window, int _width, int _height );
 
     /// Callback which is called when the window's framebuffer size has changed
     /// \param _glfw_window The window which was resized
-    /// \param width The new width of the framebuffer
-    /// \param height The new height of the framebuffer
+    /// \param _width The new width of the framebuffer
+    /// \param _height The new height of the framebuffer
     static void framebufferResizeCallback( GLFWwindow* _glfw_window, int _width, int _height );
 
     /// Callback which is called when the mouse is over the window

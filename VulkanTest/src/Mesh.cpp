@@ -5,15 +5,17 @@
 
 template< typename PositionType, typename IndexType, class ... AdditionalAttributeTypes >
 VulkanTest::Mesh< PositionType, IndexType, AdditionalAttributeTypes ... >::Mesh() {
+  static_assert( sizeof( IndexType ) == sizeof( uint16_t ) || sizeof( IndexType ) == sizeof( uint32_t ),
+    "Mesh IndexType template parameter must be the same size as either uint16_t or uint32_t" );
 }
 
 template< typename PositionType, typename IndexType, class ... AdditionalAttributeTypes >
 VulkanTest::Mesh< PositionType, IndexType, AdditionalAttributeTypes ... >::Mesh( 
-  const std::shared_ptr< VertexAttribute< Eigen::Matrix< PositionType, 3, 1 > > >& _positions,
+  const std::shared_ptr< VertexAttribute< PositionType > >& _positions,
   const std::shared_ptr< IndexAttribute< IndexType > >& _indices,
   const std::tuple< AttributeContainer< AdditionalAttributeTypes > ... >& _attributes,
   const std::shared_ptr< Shader >& _shader
-  ) : MeshBase( _shader ), positions( _positions ), indices( _indices ), attributes( _attributes ) {
+  ) : Mesh(), MeshBase( _shader ), positions( _positions ), indices( _indices ), attributes( _attributes ) {
 }
     
 template< typename PositionType, typename IndexType, class ... AdditionalAttributeTypes >
@@ -22,7 +24,7 @@ VulkanTest::Mesh< PositionType, IndexType, AdditionalAttributeTypes ... >::~Mesh
 
 template< typename PositionType, typename IndexType, class ... AdditionalAttributeTypes >
 void VulkanTest::Mesh< PositionType, IndexType, AdditionalAttributeTypes ... >::setPositions( 
-  const std::shared_ptr< VertexAttribute< Eigen::Matrix< PositionType, 3, 1 > > >& _positions ) {
+  const std::shared_ptr< VertexAttribute< PositionType > >& _positions ) {
   positions = _positions;
 }
     
@@ -45,7 +47,7 @@ const vk::PipelineVertexInputStateCreateInfo VulkanTest::Mesh<
   binding_descriptions.push_back( positions->getVkVertexInputBindingDescription() );
   attribute_descriptions.push_back( positions->getVkVertexInputAttributeDescriptions() );
 
-  tupleForEach( additional_attributes, [ this ]( const auto& attrib_vec ){
+  Utilities::tupleForEach( additional_attributes, [ this ]( const auto& attrib_vec ){
     for( const auto& attrib : attrib_vec ) {
       if( attrib.get() ) {
         binding_descriptions.push_back( attrib->getVkVertexInputBindingDescription() );
@@ -63,6 +65,16 @@ const vk::PipelineVertexInputStateCreateInfo VulkanTest::Mesh<
 }
 
 template< typename PositionType, typename IndexType, class ... AdditionalAttributeTypes >
+const vk::PipelineInputAssemblyStateCreateInfo VulkanTest::Mesh< 
+  PositionType, IndexType, AdditionalAttributeTypes ... >::getVkPipelineInputAssemblyStateCreateInfo() {
+
+  return vk::PipelineInputAssemblyStateCreateInfo()
+      .setPrimitiveRestartEnable( VK_FALSE )
+      .setTopology( vk::PrimitiveTopology::eTriangleList );
+
+}
+
+template< typename PositionType, typename IndexType, class ... AdditionalAttributeTypes >
 void VulkanTest::Mesh< PositionType, IndexType, AdditionalAttributeTypes ... >::transferBuffers(
   const vk::CommandBuffer& command_buffer ) {
 
@@ -76,7 +88,7 @@ void VulkanTest::Mesh< PositionType, IndexType, AdditionalAttributeTypes ... >::
     indices->transferBuffer();
   }
 
-  tupleForEach( additional_attributes, []( const auto& attrib_vec ){
+  Utilities::tupleForEach( additional_attributes, []( const auto& attrib_vec ){
     for( const auto& attrib : attrib_vec ) {
       if( attrib.get() ) {
         attrib->transferBuffer();
@@ -96,7 +108,7 @@ void VulkanTest::Mesh< PositionType, IndexType, AdditionalAttributeTypes ... >::
   std::vector< vk::Buffer > buffers;
   buffers.push_back( positions->getVkBuffer() );
 
-  tupleForEach( additional_attributes, [ &buffers ]( const auto& attrib_vec ){
+  Utilities::tupleForEach( additional_attributes, [ &buffers ]( const auto& attrib_vec ){
     for( const auto& attrib : attrib_vec ) {
       if( attrib.get() ) {
         buffers.push_back( attrib->getVkBuffer() );
@@ -112,7 +124,6 @@ template< typename PositionType, typename IndexType, class ... AdditionalAttribu
 void VulkanTest::Mesh< PositionType, IndexType, AdditionalAttributeTypes ... >::bindIndexBuffer( const vk::CommandBuffer& command_buffer ) {
 
   if( indices.get() ) {
-    assert( sizeof( IndexType ) == sizeof( uint16_t ) || sizeof( IndexType ) == sizeof( uint32_t ) );
     command_buffer.bindIndexBuffer( 
       indices->getVkBuffer(), 0, sizeof( IndexType ) == sizeof( uint16_t ) ? vk::IndexType::eUint16 : vk::IndexType::eUint32 );
   }

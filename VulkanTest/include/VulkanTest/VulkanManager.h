@@ -8,6 +8,7 @@
 #include <VulkanTest/UniformBuffer.h>
 #include <VulkanTest/Camera.h>
 #include <VulkanTest/MeshBase.h>
+#include <VulkanTest/Image.h>
 
 #include <Eigen/Eigen>
 #include <vk_mem_alloc.h>
@@ -60,6 +61,7 @@ namespace VulkanTest {
     /// \return The manager's vk::Queue for submitting graphics related command buffers
     const vk::Queue& getVkGraphicsQueue();
 
+    /// \return The VmaAllocator instance for performing allocations with Vulkan memory allocator
     const VmaAllocator& getVmaAllocator();
 
   private:
@@ -125,11 +127,14 @@ namespace VulkanTest {
       Eigen::Matrix4f projection;
     };
 
-    std::shared_ptr< Shader > shader;
-    std::vector< std::shared_ptr< UniformBuffer< UniformBufferObject > > > uniform_buffers;
-    std::shared_ptr< VertexAttribute< Eigen::Vector3f > > position;
-    std::shared_ptr< IndexAttribute< uint16_t > > index;
+    typedef StagedBuffer< Image< 
+      vk::Format::eR8G8B8A8Unorm,
+      vk::ImageType::e2D,
+      vk::ImageTiling::eOptimal,
+      vk::SampleCountFlagBits::e1 > > RGBATexture2D;
 
+    std::shared_ptr< RGBATexture2D > texture;
+    std::vector< std::shared_ptr< UniformBuffer< UniformBufferObject > > > uniform_buffers;
     std::shared_ptr< Camera< float > > camera;
     std::shared_ptr< MeshBase > mesh;
 

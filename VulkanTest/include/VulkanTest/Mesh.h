@@ -10,9 +10,9 @@
 namespace VulkanTest {
 
   /// Represents a mesh consisting of VertexAttribute instances
-  /// The mesh will at the very least support 3D positions and indices. Any additional
+  /// The mesh will at the very least support positions and indices. Any additional
   /// types that should be supported can be specified as template arguments.
-  /// Example: Mesh< float, uint32_t, Eigen::Vector3f, Eigen::Vector3f > represents a mesh which supports
+  /// Example: Mesh< Eigen::Vector3f, uint32_t, Eigen::Vector3f, Eigen::Vector3f > represents a mesh which supports
   /// Eigen::Matrix< float, 3, 1 > positions, uint32_t indices as well as additional Eigen::Vector3f and Eigen::Vector2f
   /// vertex attributes which could for example represent normals and texture coordinates
   /// \tparam PositionType The scalar type to use for the positions, e.g float, double
@@ -24,6 +24,7 @@ namespace VulkanTest {
   public:
 
     /// Defines the container for storing additional attributes
+    /// \tparam T The type of the VertexAttribute
     template< typename T >
     using AttributeContainer = std::vector< std::shared_ptr< VertexAttribute< T > > >;
 
@@ -36,7 +37,7 @@ namespace VulkanTest {
     /// \param _attribute A list of additional VertexAttribute instances which will be used when rendering the mesh
     /// \param _shader The shader to use when rendering the mesh
     Mesh( 
-      const std::shared_ptr< VertexAttribute< Eigen::Matrix< PositionType, 3, 1 > > >& _positions,
+      const std::shared_ptr< VertexAttribute< PositionType > >& _positions,
       const std::shared_ptr< IndexAttribute< IndexType > >& _indices,
       const std::tuple< AttributeContainer< AdditionalAttributeTypes > ... >& _attributes,
       const std::shared_ptr< Shader >& _shader
@@ -47,22 +48,26 @@ namespace VulkanTest {
 
     /// Sets the positions of the Mesh
     /// \param _positions A VertexAttribute giving the positions of the vertices of the Mesh
-    void setPositions( const std::shared_ptr< VertexAttribute< Eigen::Matrix< PositionType, 3, 1 > > >& _positions );
+    void setPositions( const std::shared_ptr< VertexAttribute< PositionType > >& _positions );
     
     /// Sets the indices of the Mesh
     /// \param _indices An IndexAttribute giving the indices of the Mesh
     void setIndices( const std::shared_ptr< IndexAttribute< IndexType > >& _indices );
     
     /// Sets the additional attributes of the Mesh
-    /// \param _attribute A list of additional VertexAttribute instances which will be used when rendering the Mesh
+    /// \param _attributes A list of additional VertexAttribute instances which will be used when rendering the Mesh
     void setAttributes( const std::tuple< AttributeContainer< AdditionalAttributeTypes > ... >& _attributes );
 
     /// \return The vk::PipelineVertexInputStateCreateInfo instance describing the attributes that constitute the Mesh
     virtual const vk::PipelineVertexInputStateCreateInfo getVkPipelineVertexInputStateCreateInfo();
 
+    /// \return The vk::PipelineInputAssemblyStateCreateInfo describing how to handle the input assembly stage for the Mesh
+    virtual const vk::PipelineInputAssemblyStateCreateInfo getVkPipelineInputAssemblyStateCreateInfo();
+
     /// Start transfer of data belonging all associated VertexAttribute instances
     /// from staging buffer to vertex buffer memory
-    /// \param command_buffer The vk::CommandBuffer to insert the commands into
+    /// \param command_buffer The vk::CommandBuffer to insert the commands into.
+    ///                       If not specified an internal command buffer will be created and submitted to the graphics queue
     virtual void transferBuffers( const vk::CommandBuffer& command_buffer = nullptr );
 
     /// Bind VertexBuffers in this Mesh which will be used for rendering
@@ -80,7 +85,7 @@ namespace VulkanTest {
   private:
 
     /// The positions defining the Mesh
-    std::shared_ptr< VertexAttribute< Eigen::Matrix< PositionType, 3, 1 > > > positions;
+    std::shared_ptr< VertexAttribute< PositionType > > positions;
     
     /// The indices of the Mesh
     std::shared_ptr< IndexAttribute< IndexType > > indices;

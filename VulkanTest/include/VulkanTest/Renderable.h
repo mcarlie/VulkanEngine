@@ -24,6 +24,9 @@ namespace VulkanTest {
     /// Destructor
     ~Renderable();
 
+    /// \return the Mesh's shader
+    const std::shared_ptr< Shader > getShader();
+
     /// Sets the Mesh's shader
     /// \param _shader The shader to use when rendering the Mesh
     void setShader( const std::shared_ptr< Shader >& _shader );
