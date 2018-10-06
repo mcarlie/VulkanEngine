@@ -23,9 +23,7 @@ VulkanTest::ShaderImage< format, image_type, tiling, sample_count_flags >::Shade
 
 template< vk::Format format, vk::ImageType image_type, vk::ImageTiling tiling, vk::SampleCountFlagBits sample_count_flags >
 VulkanTest::ShaderImage< format, image_type, tiling, sample_count_flags >::~ShaderImage() {
-  if (vk_sampler) {
-    VulkanManager::getInstance()->getVkDevice().destroySampler( vk_sampler );
-  }
+  VulkanManager::getInstance()->getVkDevice().destroySampler( vk_sampler );
 }
 
 template< vk::Format format, vk::ImageType image_type, vk::ImageTiling tiling, vk::SampleCountFlagBits sample_count_flags >

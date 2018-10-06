@@ -24,11 +24,11 @@ void VulkanTest::UniformBuffer< T >::appendVkDescriptorSets(
 
   vk_descriptor_buffer_infos.clear();
 
-  for( size_t i = 0; i < array_size; ++i ) {
+  for( uint32_t i = 0; i < array_size; ++i ) {
 
     vk_descriptor_buffer_infos.push_back( vk::DescriptorBufferInfo()
       .setBuffer( getVkBuffer() )
-      .setOffset( sizeof( T ) * i )
+      .setOffset( sizeof( T ) * static_cast< size_t >( i ) )
       .setRange( sizeof( T ) ) );
 
     write_descriptor_sets.push_back( vk::WriteDescriptorSet()

@@ -339,7 +339,7 @@ void VulkanTest::VulkanManager::createGraphicsPipeline() {
   std::vector< std::shared_ptr< ShaderModule > > shader_modules;
   shader_modules.push_back( vertex_shader );
   shader_modules.push_back( fragment_shader );
-  shader.reset( new Shader( shader_modules ) );
+  std::shared_ptr< Shader > shader( new Shader( shader_modules ) );
 
   mesh->setShader( shader );
 
@@ -425,14 +425,6 @@ void VulkanTest::VulkanManager::createGraphicsPipeline() {
     .setAttachmentCount( 1 )
     .setPAttachments( &colorblend_attachment_info );
 
-  auto layout_info = vk::PipelineLayoutCreateInfo()
-    .setSetLayoutCount( shader->getVkDescriptorSetLayouts().size() )
-    .setPSetLayouts( shader->getVkDescriptorSetLayouts().data() )
-    .setPushConstantRangeCount( 0 )
-    .setPPushConstantRanges( nullptr );
-
-  vk_layout = vk_device.createPipelineLayout( layout_info );
-
   auto graphics_pipeline_info = vk::GraphicsPipelineCreateInfo()
     .setStageCount( static_cast< uint32_t >( mesh->getShader()->getVkShaderStages().size() ) )
     .setPStages( mesh->getShader()->getVkShaderStages().data() )
@@ -444,7 +436,7 @@ void VulkanTest::VulkanManager::createGraphicsPipeline() {
     .setPDepthStencilState( nullptr )
     .setPColorBlendState( &colorblend_info )
     .setPDynamicState( nullptr )
-    .setLayout( vk_layout )
+    .setLayout( mesh->getShader()->getVkPipelineLayout() )
     .setRenderPass( vk_render_pass )
     .setSubpass( 0 );
 
@@ -512,8 +504,7 @@ void VulkanTest::VulkanManager::createCommandBuffers() {
 
     mesh->bindVertexBuffers( vk_command_buffers[i] );
     mesh->bindIndexBuffer( vk_command_buffers[i] );
-
-    vk_command_buffers[i].bindDescriptorSets( vk::PipelineBindPoint::eGraphics, vk_layout, 0, shader->getVkDescriptorSets()[i], nullptr );
+    mesh->getShader()->bindCurrentDescriptorSet( vk_command_buffers[i], static_cast< uint32_t >( i ) );
 
     mesh->draw( vk_command_buffers[i] );
 
@@ -546,13 +537,17 @@ void VulkanTest::VulkanManager::cleanup() {
 
   cleanupSwapchain();
 
-  vk_device.destroyDescriptorPool( vk_descriptor_pool );
   for( size_t i = 0; i < frames_in_flight; ++i ) {
     vk_device.destroySemaphore( vk_image_available_semaphores[i] );
     vk_device.destroySemaphore( vk_rendering_finished_semaphores[i] );  
     vk_device.destroyFence( vk_in_flight_fences[i] );
   }
   vk_device.destroyCommandPool( vk_command_pool );
+
+  mesh.reset();
+  texture.reset();
+  uniform_buffers.clear();
+  camera.reset();
 
   vmaDestroyAllocator( vma_allocator );
 
@@ -572,7 +567,6 @@ void VulkanTest::VulkanManager::cleanupSwapchain() {
   }
   vk_device.freeCommandBuffers( vk_command_pool, vk_command_buffers );
   vk_device.destroyPipeline( vk_graphics_pipeline );
-  vk_device.destroyPipelineLayout( vk_layout );
   vk_device.destroyRenderPass( vk_render_pass );
   for( size_t i = 0; i < vk_image_views.size(); ++i ) {
     vk_device.destroyImageView( vk_image_views[i] );

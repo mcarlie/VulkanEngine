@@ -1,7 +1,8 @@
 #include <VulkanTest/Shader.h>
 #include <VulkanTest/VulkanManager.h>
 
-VulkanTest::Shader::Shader( const std::vector< std::shared_ptr< ShaderModule > >& shader_modules ) {
+VulkanTest::Shader::Shader( const std::vector< std::shared_ptr< ShaderModule > >& shader_modules ) 
+  : current_descriptor_set_index( 0 ) {
 
   for( const auto& sm : shader_modules ) {
     auto shader_stage_info = vk::PipelineShaderStageCreateInfo()
@@ -14,12 +15,22 @@ VulkanTest::Shader::Shader( const std::vector< std::shared_ptr< ShaderModule > >
 }
 
 VulkanTest::Shader::~Shader() {
-  if( vk_descriptor_pool ){
-    VulkanManager::getInstance()->getVkDevice().destroyDescriptorPool( vk_descriptor_pool );
+  const auto& vk_device = VulkanManager::getInstance()->getVkDevice();
+  vk_device.destroyDescriptorPool( vk_descriptor_pool );
+  vk_device.destroyPipelineLayout( vk_pipeline_layout );
+  for( const auto& dsl : vk_descriptor_set_layouts ) {
+    vk_device.destroyDescriptorSetLayout( dsl );
   }
 }
 
 void VulkanTest::Shader::setDescriptors( const std::vector< std::vector< std::shared_ptr< Descriptor > > >& _descriptors ) {
+
+  const auto& vk_device = VulkanManager::getInstance()->getVkDevice();
+
+  // Causes the pipeline layout to be recreated and include changes to descriptors
+  if( vk_pipeline_layout ){
+    vk_device.destroyPipelineLayout( vk_pipeline_layout );
+  }
 
   descriptors = _descriptors;
 
@@ -39,8 +50,6 @@ void VulkanTest::Shader::setDescriptors( const std::vector< std::vector< std::sh
     .setPPoolSizes( pool_sizes.data() )
     .setMaxSets( static_cast< uint32_t >( descriptors.size() ) );
 
-  const auto& vk_device = VulkanManager::getInstance()->getVkDevice();
-
   if( vk_descriptor_pool ) {
     vk_device.destroyDescriptorPool( vk_descriptor_pool );
   }
@@ -49,7 +58,7 @@ void VulkanTest::Shader::setDescriptors( const std::vector< std::vector< std::sh
   for( uint32_t i = 0; i < descriptors.size(); ++i ) {
 
     auto descriptor_set_layout_info = vk::DescriptorSetLayoutCreateInfo()
-      .setBindingCount( descriptor_set_layout_bindings[i].size() )
+      .setBindingCount( static_cast< uint32_t >( descriptor_set_layout_bindings[i].size() ) )
       .setPBindings( descriptor_set_layout_bindings[i].data() );
 
     vk_descriptor_set_layouts.push_back( vk_device.createDescriptorSetLayout( descriptor_set_layout_info ) );
@@ -78,8 +87,11 @@ void VulkanTest::Shader::setDescriptors( const std::vector< std::vector< std::sh
 
 }
 
-void VulkanTest::Shader::createPipeline() {
+void VulkanTest::Shader::bindCurrentDescriptorSet( const vk::CommandBuffer& command_buffer, uint32_t descriptor_set_index ) {
 
+  command_buffer.bindDescriptorSets( 
+    vk::PipelineBindPoint::eGraphics,
+    getVkPipelineLayout(), 0, vk_descriptor_sets[descriptor_set_index], nullptr );
 
 }
 
@@ -87,10 +99,21 @@ const std::vector< vk::PipelineShaderStageCreateInfo >& VulkanTest::Shader::getV
   return shader_stages;
 }
 
-const std::vector< vk::DescriptorSetLayout >& VulkanTest::Shader::getVkDescriptorSetLayouts() {
-  return vk_descriptor_set_layouts;
-}
+const vk::PipelineLayout VulkanTest::Shader::getVkPipelineLayout() {
 
-const std::vector< vk::DescriptorSet >& VulkanTest::Shader::getVkDescriptorSets() {
-  return vk_descriptor_sets;
+  if( !vk_pipeline_layout ) {
+    auto pipeline_layout_info = vk::PipelineLayoutCreateInfo()
+      .setSetLayoutCount( static_cast< uint32_t >( vk_descriptor_set_layouts.size() ) )
+      .setPSetLayouts( vk_descriptor_set_layouts.data() )
+      .setPushConstantRangeCount( 0 )
+      .setPPushConstantRanges( nullptr );
+    vk_pipeline_layout = VulkanManager::getInstance()->getVkDevice().createPipelineLayout( pipeline_layout_info );
+  }
+
+  if( !vk_pipeline_layout ){
+    throw std::runtime_error( "Could not create pipeline layout!" );
+  }
+
+  return vk_pipeline_layout;
+
 }

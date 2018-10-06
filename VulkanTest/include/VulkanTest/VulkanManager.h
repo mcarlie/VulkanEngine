@@ -106,20 +106,13 @@ namespace VulkanTest {
 
     std::vector< vk::ImageView > vk_image_views;
 
-    vk::PipelineLayout vk_layout;
-
     vk::CommandPool vk_command_pool;
 
     std::vector< vk::CommandBuffer > vk_command_buffers;
 
     vk::Pipeline vk_graphics_pipeline;
 
-    vk::DescriptorSetLayout vk_descriptor_set_layout;
-
     std::vector< vk::Framebuffer > vk_swapchain_framebuffers;
-
-    vk::DescriptorPool vk_descriptor_pool;
-    std::vector< vk::DescriptorSet > vk_descriptor_sets;
 
     struct UniformBufferObject {
       Eigen::Matrix4f model;
@@ -134,7 +127,6 @@ namespace VulkanTest {
     std::vector< std::shared_ptr< UniformBuffer< UniformBufferObject > > > uniform_buffers;
     std::shared_ptr< Camera< float > > camera;
     std::shared_ptr< MeshBase > mesh;
-    std::shared_ptr< Shader > shader;
 
     size_t frames_in_flight;
     size_t current_frame;
