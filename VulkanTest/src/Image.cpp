@@ -6,19 +6,20 @@
 
 template< vk::Format format, vk::ImageType image_type, vk::ImageTiling tiling, vk::SampleCountFlagBits sample_count_flags >
 VulkanTest::Image< format, image_type, tiling, sample_count_flags >::Image( 
-  vk::ImageLayout inital_layout,
+  vk::ImageLayout initial_layout,
   vk::ImageUsageFlags usage_flags,
-  VmaMemoryUsage vma_usage,
+  VmaMemoryUsage vma_memory_usage,
   uint32_t _width,
   uint32_t _height,
   uint32_t _depth,
   size_t pixel_size ) 
-  : width( _width ), height( _height ), depth( _depth ), vk_image_layout( inital_layout ), data_size( pixel_size * width * height * depth ) {
-  createImage( usage_flags, vma_usage );
+  : width( _width ), height( _height ), depth( _depth ), vk_image_layout( initial_layout ), data_size( pixel_size * width * height * depth ) {
+  createImage( usage_flags, vma_memory_usage );
 }
 
 template< vk::Format format, vk::ImageType image_type, vk::ImageTiling tiling, vk::SampleCountFlagBits sample_count_flags >
 VulkanTest::Image< format, image_type, tiling, sample_count_flags >::~Image() {
+  VulkanManager::getInstance()->getVkDevice().destroyImageView( vk_image_view );
   vmaDestroyImage( VulkanManager::getInstance()->getVmaAllocator(), vk_image, vma_allocation );
 }
 
@@ -28,13 +29,36 @@ void VulkanTest::Image< format, image_type, tiling, sample_count_flags >::setIma
 }
 
 template< vk::Format format, vk::ImageType image_type, vk::ImageTiling tiling, vk::SampleCountFlagBits sample_count_flags >
+void VulkanTest::Image< format, image_type, tiling, sample_count_flags >::createImageView( vk::ImageViewType image_view_type ) {
+
+  auto subresource_range = vk::ImageSubresourceRange()
+    .setAspectMask( vk::ImageAspectFlagBits::eColor )
+    .setBaseMipLevel( 0 )
+    .setLevelCount( 1 )
+    .setBaseArrayLayer( 0 )
+    .setLayerCount( 1 );
+
+  auto image_view_create_info = vk::ImageViewCreateInfo()
+    .setFormat( format )
+    .setImage( vk_image )
+    .setViewType( image_view_type )
+    .setSubresourceRange( subresource_range );
+
+  vk_image_view = VulkanManager::getInstance()->getVkDevice().createImageView( image_view_create_info );
+  if( !vk_image_view ){
+    throw std::runtime_error( "Could not create image view for image!" );
+  }
+
+}
+
+template< vk::Format format, vk::ImageType image_type, vk::ImageTiling tiling, vk::SampleCountFlagBits sample_count_flags >
 void VulkanTest::Image< format, image_type, tiling, sample_count_flags >::transitionImageLayout( 
   vk::ImageLayout new_layout, const vk::CommandBuffer& command_buffer ) {
 
   auto subresource_range = vk::ImageSubresourceRange()
     .setAspectMask( vk::ImageAspectFlagBits::eColor )
     .setBaseMipLevel( 0 )
-    .setLevelCount( 0 )
+    .setLevelCount( 1 )
     .setBaseArrayLayer( 0 )
     .setLayerCount( 1 );
 

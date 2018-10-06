@@ -8,7 +8,7 @@
 #include <VulkanTest/UniformBuffer.h>
 #include <VulkanTest/Camera.h>
 #include <VulkanTest/MeshBase.h>
-#include <VulkanTest/Image.h>
+#include <VulkanTest/ShaderImage.h>
 
 #include <Eigen/Eigen>
 #include <vk_mem_alloc.h>
@@ -127,16 +127,14 @@ namespace VulkanTest {
       Eigen::Matrix4f projection;
     };
 
-    typedef StagedBuffer< Image< 
-      vk::Format::eR8G8B8A8Unorm,
-      vk::ImageType::e2D,
-      vk::ImageTiling::eOptimal,
-      vk::SampleCountFlagBits::e1 > > RGBATexture2D;
+    using RGBATexture2D1S 
+      = StagedBuffer< ShaderImage< vk::Format::eR8G8B8A8Unorm, vk::ImageType::e2D, vk::ImageTiling::eOptimal, vk::SampleCountFlagBits::e1 > >;
 
-    std::shared_ptr< RGBATexture2D > texture;
+    std::shared_ptr< RGBATexture2D1S > texture;
     std::vector< std::shared_ptr< UniformBuffer< UniformBufferObject > > > uniform_buffers;
     std::shared_ptr< Camera< float > > camera;
     std::shared_ptr< MeshBase > mesh;
+    std::shared_ptr< Shader > shader;
 
     size_t frames_in_flight;
     size_t current_frame;

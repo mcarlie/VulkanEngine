@@ -23,6 +23,7 @@
     <ClCompile Include="src\Buffer.cpp" />
     <ClCompile Include="src\BufferBase.cpp" />
     <ClCompile Include="src\Camera.cpp" />
+    <ClCompile Include="src\Descriptor.cpp" />
     <ClCompile Include="src\GLFWWindow.cpp" />
     <ClCompile Include="src\Image.cpp" />
     <ClCompile Include="src\IndexAttribute.cpp" />
@@ -30,11 +31,10 @@
     <ClCompile Include="src\Mesh.cpp" />
     <ClCompile Include="src\MeshBase.cpp" />
     <ClCompile Include="src\OBJLoader.cpp" />
-    <ClCompile Include="src\Renderable.cpp" />
     <ClCompile Include="src\Shader.cpp" />
+    <ClCompile Include="src\ShaderImage.cpp" />
     <ClCompile Include="src\ShaderModule.cpp" />
     <ClCompile Include="src\StagedBuffer.cpp" />
-    <ClCompile Include="src\Texture.cpp" />
     <ClCompile Include="src\UniformBuffer.cpp" />
     <ClCompile Include="src\VertexAttribute.cpp" />
     <ClCompile Include="src\VulkanManager.cpp" />
@@ -46,14 +46,15 @@
     <ClInclude Include="include\VulkanTest\BufferBase.h" />
     <ClInclude Include="include\VulkanTest\Camera.h" />
     <ClInclude Include="include\VulkanTest\Constants.h" />
+    <ClInclude Include="include\VulkanTest\Descriptor.h" />
     <ClInclude Include="include\VulkanTest\GLFWWindow.h" />
     <ClInclude Include="include\VulkanTest\Image.h" />
     <ClInclude Include="include\VulkanTest\IndexAttribute.h" />
     <ClInclude Include="include\VulkanTest\Mesh.h" />
     <ClInclude Include="include\VulkanTest\MeshBase.h" />
     <ClInclude Include="include\VulkanTest\OBJLoader.h" />
-    <ClInclude Include="include\VulkanTest\Renderable.h" />
     <ClInclude Include="include\VulkanTest\Shader.h" />
+    <ClInclude Include="include\VulkanTest\ShaderImage.h" />
     <ClInclude Include="include\VulkanTest\ShaderModule.h" />
     <ClInclude Include="include\VulkanTest\StagedBuffer.h" />
     <ClInclude Include="include\VulkanTest\StagedBufferDestination.h" />

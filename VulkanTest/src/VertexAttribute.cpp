@@ -19,20 +19,20 @@ VulkanTest::VertexAttribute< T >::~VertexAttribute() {
 }
 
 template< typename T >
-const vk::VertexInputBindingDescription VulkanTest::VertexAttribute< T >::getVkVertexInputBindingDescription() {
+const vk::VertexInputBindingDescription VulkanTest::VertexAttribute< T >::getVkVertexInputBindingDescription( uint32_t binding_index ) {
 
   return vk::VertexInputBindingDescription()
-    .setBinding( 0 )
+    .setBinding( binding_index )
     .setInputRate( vk::VertexInputRate::eVertex )
     .setStride( sizeof( T ) );
 
 }
 
 template< typename T >
-const vk::VertexInputAttributeDescription VulkanTest::VertexAttribute< T >::getVkVertexInputAttributeDescriptions() {
+const vk::VertexInputAttributeDescription VulkanTest::VertexAttribute< T >::getVkVertexInputAttributeDescriptions( uint32_t binding_index ) {
 
   return vk::VertexInputAttributeDescription()
-    .setBinding( 0 )
+    .setBinding( binding_index )
     .setLocation( location )
     .setFormat( getVkFormat() )
     .setOffset( 0 );

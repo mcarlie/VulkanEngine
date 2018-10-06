@@ -1,12 +1,14 @@
 #ifndef MESHBASE_H
 #define MESHBASE_H
 
-#include <VulkanTest/Renderable.h>
+#include <VulkanTest/Shader.h>
+
+#include <memory>
 
 namespace VulkanTest {
 
   /// Provides an abstract interface for various types of Mesh classes
-  class MeshBase : public Renderable {
+  class MeshBase {
   
   public:
 
@@ -18,6 +20,13 @@ namespace VulkanTest {
 
     /// Destructor
     ~MeshBase();
+
+    /// \return the mesh's shader
+    const std::shared_ptr< Shader >& getShader();
+
+    /// Sets the Mesh's shader
+    /// \param _shader The shader to use when rendering the mesh
+    void setShader( const std::shared_ptr< Shader >& _shader );
 
     /// \return The vk::PipelineVertexInputStateCreateInfo instance describing the attributes that consitute the Mesh
     virtual const vk::PipelineVertexInputStateCreateInfo getVkPipelineVertexInputStateCreateInfo() = 0;
@@ -43,6 +52,11 @@ namespace VulkanTest {
     /// Insert drawing commands
     /// \param command_buffer The vk::CommandBuffer to insert the commands into
     virtual void draw( const vk::CommandBuffer& command_buffer ) = 0;
+
+  private:
+
+    /// The shader to use when rendering this mesh
+    std::shared_ptr< Shader > shader;
 
   };
 

@@ -25,10 +25,10 @@ namespace VulkanTest {
     ~VertexAttribute();
 
     /// \return The Vulkan VertexInputBindingDescription for this VertexAttribute instance
-    const vk::VertexInputBindingDescription getVkVertexInputBindingDescription();
+    const vk::VertexInputBindingDescription getVkVertexInputBindingDescription( uint32_t binding_index );
 
     /// \return All vk::VertexInputAttributeDescription instances describing the 
-    const vk::VertexInputAttributeDescription getVkVertexInputAttributeDescriptions();
+    const vk::VertexInputAttributeDescription getVkVertexInputAttributeDescriptions( uint32_t binding_index );
 
     /// \return The vk::Format of the VertexAttribute describing the format of the vertex data
     vk::Format getVkFormat();

@@ -21,7 +21,7 @@ namespace VulkanTest {
     /// \param _z_far The distance from the Camera's position to the far plane
     /// \param _fov The field of view of the Camera
     Camera( 
-      Eigen::Matrix< Scalar, 3, 1 > _position = { 10, 10, 10 },
+      Eigen::Matrix< Scalar, 3, 1 > _position = { 0, 0, -200 },
       Eigen::Matrix< Scalar, 3, 1 > _look_at = { 0, 0, 0 },
       Eigen::Matrix< Scalar, 3, 1 > _up_vector = { 0, -1, 0 },
       Scalar _z_near = static_cast< Scalar >( 0.1 ),

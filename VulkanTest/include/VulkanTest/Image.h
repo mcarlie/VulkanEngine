@@ -19,15 +19,15 @@ namespace VulkanTest {
     /// Constructor
     /// \param initial_layout The initial vk::ImageLayout of the Image
     /// \param usage_flags vk::ImageUsageFlags specifying how the image will be used
-    /// \param vma_usage VmaMemoryUsage flags to pass to the Vulkan memory allocator library when allocating the image
+    /// \param vma_memory_usage VmaMemoryUsage flags to pass to the Vulkan memory allocator library when allocating the image
     /// \param _width The width of the image
     /// \param _height The height of the image
     /// \param _depth The depth of the image
     /// \param pixel_size The data size of a single pixel in the image
     Image( 
-      vk::ImageLayout inital_layout,
+      vk::ImageLayout initial_layout,
       vk::ImageUsageFlags usage_flags,
-      VmaMemoryUsage vma_usage,
+      VmaMemoryUsage vma_memory_usage,
       uint32_t _width,
       uint32_t _height,
       uint32_t _depth,
@@ -39,6 +39,8 @@ namespace VulkanTest {
     /// Sets the image data from the given pointer
     /// \param data Pointer to the image data
     void setImageData( const void* data );
+
+    void createImageView( vk::ImageViewType image_view_type );
 
   protected:
 
@@ -64,6 +66,8 @@ namespace VulkanTest {
       vk::ImageUsageFlags usage_flags,
       VmaMemoryUsage vma_usage );
 
+  protected:
+
     /// The width of the Image
     uint32_t width;
 
@@ -82,6 +86,9 @@ namespace VulkanTest {
     /// The vk::Image instance
     vk::Image vk_image;
   
+    /// The vk::ImageView created in createImageView()
+    vk::ImageView vk_image_view;
+
   };
 
 }

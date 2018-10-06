@@ -10,8 +10,13 @@ namespace VulkanTest {
 
   namespace Constants {
   
-    /// Definition of PI to use in application
-    const double pi = M_PI;
+    /// Definition of pi to use in application
+    template< typename T >
+    constexpr T pi() { return static_cast< T >( M_PI ); };
+
+    /// Definition of e to use in application
+    template< typename T >
+    constexpr T e() { return static_cast< T >( M_E ); };
 
   }
 

@@ -101,8 +101,9 @@ void VulkanTest::VulkanManager::initialize( const std::shared_ptr< Window >& _wi
     .setQueueCount( 1 )
     .setQueueFamilyIndex( graphics_queue_family_index );
 
-  auto physical_device_features = vk::PhysicalDeviceFeatures().
-    setFragmentStoresAndAtomics( VK_TRUE );
+  auto physical_device_features = vk::PhysicalDeviceFeatures()
+    .setSamplerAnisotropy( VK_TRUE )
+    .setFragmentStoresAndAtomics( VK_TRUE );
 
   auto device_info = vk::DeviceCreateInfo()
 #if defined( _DEBUG )
@@ -151,6 +152,7 @@ void VulkanTest::VulkanManager::drawImage() {
     ub->updateBuffer( &vp_data, sizeof( vp_data ) );
   }
 
+  // Causing device lost error since image upload implementation
   auto fence_result = vk_device.waitForFences( vk_in_flight_fences[current_frame], VK_TRUE, std::numeric_limits< uint32_t >::max() );
 
   uint32_t image_index;
@@ -200,7 +202,6 @@ void VulkanTest::VulkanManager::drawImage() {
 
   vk_device.resetFences( vk_in_flight_fences[current_frame] );
 
-  /// Todo, why are there six fences?
   vk_graphics_queue.submit( submit_info, vk_in_flight_fences[current_frame] );
 
   vk::SwapchainKHR swapchains[] = { vk_swapchain };
@@ -212,6 +213,9 @@ void VulkanTest::VulkanManager::drawImage() {
     .setPImageIndices( &image_index );
 
   auto present_result = vk_graphics_queue.presentKHR( present_info );
+  if( present_result != vk::Result::eSuccess ){
+    throw std::runtime_error( "Error presenting image to screen" );
+  }
 
   current_frame = ( current_frame + 1 ) % frames_in_flight;
 
@@ -327,7 +331,7 @@ void VulkanTest::VulkanManager::createRenderPass() {
 
 void VulkanTest::VulkanManager::createGraphicsPipeline() {
 
-  auto meshes = VulkanTest::loadOBJ( "C:/Users/Michael/Desktop/VK/VulkanTest/models/cow-nonormals.obj", "" );
+  auto meshes = VulkanTest::OBJLoader::loadOBJ( "C:/Users/Michael/Desktop/VK/VulkanTest/models/spider_pumpkin_obj.obj", "" );
   mesh = meshes[0];
 
   std::shared_ptr< ShaderModule > fragment_shader( new ShaderModule( "C:/Users/Michael/Desktop/VK/VulkanTest/shaders/frag.spv", vk::ShaderStageFlagBits::eFragment ) );
@@ -335,35 +339,42 @@ void VulkanTest::VulkanManager::createGraphicsPipeline() {
   std::vector< std::shared_ptr< ShaderModule > > shader_modules;
   shader_modules.push_back( vertex_shader );
   shader_modules.push_back( fragment_shader );
-  std::shared_ptr< Shader > shader( new Shader( shader_modules ) );
+  shader.reset( new Shader( shader_modules ) );
 
   mesh->setShader( shader );
-
-  typedef StagedBuffer< Image< 
-    vk::Format::eR8G8B8A8Unorm,
-    vk::ImageType::e2D,
-    vk::ImageTiling::eOptimal,
-    vk::SampleCountFlagBits::e1 > > RGBATexture2D;
 
   int texture_width;
   int texture_height;
   int channels_in_file;
-  unsigned char* image_data = stbi_load( "C:/Users/Michael/Desktop/VK/VulkanTest/models/tex.jpg", &texture_width, &texture_height, &channels_in_file, 4 );
-  texture.reset( new RGBATexture2D( 
+  unsigned char* image_data = stbi_load( "C:/Users/Michael/Desktop/VK/VulkanTest/models/spider_pumpkin_obj_0.jpg", &texture_width, &texture_height, &channels_in_file, 4 );
+  texture.reset( new RGBATexture2D1S( 
     vk::ImageLayout::eUndefined,
     vk::ImageUsageFlagBits::eTransferDst | vk::ImageUsageFlagBits::eSampled,
     VMA_MEMORY_USAGE_GPU_ONLY,
     static_cast< uint32_t >( texture_width ),
     static_cast< uint32_t >( texture_height ),
-    1, sizeof( unsigned char ) * 4 ) );
-  texture->setImageData( image_data );
+    1, sizeof( unsigned char ) * 4, 1,
+    1, // TODO
+    vk::DescriptorType::eCombinedImageSampler,
+    vk::ShaderStageFlagBits::eFragment ) );
 
-  camera.reset( new Camera< float > );
+  texture->setImageData( image_data );
+  texture->createImageView( vk::ImageViewType::e2D );
+  texture->createSampler();
 
   uniform_buffers.resize( vk_swapchain_images.size() );
   for( auto& ub : uniform_buffers ) {
     ub.reset( new UniformBuffer< UniformBufferObject >( 0 ) );
   }
+
+  std::vector< std::vector< std::shared_ptr< Descriptor > > > descriptors;
+  for( size_t i = 0; i < vk_swapchain_images.size(); ++i ) {
+    descriptors.push_back( { texture, uniform_buffers[i] } );
+  }
+
+  shader->setDescriptors( descriptors );
+
+  camera.reset( new Camera< float > );
 
   auto viewport = vk::Viewport()
     .setX( 0 )
@@ -387,7 +398,7 @@ void VulkanTest::VulkanManager::createGraphicsPipeline() {
     .setRasterizerDiscardEnable( VK_FALSE )
     .setLineWidth( 1.0f )
     .setPolygonMode( vk::PolygonMode::eFill )
-    .setCullMode( vk::CullModeFlagBits::eNone )
+    .setCullMode( vk::CullModeFlagBits::eBack )
     .setFrontFace( vk::FrontFace::eCounterClockwise )
     .setDepthBiasEnable( VK_FALSE );
 
@@ -414,55 +425,11 @@ void VulkanTest::VulkanManager::createGraphicsPipeline() {
     .setAttachmentCount( 1 )
     .setPAttachments( &colorblend_attachment_info );
 
-  auto pool_size = vk::DescriptorPoolSize()
-    .setDescriptorCount( static_cast< uint32_t >( vk_swapchain_images.size() ) )
-    .setType( vk::DescriptorType::eUniformBuffer );
-
-  auto pool_create_info = vk::DescriptorPoolCreateInfo()
-    .setPoolSizeCount( 1 )
-    .setPPoolSizes( &pool_size )
-    .setMaxSets( static_cast< uint32_t >( vk_swapchain_images.size() ) );
-
-  vk_descriptor_pool = vk_device.createDescriptorPool( pool_create_info );
-
-  auto descriptor_set_info = vk::DescriptorSetLayoutCreateInfo()
-    .setBindingCount( 1 )
-    .setPBindings( &uniform_buffers[0]->getVkDescriptorSetLayoutBinding() );
-
-  auto descriptor_set = vk_device.createDescriptorSetLayout( descriptor_set_info );
-
   auto layout_info = vk::PipelineLayoutCreateInfo()
-    .setSetLayoutCount( 1 )
-    .setPSetLayouts( &descriptor_set )
+    .setSetLayoutCount( shader->getVkDescriptorSetLayouts().size() )
+    .setPSetLayouts( shader->getVkDescriptorSetLayouts().data() )
     .setPushConstantRangeCount( 0 )
     .setPPushConstantRanges( nullptr );
-
-  std::vector< vk::DescriptorSetLayout > descriptor_set_layouts( vk_swapchain_images.size(), descriptor_set );
-  auto descriptor_set_allocate_info = vk::DescriptorSetAllocateInfo()
-    .setDescriptorPool( vk_descriptor_pool )
-    .setDescriptorSetCount( static_cast< uint32_t >( vk_swapchain_images.size() ) )
-    .setPSetLayouts( descriptor_set_layouts.data() );
-
-  vk_descriptor_sets = vk_device.allocateDescriptorSets( descriptor_set_allocate_info );
-
-  for( size_t i = 0; i < uniform_buffers.size(); ++i ) {
-
-    auto descriptor_buffer_info = vk::DescriptorBufferInfo()
-      .setBuffer( uniform_buffers[i]->getVkBuffer() )
-      .setOffset( 0 )
-      .setRange( sizeof( UniformBufferObject ) );
-
-    auto write_descriptor_set = vk::WriteDescriptorSet()
-      .setDstBinding( 0 )
-      .setDstArrayElement( 0 )
-      .setDstSet( vk_descriptor_sets[i] )
-      .setDescriptorType( vk::DescriptorType::eUniformBuffer )
-      .setDescriptorCount( 1 )
-      .setPBufferInfo( &descriptor_buffer_info );
-
-    vk_device.updateDescriptorSets( write_descriptor_set, nullptr );
-
-  }
 
   vk_layout = vk_device.createPipelineLayout( layout_info );
 
@@ -546,7 +513,7 @@ void VulkanTest::VulkanManager::createCommandBuffers() {
     mesh->bindVertexBuffers( vk_command_buffers[i] );
     mesh->bindIndexBuffer( vk_command_buffers[i] );
 
-    vk_command_buffers[i].bindDescriptorSets( vk::PipelineBindPoint::eGraphics, vk_layout, 0, vk_descriptor_sets[i], nullptr );
+    vk_command_buffers[i].bindDescriptorSets( vk::PipelineBindPoint::eGraphics, vk_layout, 0, shader->getVkDescriptorSets()[i], nullptr );
 
     mesh->draw( vk_command_buffers[i] );
 

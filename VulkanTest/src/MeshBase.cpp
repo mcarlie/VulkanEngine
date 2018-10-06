@@ -6,10 +6,18 @@
 VulkanTest::MeshBase::MeshBase() {
 }
 
-VulkanTest::MeshBase::MeshBase( const std::shared_ptr< Shader > _shader ) : Renderable( _shader )  {
+VulkanTest::MeshBase::MeshBase( const std::shared_ptr< Shader > _shader ) : shader( _shader ) {
 }
 
 VulkanTest::MeshBase::~MeshBase() {
+}
+
+const std::shared_ptr< VulkanTest::Shader >& VulkanTest::MeshBase::getShader() {
+  return shader;
+}
+
+void VulkanTest::MeshBase::setShader(const std::shared_ptr< VulkanTest::Shader >& _shader) {
+  shader = _shader;
 }
 
 #endif /* MESH_CPP */

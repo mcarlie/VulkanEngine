@@ -13,13 +13,16 @@ namespace VulkanTest {
   /// The mesh will at the very least support positions and indices. Any additional
   /// types that should be supported can be specified as template arguments.
   /// Example: Mesh< Eigen::Vector3f, uint32_t, Eigen::Vector3f, Eigen::Vector3f > represents a mesh which supports
-  /// Eigen::Matrix< float, 3, 1 > positions, uint32_t indices as well as additional Eigen::Vector3f and Eigen::Vector2f
+  /// Eigen::Vector3f positions, uint32_t indices as well as additional Eigen::Vector3f and Eigen::Vector2f
   /// vertex attributes which could for example represent normals and texture coordinates
   /// \tparam PositionType The scalar type to use for the positions, e.g float, double
   /// \tparam IndexType The type to use for storing indices, e.g uint16_t or uint32_t
   /// \tparam AdditionalAttributeTypes A variadic list of additional VertexAttribute types supported by the mesh
   template< typename PositionType, typename IndexType, class ... AdditionalAttributeTypes >
   class Mesh : public MeshBase {
+
+    static_assert( sizeof( IndexType ) == sizeof( uint16_t ) || sizeof( IndexType ) == sizeof( uint32_t ),
+      "Mesh IndexType template parameter must be the same size as either uint16_t or uint32_t" );
 
   public:
 
@@ -55,8 +58,8 @@ namespace VulkanTest {
     void setIndices( const std::shared_ptr< IndexAttribute< IndexType > >& _indices );
     
     /// Sets the additional attributes of the Mesh
-    /// \param _attributes A list of additional VertexAttribute instances which will be used when rendering the Mesh
-    void setAttributes( const std::tuple< AttributeContainer< AdditionalAttributeTypes > ... >& _attributes );
+    /// \param _additional_attributes A list of additional VertexAttribute instances which will be used when rendering the Mesh
+    void setAttributes( const std::tuple< AttributeContainer< AdditionalAttributeTypes > ... >& _additional_attributes );
 
     /// \return The vk::PipelineVertexInputStateCreateInfo instance describing the attributes that constitute the Mesh
     virtual const vk::PipelineVertexInputStateCreateInfo getVkPipelineVertexInputStateCreateInfo();

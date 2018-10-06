@@ -5,8 +5,6 @@
 
 template< typename PositionType, typename IndexType, class ... AdditionalAttributeTypes >
 VulkanTest::Mesh< PositionType, IndexType, AdditionalAttributeTypes ... >::Mesh() {
-  static_assert( sizeof( IndexType ) == sizeof( uint16_t ) || sizeof( IndexType ) == sizeof( uint32_t ),
-    "Mesh IndexType template parameter must be the same size as either uint16_t or uint32_t" );
 }
 
 template< typename PositionType, typename IndexType, class ... AdditionalAttributeTypes >
@@ -15,7 +13,7 @@ VulkanTest::Mesh< PositionType, IndexType, AdditionalAttributeTypes ... >::Mesh(
   const std::shared_ptr< IndexAttribute< IndexType > >& _indices,
   const std::tuple< AttributeContainer< AdditionalAttributeTypes > ... >& _attributes,
   const std::shared_ptr< Shader >& _shader
-  ) : Mesh(), MeshBase( _shader ), positions( _positions ), indices( _indices ), attributes( _attributes ) {
+  ) : MeshBase( _shader ), positions( _positions ), indices( _indices ), attributes( _attributes ) {
 }
     
 template< typename PositionType, typename IndexType, class ... AdditionalAttributeTypes >
@@ -36,22 +34,25 @@ void VulkanTest::Mesh< PositionType, IndexType, AdditionalAttributeTypes ... >::
     
 template< typename PositionType, typename IndexType, class ... AdditionalAttributeTypes >
 void VulkanTest::Mesh< PositionType, IndexType, AdditionalAttributeTypes ... >::setAttributes( 
-const std::tuple< AttributeContainer< AdditionalAttributeTypes > ... >& _attributes ) {
-  attributes = _attributes;
+const std::tuple< AttributeContainer< AdditionalAttributeTypes > ... >& _additional_attributes ) {
+  additional_attributes = _additional_attributes;
 }
 
 template< typename PositionType, typename IndexType, class ... AdditionalAttributeTypes >
 const vk::PipelineVertexInputStateCreateInfo VulkanTest::Mesh< 
   PositionType, IndexType, AdditionalAttributeTypes ... >::getVkPipelineVertexInputStateCreateInfo() {
 
-  binding_descriptions.push_back( positions->getVkVertexInputBindingDescription() );
-  attribute_descriptions.push_back( positions->getVkVertexInputAttributeDescriptions() );
+  uint32_t binding_index = 0;
 
-  Utilities::tupleForEach( additional_attributes, [ this ]( const auto& attrib_vec ){
+  binding_descriptions.push_back( positions->getVkVertexInputBindingDescription( binding_index ) );
+  attribute_descriptions.push_back( positions->getVkVertexInputAttributeDescriptions( binding_index ) );
+
+  Utilities::tupleForEach( additional_attributes, [ this, &binding_index ]( const auto& attrib_vec ){
     for( const auto& attrib : attrib_vec ) {
       if( attrib.get() ) {
-        binding_descriptions.push_back( attrib->getVkVertexInputBindingDescription() );
-        attribute_descriptions.push_back( attrib->getVkVertexInputAttributeDescriptions() );      
+        ++binding_index;
+        binding_descriptions.push_back( attrib->getVkVertexInputBindingDescription( binding_index ) );
+        attribute_descriptions.push_back( attrib->getVkVertexInputAttributeDescriptions( binding_index ) );      
       }
     } 
   } );
@@ -116,7 +117,8 @@ void VulkanTest::Mesh< PositionType, IndexType, AdditionalAttributeTypes ... >::
     } 
   } );
 
-  command_buffer.bindVertexBuffers( 0, buffers, { 0 } );
+  std::vector< vk::DeviceSize > offsets( buffers.size(), 0 );
+  command_buffer.bindVertexBuffers( 0, buffers, offsets );
 
 }
 

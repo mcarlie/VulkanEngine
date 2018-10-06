@@ -33,7 +33,7 @@ VulkanTest::Camera< Scalar >::~Camera() {
 template< typename Scalar > 
 const Eigen::Matrix< Scalar, 4, 4 > VulkanTest::Camera< Scalar >::getPerspectiveProjectionMatrix() {
 
-  const Scalar tan_half_fov = std::tan( static_cast< Scalar >( Constants::pi ) * fov / ( static_cast< Scalar >( 2 * 180 ) ) );
+  const Scalar tan_half_fov = std::tan( Constants::pi< Scalar >() * fov / ( static_cast< Scalar >( 2 * 180 ) ) );
   const Scalar aspect = width / static_cast< Scalar >( height );
 
 	Eigen::Matrix< Scalar, 4, 4 > result;
