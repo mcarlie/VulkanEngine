@@ -2,6 +2,7 @@
 #define IMAGE_H
 
 #include <VulkanTest/StagedBufferDestination.h>
+
 #include <vk_mem_alloc.h>
 
 namespace VulkanTest {
@@ -40,14 +41,18 @@ namespace VulkanTest {
     /// \param data Pointer to the image data
     void setImageData( const void* data );
 
-    void createImageView( vk::ImageViewType image_view_type );
-
-  protected:
+    void createImageView( vk::ImageViewType image_view_type, vk::ImageAspectFlags image_aspect_flags );
 
     /// Transition the image from one vk::ImageLayout to another given by \c new layout by adding a vk::ImageMemoryBarrier to the command_buffer
     /// \param new_layout The new layout to transition to
     /// \param command_buffer The command buffer to add the command to. One will be created and added to the graphics queue if not specified
     void transitionImageLayout( vk::ImageLayout new_layout, const vk::CommandBuffer& command_buffer = nullptr );
+
+    const vk::Format getVkFormat();
+    const vk::SampleCountFlagBits getVkSampleCountFlags();
+    const vk::ImageView& getVkImageView();
+
+  protected:
 
     /// Overridden to handle tranferring data from a StagedBuffer to this Image
     /// \param command_buffers The command buffer to insert the command into

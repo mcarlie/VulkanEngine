@@ -34,6 +34,7 @@
     <ClCompile Include="src\Shader.cpp" />
     <ClCompile Include="src\ShaderImage.cpp" />
     <ClCompile Include="src\ShaderModule.cpp" />
+    <ClCompile Include="src\SingleUsageCommandBuffer.cpp" />
     <ClCompile Include="src\StagedBuffer.cpp" />
     <ClCompile Include="src\UniformBuffer.cpp" />
     <ClCompile Include="src\VertexAttribute.cpp" />
@@ -56,6 +57,7 @@
     <ClInclude Include="include\VulkanTest\Shader.h" />
     <ClInclude Include="include\VulkanTest\ShaderImage.h" />
     <ClInclude Include="include\VulkanTest\ShaderModule.h" />
+    <ClInclude Include="include\VulkanTest\SingleUsageCommandBuffer.h" />
     <ClInclude Include="include\VulkanTest\StagedBuffer.h" />
     <ClInclude Include="include\VulkanTest\StagedBufferDestination.h" />
     <ClInclude Include="include\VulkanTest\UniformBuffer.h" />

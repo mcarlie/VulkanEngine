@@ -44,7 +44,15 @@ const Eigen::Matrix< Scalar, 4, 4 > VulkanTest::Camera< Scalar >::getPerspective
 	result( 3, 2 ) = -1;
 	result( 2, 3 ) = -( z_far * z_near ) / ( z_far - z_near );
 
-  return result;
+  Eigen::Matrix< Scalar, 4, 4 > clip;
+  clip.setZero();
+  clip( 0, 0 ) = 1;
+  clip( 1, 1 ) = -1;
+  clip( 2, 2 ) = 1 / static_cast< Scalar >( 2 );
+  clip( 2, 3 ) = 1 / static_cast< Scalar >( 2 );
+  clip( 3, 3 ) = 1;
+
+  return clip * result;
 
 }
 

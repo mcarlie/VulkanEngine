@@ -7,6 +7,7 @@
 
 namespace VulkanTest {
 
+  /// Contains functions for loading OBJ mesh files and associated MTL files
   namespace OBJLoader {
   
     /// Genegerate Mesh instances from an OBJ file

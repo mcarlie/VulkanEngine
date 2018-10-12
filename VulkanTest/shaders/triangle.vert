@@ -17,6 +17,6 @@ out gl_PerVertex {
 };
 
 void main() {
-    gl_Position = ubo.proj * ubo.view * vec4(inPosition, 1.0);
-	outTexcoords = inTexcoords;
+  gl_Position = ubo.proj * ubo.view * vec4(inPosition, 1.0);
+  outTexcoords = inTexcoords;
 }

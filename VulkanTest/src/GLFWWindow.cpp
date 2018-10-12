@@ -17,9 +17,7 @@ VulkanTest::GLFWWindow::~GLFWWindow() {
 }
 
 void VulkanTest::GLFWWindow::update() {
-
   glfwPollEvents();
-
 }
 
 bool VulkanTest::GLFWWindow::initialize() {
@@ -55,7 +53,7 @@ bool VulkanTest::GLFWWindow::initialize() {
 
 }
 
-vk::SurfaceKHR VulkanTest::GLFWWindow::createVulkanSurface( const vk::Instance& instance ) {
+vk::SurfaceKHR VulkanTest::GLFWWindow::createVkSurface( const vk::Instance& instance ) {
 
   VkSurfaceKHR surface;
   VkResult err = glfwCreateWindowSurface( instance, glfw_window, nullptr, &surface );
@@ -133,11 +131,5 @@ void VulkanTest::GLFWWindow::windowResizeCallback( GLFWwindow* _glfw_window, int
   }
   window->width = static_cast< uint32_t >( _width );
   window->height = static_cast< uint32_t >( _height );
-
-}
-
-static void cursorPositionCallback( GLFWwindow* _glfw_window, double x_pos, double y_pos ) {
-
-
 
 }

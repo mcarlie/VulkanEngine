@@ -19,31 +19,18 @@ VulkanTest::StagedBuffer< DestinationClass >::~StagedBuffer() {
 template< class DestinationClass >
 void VulkanTest::StagedBuffer< DestinationClass >::transferBuffer( const vk::CommandBuffer& command_buffer ) {
 
-  auto command_buffer_info = vk::CommandBufferAllocateInfo()
-    .setCommandBufferCount( 1 )
-    .setCommandPool( VulkanManager::getInstance()->getVkCommandPool() )
-    .setLevel( vk::CommandBufferLevel::ePrimary );
-
-  auto command_buffers = VulkanManager::getInstance()->getVkDevice().allocateCommandBuffers( command_buffer_info );
-  if( command_buffers.empty() ){
-    throw std::runtime_error( "Could not allocate command buffer for buffer transfer!" );
+  const vk::CommandBuffer& command_buffer_to_use = command_buffer ? command_buffer : single_use_command_buffer;
+  bool created_single_use_command_buffer = false;
+  if( !command_buffer_to_use ) {
+    created_single_use_command_buffer = true;
+    beginSingleUsageCommandBuffer();
   }
 
-  auto command_buffer_begin_info = vk::CommandBufferBeginInfo()
-    .setFlags( vk::CommandBufferUsageFlagBits::eOneTimeSubmit );
+  insertTransferCommand( command_buffer_to_use, source_buffer.getVkBuffer() );
 
-  command_buffers[0].begin( command_buffer_begin_info );
-  insertTransferCommand( command_buffers[0], source_buffer.getVkBuffer() );
-  command_buffers[0].end();
-
-  auto submit_info = vk::SubmitInfo()
-    .setCommandBufferCount( static_cast< uint32_t >( command_buffers.size() ) )
-    .setPCommandBuffers( command_buffers.data() );
-
-  VulkanManager::getInstance()->getVkGraphicsQueue().submit( submit_info, nullptr );
-  VulkanManager::getInstance()->getVkGraphicsQueue().waitIdle();
-
-  VulkanManager::getInstance()->getVkDevice().freeCommandBuffers( VulkanManager::getInstance()->getVkCommandPool(), command_buffers );
+  if( created_single_use_command_buffer ){
+    endSingleUsageCommandBuffer();
+  }
 
 }
 

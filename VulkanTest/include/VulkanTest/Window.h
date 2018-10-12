@@ -26,13 +26,13 @@ namespace VulkanTest {
     /// \return True on success
     virtual bool initialize() = 0;
 
+    /// \return A list of vulkan extensions required by the underlying windowing system
+    virtual const std::vector< const char* > getRequiredVulkanInstanceExtensions() = 0;
+
     /// Create and return a vk::SurfaceKHR instance
     /// \param instance The vk::Instance to create the surface for
     /// \return The created vk::SurfaceKHR
-    virtual vk::SurfaceKHR createVulkanSurface( const vk::Instance& instance ) = 0;
-
-    /// \return A list of vulkan extensions required by the underlying windowing system
-    virtual const std::vector< const char* > getRequiredVulkanInstanceExtensions() = 0;
+    virtual vk::SurfaceKHR createVkSurface( const vk::Instance& instance ) = 0;
 
     /// Do anything needed to update the window
     virtual void update() {};

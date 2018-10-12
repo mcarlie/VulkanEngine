@@ -2,6 +2,7 @@
 #define STAGEDBUFFERDESTINATION_H
 
 #include <VulkanTest/BufferBase.h>
+#include <VulkanTest/SingleUsageCommandBuffer.h>
 
 #include <vulkan/vulkan.hpp>
 
@@ -9,7 +10,7 @@ namespace VulkanTest {
 
   /// Base class for classes which are capable of being targets of a StagedBuffer.
   /// insertTransferCommand is called from StagedBuffer::tranferBuffer()
-  class StagedBufferDestination : public BufferBase {
+  class StagedBufferDestination : public BufferBase, protected SingleUsageCommandBuffer {
 
     /// Override to handle tranferring data from a StagedBuffer to this buffer
     /// \param command_buffers The command buffer to insert the command into

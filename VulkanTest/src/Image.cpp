@@ -29,10 +29,10 @@ void VulkanTest::Image< format, image_type, tiling, sample_count_flags >::setIma
 }
 
 template< vk::Format format, vk::ImageType image_type, vk::ImageTiling tiling, vk::SampleCountFlagBits sample_count_flags >
-void VulkanTest::Image< format, image_type, tiling, sample_count_flags >::createImageView( vk::ImageViewType image_view_type ) {
+void VulkanTest::Image< format, image_type, tiling, sample_count_flags >::createImageView( vk::ImageViewType image_view_type, vk::ImageAspectFlags image_aspect_flags ) {
 
   auto subresource_range = vk::ImageSubresourceRange()
-    .setAspectMask( vk::ImageAspectFlagBits::eColor )
+    .setAspectMask( image_aspect_flags )
     .setBaseMipLevel( 0 )
     .setLevelCount( 1 )
     .setBaseArrayLayer( 0 )
@@ -55,6 +55,13 @@ template< vk::Format format, vk::ImageType image_type, vk::ImageTiling tiling, v
 void VulkanTest::Image< format, image_type, tiling, sample_count_flags >::transitionImageLayout( 
   vk::ImageLayout new_layout, const vk::CommandBuffer& command_buffer ) {
 
+  const vk::CommandBuffer& command_buffer_to_use = command_buffer ? command_buffer : single_use_command_buffer;
+  bool created_single_use_command_buffer = false;
+  if( !command_buffer_to_use ) {
+    created_single_use_command_buffer = true;
+    beginSingleUsageCommandBuffer();
+  }
+
   auto subresource_range = vk::ImageSubresourceRange()
     .setAspectMask( vk::ImageAspectFlagBits::eColor )
     .setBaseMipLevel( 0 )
@@ -70,8 +77,7 @@ void VulkanTest::Image< format, image_type, tiling, sample_count_flags >::transi
     .setOldLayout( vk_image_layout )
     .setNewLayout( new_layout )
     .setSrcQueueFamilyIndex( VK_QUEUE_FAMILY_IGNORED )
-    .setDstQueueFamilyIndex( VK_QUEUE_FAMILY_IGNORED )
-    .setSubresourceRange( subresource_range );
+    .setDstQueueFamilyIndex( VK_QUEUE_FAMILY_IGNORED );
 
   if( vk_image_layout == vk::ImageLayout::eUndefined && new_layout == vk::ImageLayout::eTransferDstOptimal ) {
 
@@ -80,6 +86,16 @@ void VulkanTest::Image< format, image_type, tiling, sample_count_flags >::transi
 
     source_stage = vk::PipelineStageFlagBits::eTopOfPipe;
     destination_stage = vk::PipelineStageFlagBits::eTransfer;
+
+  } else if( vk_image_layout == vk::ImageLayout::eUndefined && new_layout == vk::ImageLayout::eDepthStencilAttachmentOptimal ) {
+
+    subresource_range.setAspectMask( vk::ImageAspectFlagBits::eDepth | vk::ImageAspectFlagBits::eStencil );
+
+    image_memory_barrier.setSrcAccessMask( vk::AccessFlags() );
+    image_memory_barrier.setDstAccessMask( vk::AccessFlagBits::eDepthStencilAttachmentRead | vk::AccessFlagBits::eDepthStencilAttachmentWrite );
+
+    source_stage = vk::PipelineStageFlagBits::eTopOfPipe;
+    destination_stage = vk::PipelineStageFlagBits::eEarlyFragmentTests;
 
   } else if( vk_image_layout == vk::ImageLayout::eTransferDstOptimal && new_layout == vk::ImageLayout::eShaderReadOnlyOptimal ) {
   
@@ -93,10 +109,30 @@ void VulkanTest::Image< format, image_type, tiling, sample_count_flags >::transi
     throw std::runtime_error( "Invalid image transfer request!" );
   }
 
-  command_buffer.pipelineBarrier( source_stage, destination_stage, vk::DependencyFlags(), 0, 0, image_memory_barrier );
+  image_memory_barrier.setSubresourceRange( subresource_range );
+  command_buffer_to_use.pipelineBarrier( source_stage, destination_stage, vk::DependencyFlags(), 0, 0, image_memory_barrier );
 
   vk_image_layout = new_layout;
 
+  if( created_single_use_command_buffer ){
+    endSingleUsageCommandBuffer();
+  }
+
+}
+
+template< vk::Format format, vk::ImageType image_type, vk::ImageTiling tiling, vk::SampleCountFlagBits sample_count_flags >
+const vk::Format VulkanTest::Image< format, image_type, tiling, sample_count_flags >::getVkFormat() {
+  return format;
+}
+
+template< vk::Format format, vk::ImageType image_type, vk::ImageTiling tiling, vk::SampleCountFlagBits sample_count_flags >
+const vk::SampleCountFlagBits VulkanTest::Image< format, image_type, tiling, sample_count_flags >::getVkSampleCountFlags() {
+  return sample_count_flags;
+}
+
+template< vk::Format format, vk::ImageType image_type, vk::ImageTiling tiling, vk::SampleCountFlagBits sample_count_flags >
+const vk::ImageView& VulkanTest::Image< format, image_type, tiling, sample_count_flags >::getVkImageView() {
+  return vk_image_view;
 }
 
 template< vk::Format format, vk::ImageType image_type, vk::ImageTiling tiling, vk::SampleCountFlagBits sample_count_flags >

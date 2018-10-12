@@ -46,6 +46,10 @@ namespace VulkanTest {
     /// \param _window The Window instance to use with the manager
     void initialize( const std::shared_ptr< Window >& _window );
 
+    void createGraphicsPipeline( const std::shared_ptr< MeshBase >& mesh );
+
+    void createCommandBuffers( const std::shared_ptr< MeshBase >& mesh );
+
     /// Executes all command buffers and swaps buffers
     void drawImage();
 
@@ -68,10 +72,9 @@ namespace VulkanTest {
 
     void createSwapchain();
     void createImageViews();
-    void createGraphicsPipeline();
+
     void createRenderPass();
     void createSwapchainFramebuffers();
-    void createCommandBuffers();
     void createSyncObjects();
 
     void cleanup();
@@ -114,19 +117,10 @@ namespace VulkanTest {
 
     std::vector< vk::Framebuffer > vk_swapchain_framebuffers;
 
-    struct UniformBufferObject {
-      Eigen::Matrix4f model;
-      Eigen::Matrix4f view;
-      Eigen::Matrix4f projection;
-    };
+    using DepthStencilImageAttachment 
+      = Image< vk::Format::eD24UnormS8Uint, vk::ImageType::e2D, vk::ImageTiling::eOptimal, vk::SampleCountFlagBits::e1 >;
 
-    using RGBATexture2D1S 
-      = StagedBuffer< ShaderImage< vk::Format::eR8G8B8A8Unorm, vk::ImageType::e2D, vk::ImageTiling::eOptimal, vk::SampleCountFlagBits::e1 > >;
-
-    std::shared_ptr< RGBATexture2D1S > texture;
-    std::vector< std::shared_ptr< UniformBuffer< UniformBufferObject > > > uniform_buffers;
-    std::shared_ptr< Camera< float > > camera;
-    std::shared_ptr< MeshBase > mesh;
+    std::shared_ptr< DepthStencilImageAttachment > depth_stencil_attachment;
 
     size_t frames_in_flight;
     size_t current_frame;
@@ -140,13 +134,13 @@ namespace VulkanTest {
 
 #if defined( _DEBUG )
     vk::DebugUtilsMessengerEXT vk_debug_utils_messenger;
-#endif
 
     static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
       VkDebugUtilsMessageSeverityFlagBitsEXT message_severity,
       VkDebugUtilsMessageTypeFlagsEXT message_type,
       const VkDebugUtilsMessengerCallbackDataEXT* callback_data,
       void* user_data );
+#endif
 
   };
 

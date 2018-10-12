@@ -4,10 +4,7 @@
 #define VMA_IMPLEMENTATION
 #include "vk_mem_alloc.h"
 
-#define STB_IMAGE_IMPLEMENTATION
-#include <stb_image.h>
-
-VulkanTest::VulkanManager::VulkanManager() : frames_in_flight( 2 ), current_frame( 0 ) {
+VulkanTest::VulkanManager::VulkanManager() : frames_in_flight( 3 ), current_frame( 0 ) {
 }
 
 VulkanTest::VulkanManager::~VulkanManager() {
@@ -64,15 +61,15 @@ void VulkanTest::VulkanManager::initialize( const std::shared_ptr< Window >& _wi
   debug_message_create_info.pUserData = nullptr;
 
   vk_dispatch_loader_dynamic.init( vk_instance );
-  vk::DebugUtilsMessengerEXT debug_report 
+  vk_debug_utils_messenger
     = vk_instance.createDebugUtilsMessengerEXT( debug_message_create_info, nullptr, vk_dispatch_loader_dynamic );
 
-  if( !debug_report ) {
+  if( !vk_debug_utils_messenger ) {
     throw std::runtime_error( "Could not initialize debug reporting for vulkan!" );
   }
 #endif
 
-  vk_surface = window->createVulkanSurface( vk_instance );
+  vk_surface = window->createVkSurface( vk_instance );
 
   // TODO Check suitability and handle case where there is no device
   std::vector< vk::PhysicalDevice > physical_devices = vk_instance.enumeratePhysicalDevices();
@@ -128,6 +125,11 @@ void VulkanTest::VulkanManager::initialize( const std::shared_ptr< Window >& _wi
   
   vk_graphics_queue = vk_device.getQueue( graphics_queue_family_index, 0 );
 
+  auto command_pool_info = vk::CommandPoolCreateInfo()
+    .setQueueFamilyIndex( graphics_queue_family_index );
+
+  vk_command_pool = vk_device.createCommandPool( command_pool_info );
+
   // TODO Use these
   auto surface_formats = vk_physical_device.getSurfaceFormatsKHR( vk_surface );
   auto present_modes = vk_physical_device.getSurfacePresentModesKHR( vk_surface );
@@ -136,23 +138,13 @@ void VulkanTest::VulkanManager::initialize( const std::shared_ptr< Window >& _wi
   createSwapchain();
   createImageViews();
   createRenderPass();
-  createGraphicsPipeline();
   createSwapchainFramebuffers();
-  createCommandBuffers();
   createSyncObjects();
 
 }
 
 void VulkanTest::VulkanManager::drawImage() {
 
-  UniformBufferObject vp_data;
-  vp_data.projection = camera->getPerspectiveProjectionMatrix();
-  vp_data.view = camera->getViewMatrix();
-  for( auto& ub : uniform_buffers ) {
-    ub->updateBuffer( &vp_data, sizeof( vp_data ) );
-  }
-
-  // Causing device lost error since image upload implementation
   auto fence_result = vk_device.waitForFences( vk_in_flight_fences[current_frame], VK_TRUE, std::numeric_limits< uint32_t >::max() );
 
   uint32_t image_index;
@@ -173,9 +165,7 @@ void VulkanTest::VulkanManager::drawImage() {
       createSwapchain();
       createImageViews();
       createRenderPass();
-      createGraphicsPipeline();
       createSwapchainFramebuffers();
-      createCommandBuffers();
       createSyncObjects();
       continue;
     } else if ( result != vk::Result::eSuccess &&
@@ -290,6 +280,30 @@ void VulkanTest::VulkanManager::createImageViews() {
 
 void VulkanTest::VulkanManager::createRenderPass() {
 
+  depth_stencil_attachment.reset( 
+    new DepthStencilImageAttachment(
+      vk::ImageLayout::eUndefined,
+      vk::ImageUsageFlagBits::eDepthStencilAttachment,
+      VmaMemoryUsage::VMA_MEMORY_USAGE_GPU_ONLY,
+      window->getWidth(), window->getHeight(), 1, 4 ) );
+
+  depth_stencil_attachment->createImageView( vk::ImageViewType::e2D, vk::ImageAspectFlagBits::eDepth );
+  depth_stencil_attachment->transitionImageLayout( vk::ImageLayout::eDepthStencilAttachmentOptimal );
+
+  auto depth_attachment_description = vk::AttachmentDescription()
+    .setFormat( depth_stencil_attachment->getVkFormat() )
+    .setSamples( depth_stencil_attachment->getVkSampleCountFlags() )
+    .setLoadOp( vk::AttachmentLoadOp::eClear )
+    .setStoreOp( vk::AttachmentStoreOp::eDontCare )
+    .setStencilLoadOp( vk::AttachmentLoadOp::eDontCare )
+    .setStencilStoreOp( vk::AttachmentStoreOp::eDontCare )
+    .setInitialLayout( vk::ImageLayout::eUndefined )
+    .setFinalLayout( vk::ImageLayout::eDepthStencilAttachmentOptimal );
+
+  auto depth_attachment_reference = vk::AttachmentReference()
+    .setAttachment( 1 )
+    .setLayout( vk::ImageLayout::eDepthStencilAttachmentOptimal );
+
   auto attachment_description = vk::AttachmentDescription()
     .setFormat( vk::Format::eB8G8R8A8Unorm )
     .setSamples( vk::SampleCountFlagBits::e1 )
@@ -307,19 +321,22 @@ void VulkanTest::VulkanManager::createRenderPass() {
   auto subpass_description = vk::SubpassDescription()
     .setPipelineBindPoint( vk::PipelineBindPoint::eGraphics )
     .setColorAttachmentCount( 1 )
-    .setPColorAttachments( &attachment_reference );
+    .setPColorAttachments( &attachment_reference )
+    .setPDepthStencilAttachment( &depth_attachment_reference );
 
   VkSubpassDependency dependency = {};
-          dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
-          dependency.dstSubpass = 0;
-          dependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-          dependency.srcAccessMask = 0;
-          dependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-          dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+  dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
+  dependency.dstSubpass = 0;
+  dependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+  dependency.srcAccessMask = 0;
+  dependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+  dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+
+  std::array< vk::AttachmentDescription, 2 > attachment_descriptions = { attachment_description, depth_attachment_description };
 
   auto render_pass_info = vk::RenderPassCreateInfo()
-    .setAttachmentCount( 1 )
-    .setPAttachments( &attachment_description )
+    .setAttachmentCount( attachment_descriptions.size() )
+    .setPAttachments( attachment_descriptions.data() )
     .setSubpassCount( 1 )
     .setPSubpasses( &subpass_description )
     .setDependencyCount( 1 )
@@ -329,52 +346,7 @@ void VulkanTest::VulkanManager::createRenderPass() {
 
 }
 
-void VulkanTest::VulkanManager::createGraphicsPipeline() {
-
-  auto meshes = VulkanTest::OBJLoader::loadOBJ( "C:/Users/Michael/Desktop/VK/VulkanTest/models/spider_pumpkin_obj.obj", "" );
-  mesh = meshes[0];
-
-  std::shared_ptr< ShaderModule > fragment_shader( new ShaderModule( "C:/Users/Michael/Desktop/VK/VulkanTest/shaders/frag.spv", vk::ShaderStageFlagBits::eFragment ) );
-  std::shared_ptr< ShaderModule > vertex_shader( new ShaderModule( "C:/Users/Michael/Desktop/VK/VulkanTest/shaders/vert.spv", vk::ShaderStageFlagBits::eVertex ) );
-  std::vector< std::shared_ptr< ShaderModule > > shader_modules;
-  shader_modules.push_back( vertex_shader );
-  shader_modules.push_back( fragment_shader );
-  std::shared_ptr< Shader > shader( new Shader( shader_modules ) );
-
-  mesh->setShader( shader );
-
-  int texture_width;
-  int texture_height;
-  int channels_in_file;
-  unsigned char* image_data = stbi_load( "C:/Users/Michael/Desktop/VK/VulkanTest/models/spider_pumpkin_obj_0.jpg", &texture_width, &texture_height, &channels_in_file, 4 );
-  texture.reset( new RGBATexture2D1S( 
-    vk::ImageLayout::eUndefined,
-    vk::ImageUsageFlagBits::eTransferDst | vk::ImageUsageFlagBits::eSampled,
-    VMA_MEMORY_USAGE_GPU_ONLY,
-    static_cast< uint32_t >( texture_width ),
-    static_cast< uint32_t >( texture_height ),
-    1, sizeof( unsigned char ) * 4, 1,
-    1, // TODO
-    vk::DescriptorType::eCombinedImageSampler,
-    vk::ShaderStageFlagBits::eFragment ) );
-
-  texture->setImageData( image_data );
-  texture->createImageView( vk::ImageViewType::e2D );
-  texture->createSampler();
-
-  uniform_buffers.resize( vk_swapchain_images.size() );
-  for( auto& ub : uniform_buffers ) {
-    ub.reset( new UniformBuffer< UniformBufferObject >( 0 ) );
-  }
-
-  std::vector< std::vector< std::shared_ptr< Descriptor > > > descriptors;
-  for( size_t i = 0; i < vk_swapchain_images.size(); ++i ) {
-    descriptors.push_back( { texture, uniform_buffers[i] } );
-  }
-
-  shader->setDescriptors( descriptors );
-
-  camera.reset( new Camera< float > );
+void VulkanTest::VulkanManager::createGraphicsPipeline( const std::shared_ptr< MeshBase >& mesh ) {
 
   auto viewport = vk::Viewport()
     .setX( 0 )
@@ -425,6 +397,14 @@ void VulkanTest::VulkanManager::createGraphicsPipeline() {
     .setAttachmentCount( 1 )
     .setPAttachments( &colorblend_attachment_info );
 
+  auto depth_stencil_state_create_info = vk::PipelineDepthStencilStateCreateInfo()
+    .setDepthTestEnable( VK_TRUE )
+    .setDepthWriteEnable( VK_TRUE )
+    .setDepthCompareOp( vk::CompareOp::eLess )
+    .setDepthBoundsTestEnable( VK_FALSE )
+    .setMinDepthBounds( 0.0f )
+    .setMaxDepthBounds( 1.0f );
+
   auto graphics_pipeline_info = vk::GraphicsPipelineCreateInfo()
     .setStageCount( static_cast< uint32_t >( mesh->getShader()->getVkShaderStages().size() ) )
     .setPStages( mesh->getShader()->getVkShaderStages().data() )
@@ -433,7 +413,7 @@ void VulkanTest::VulkanManager::createGraphicsPipeline() {
     .setPViewportState( &viewport_info )
     .setPRasterizationState( &rasterization_info )
     .setPMultisampleState( &multisampling_info )
-    .setPDepthStencilState( nullptr )
+    .setPDepthStencilState( &depth_stencil_state_create_info )
     .setPColorBlendState( &colorblend_info )
     .setPDynamicState( nullptr )
     .setLayout( mesh->getShader()->getVkPipelineLayout() )
@@ -448,12 +428,12 @@ void VulkanTest::VulkanManager::createSwapchainFramebuffers() {
 
   vk_swapchain_framebuffers.resize( vk_image_views.size() );
   for( size_t i = 0; i < vk_image_views.size(); ++i ) {
-    vk::ImageView attachments[] = { vk_image_views[i] };
+    std::array< vk::ImageView, 2 > attachments = { vk_image_views[i], depth_stencil_attachment->getVkImageView() };
 
     auto framebuffer_info = vk::FramebufferCreateInfo()
       .setRenderPass( vk_render_pass )
-      .setAttachmentCount( 1 )
-      .setPAttachments( attachments )
+      .setAttachmentCount( attachments.size() )
+      .setPAttachments( attachments.data() )
       .setWidth( window->getWidth() )
       .setHeight( window->getHeight() )
       .setLayers( 1 );
@@ -463,15 +443,7 @@ void VulkanTest::VulkanManager::createSwapchainFramebuffers() {
 
 }
 
-void VulkanTest::VulkanManager::createCommandBuffers() {
-
-  auto command_pool_info = vk::CommandPoolCreateInfo()
-    .setQueueFamilyIndex( graphics_queue_family_index );
-
-  vk_command_pool = vk_device.createCommandPool( command_pool_info );
-
-  mesh->transferBuffers();
-  texture->transferBuffer();
+void VulkanTest::VulkanManager::createCommandBuffers( const std::shared_ptr< MeshBase >& mesh ) {
 
   auto command_buffer_allocate_info = vk::CommandBufferAllocateInfo()
     .setCommandBufferCount( static_cast< uint32_t >( vk_swapchain_framebuffers.size() ) )
@@ -483,6 +455,10 @@ void VulkanTest::VulkanManager::createCommandBuffers() {
   const std::array< float, 4 > clear_color_array = { 0.0f, 0.0f, 0.0f, 1.0f };
   auto clear_color = vk::ClearValue()
     .setColor( vk::ClearColorValue( clear_color_array ) );
+  auto clear_depth_stencil = vk::ClearValue()
+    .setDepthStencil( vk::ClearDepthStencilValue( { 1.0f, 0 } ) );
+
+  std::array< vk::ClearValue, 2 > clear_values = { clear_color, clear_depth_stencil };
 
   for( size_t i = 0; i < vk_command_buffers.size(); ++i ) {
 
@@ -496,8 +472,8 @@ void VulkanTest::VulkanManager::createCommandBuffers() {
       .setRenderPass( vk_render_pass )
       .setFramebuffer( vk_swapchain_framebuffers[i] )
       .setRenderArea( vk::Rect2D( { 0, 0 }, { window->getWidth(), window->getHeight() } ) )
-      .setClearValueCount( 1 )
-      .setPClearValues( &clear_color );
+      .setClearValueCount( clear_values.size() )
+      .setPClearValues( clear_values.data() );
 
     vk_command_buffers[i].beginRenderPass( render_pass_info, vk::SubpassContents::eInline );
     vk_command_buffers[i].bindPipeline( vk::PipelineBindPoint::eGraphics, vk_graphics_pipeline );
@@ -544,11 +520,6 @@ void VulkanTest::VulkanManager::cleanup() {
   }
   vk_device.destroyCommandPool( vk_command_pool );
 
-  mesh.reset();
-  texture.reset();
-  uniform_buffers.clear();
-  camera.reset();
-
   vmaDestroyAllocator( vma_allocator );
 
   vk_device.destroy();
@@ -575,6 +546,7 @@ void VulkanTest::VulkanManager::cleanupSwapchain() {
 
 }
 
+#if defined( _DEBUG )
 VKAPI_ATTR VkBool32 VKAPI_CALL VulkanTest::VulkanManager::debugCallback(
   VkDebugUtilsMessageSeverityFlagBitsEXT message_severity,
   VkDebugUtilsMessageTypeFlagsEXT message_type,
@@ -583,3 +555,4 @@ VKAPI_ATTR VkBool32 VKAPI_CALL VulkanTest::VulkanManager::debugCallback(
   std::cerr << "validation layer: " << callback_data->pMessage << std::endl;
   return VK_FALSE;
 }
+#endif
