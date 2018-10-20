@@ -1,7 +1,7 @@
-#include <VulkanTest/Attribute.h>
-#include <VulkanTest/VulkanManager.h>
+#include <VulkanEngine/Attribute.h>
+#include <VulkanEngine/VulkanManager.h>
 
-VulkanTest::Attribute::Attribute( size_t _num_elements, size_t _element_size, vk::BufferUsageFlags flags ) 
+VulkanEngine::Attribute::Attribute( size_t _num_elements, size_t _element_size, vk::BufferUsageFlags flags ) 
   : StagedBuffer< Buffer >( 
     _num_elements * _element_size,
     flags | vk::BufferUsageFlagBits::eTransferDst,
@@ -12,9 +12,9 @@ VulkanTest::Attribute::Attribute( size_t _num_elements, size_t _element_size, vk
 
 }
 
-VulkanTest::Attribute::~Attribute() {
+VulkanEngine::Attribute::~Attribute() {
 }
 
-size_t VulkanTest::Attribute::getNumElements() {
+size_t VulkanEngine::Attribute::getNumElements() {
   return num_elements;
 }

@@ -1,7 +1,7 @@
-#include <VulkanTest/SingleUsageCommandBuffer.h>
-#include <VulkanTest/VulkanManager.h>
+#include <VulkanEngine/SingleUsageCommandBuffer.h>
+#include <VulkanEngine/VulkanManager.h>
 
-void VulkanTest::SingleUsageCommandBuffer::beginSingleUsageCommandBuffer() {
+void VulkanEngine::SingleUsageCommandBuffer::beginSingleUsageCommandBuffer() {
 
   auto command_buffer_info = vk::CommandBufferAllocateInfo()
     .setCommandBufferCount( 1 )
@@ -22,7 +22,7 @@ void VulkanTest::SingleUsageCommandBuffer::beginSingleUsageCommandBuffer() {
 
 }
 
-void VulkanTest::SingleUsageCommandBuffer::endSingleUsageCommandBuffer() {
+void VulkanEngine::SingleUsageCommandBuffer::endSingleUsageCommandBuffer() {
 
   single_use_command_buffer.end();
 

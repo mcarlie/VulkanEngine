@@ -1,11 +1,11 @@
 #ifndef SHADERIMAGE_CPP
 #define SHADERIMAGE_CPP
 
-#include <VulkanTest/ShaderImage.h>
-#include <VulkanTest/Image.h>
+#include <VulkanEngine/ShaderImage.h>
+#include <VulkanEngine/Image.h>
 
 template< vk::Format format, vk::ImageType image_type, vk::ImageTiling tiling, vk::SampleCountFlagBits sample_count_flags >
-VulkanTest::ShaderImage< format, image_type, tiling, sample_count_flags >::ShaderImage( 
+VulkanEngine::ShaderImage< format, image_type, tiling, sample_count_flags >::ShaderImage( 
   vk::ImageLayout initial_layout,
   vk::ImageUsageFlags usage_flags,
   VmaMemoryUsage vma_memory_usage,
@@ -22,12 +22,12 @@ VulkanTest::ShaderImage< format, image_type, tiling, sample_count_flags >::Shade
 }
 
 template< vk::Format format, vk::ImageType image_type, vk::ImageTiling tiling, vk::SampleCountFlagBits sample_count_flags >
-VulkanTest::ShaderImage< format, image_type, tiling, sample_count_flags >::~ShaderImage() {
+VulkanEngine::ShaderImage< format, image_type, tiling, sample_count_flags >::~ShaderImage() {
   VulkanManager::getInstance()->getVkDevice().destroySampler( vk_sampler );
 }
 
 template< vk::Format format, vk::ImageType image_type, vk::ImageTiling tiling, vk::SampleCountFlagBits sample_count_flags >
-void VulkanTest::ShaderImage< format, image_type, tiling, sample_count_flags >::createSampler() {
+void VulkanEngine::ShaderImage< format, image_type, tiling, sample_count_flags >::createSampler() {
 
   auto sampler_create_info = vk::SamplerCreateInfo()
     .setAddressModeU( vk::SamplerAddressMode::eClampToEdge )
@@ -54,7 +54,7 @@ void VulkanTest::ShaderImage< format, image_type, tiling, sample_count_flags >::
 }
 
 template< vk::Format format, vk::ImageType image_type, vk::ImageTiling tiling, vk::SampleCountFlagBits sample_count_flags >
-vk::DescriptorImageInfo VulkanTest::ShaderImage< format, image_type, tiling, sample_count_flags >::getVkDescriptorImageInfo() {
+vk::DescriptorImageInfo VulkanEngine::ShaderImage< format, image_type, tiling, sample_count_flags >::getVkDescriptorImageInfo() {
 
   return vk::DescriptorImageInfo()
     .setSampler( vk_sampler )
@@ -64,7 +64,7 @@ vk::DescriptorImageInfo VulkanTest::ShaderImage< format, image_type, tiling, sam
 }
 
 template< vk::Format format, vk::ImageType image_type, vk::ImageTiling tiling, vk::SampleCountFlagBits sample_count_flags >
-void VulkanTest::ShaderImage< format, image_type, tiling, sample_count_flags >::appendVkDescriptorSets(
+void VulkanEngine::ShaderImage< format, image_type, tiling, sample_count_flags >::appendVkDescriptorSets(
   std::vector< vk::WriteDescriptorSet >& write_descriptor_sets,
   std::vector< vk::CopyDescriptorSet >& copy_descriptor_sets,
   const vk::DescriptorSet& destination_set ) {

@@ -4,7 +4,7 @@
 #include <Eigen/Eigen>
 #include <vulkan/vulkan.hpp>
 
-namespace VulkanTest {
+namespace VulkanEngine {
 
   /// Represents a camera or viewpoint in the scene
   /// \tparam Scalar The scalar type to use when calculating matrices

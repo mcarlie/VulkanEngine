@@ -1,11 +1,11 @@
 #ifndef STAGEDBUFFER_CPP
 #define STAGEDBUFFER_CPP
 
-#include <VulkanTest/StagedBuffer.h>
+#include <VulkanEngine/StagedBuffer.h>
 
 template< class DestinationClass >
 template< class ... DestinationClassArgs >
-VulkanTest::StagedBuffer< DestinationClass >::StagedBuffer( DestinationClassArgs ... args ) 
+VulkanEngine::StagedBuffer< DestinationClass >::StagedBuffer( DestinationClassArgs ... args ) 
   : source_buffer( getStagingBufferSize(),
     vk::BufferUsageFlagBits::eTransferSrc,
     vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent,
@@ -13,11 +13,11 @@ VulkanTest::StagedBuffer< DestinationClass >::StagedBuffer( DestinationClassArgs
 }
 
 template< class DestinationClass >
-VulkanTest::StagedBuffer< DestinationClass >::~StagedBuffer() {
+VulkanEngine::StagedBuffer< DestinationClass >::~StagedBuffer() {
 }
 
 template< class DestinationClass >
-void VulkanTest::StagedBuffer< DestinationClass >::transferBuffer( const vk::CommandBuffer& command_buffer ) {
+void VulkanEngine::StagedBuffer< DestinationClass >::transferBuffer( const vk::CommandBuffer& command_buffer ) {
 
   const vk::CommandBuffer& command_buffer_to_use = command_buffer ? command_buffer : single_use_command_buffer;
   bool created_single_use_command_buffer = false;
@@ -35,7 +35,7 @@ void VulkanTest::StagedBuffer< DestinationClass >::transferBuffer( const vk::Com
 }
 
 template< class DestinationClass >
-void VulkanTest::StagedBuffer< DestinationClass >::updateBuffer( const void* _data, size_t _data_size ) {
+void VulkanEngine::StagedBuffer< DestinationClass >::updateBuffer( const void* _data, size_t _data_size ) {
   source_buffer.updateBuffer( _data, _data_size );
 }
 

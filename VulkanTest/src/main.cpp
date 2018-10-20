@@ -1,10 +1,10 @@
 #define TINYOBJLOADER_IMPLEMENTATION
 
-#include <VulkanTest/GLFWWindow.h>
-#include <VulkanTest/UniformBuffer.h>
-#include <VulkanTest/ShaderImage.h>
-#include <VulkanTest/StagedBuffer.h>
-#include <VulkanTest/OBJLoader.h>
+#include <VulkanEngine/GLFWWindow.h>
+#include <VulkanEngine/UniformBuffer.h>
+#include <VulkanEngine/ShaderImage.h>
+#include <VulkanEngine/StagedBuffer.h>
+#include <VulkanEngine/OBJLoader.h>
 
 #include <iostream>
 #include <vector>
@@ -19,8 +19,8 @@ struct MvpUbo {
 };
 
 using RGBATexture2D1S 
-  = VulkanTest::StagedBuffer< 
-  VulkanTest::ShaderImage< 
+  = VulkanEngine::StagedBuffer< 
+  VulkanEngine::ShaderImage< 
   vk::Format::eR8G8B8A8Unorm,
   vk::ImageType::e2D,
   vk::ImageTiling::eOptimal,
@@ -28,20 +28,20 @@ using RGBATexture2D1S
 
 int main() {
 
-  std::shared_ptr< VulkanTest::Window > window( new VulkanTest::GLFWWindow( 1280, 800, "VulkanTest", false ) );
+  std::shared_ptr< VulkanEngine::Window > window( new VulkanEngine::GLFWWindow( 1280, 800, "VulkanEngine", false ) );
   window->initialize();
 
-  auto vulkan_manager = VulkanTest::VulkanManager::getInstance();
+  auto vulkan_manager = VulkanEngine::VulkanManager::getInstance();
   vulkan_manager->initialize( window );
 
-  std::shared_ptr< VulkanTest::MeshBase > mesh;
-  mesh = VulkanTest::OBJLoader::loadOBJ( "C:/Users/Michael/Desktop/VK/VulkanTest/models/spider_pumpkin_obj.obj", "" )[0];
+  std::shared_ptr< VulkanEngine::MeshBase > mesh;
+  mesh = VulkanEngine::OBJLoader::loadOBJ( "C:/Users/Michael/Desktop/VK/VulkanEngine/models/spider_pumpkin_obj.obj", "" )[0];
 
-  std::shared_ptr< VulkanTest::ShaderModule > fragment_shader( 
-    new VulkanTest::ShaderModule( "C:/Users/Michael/Desktop/VK/VulkanTest/shaders/frag.spv", vk::ShaderStageFlagBits::eFragment ) );
-  std::shared_ptr< VulkanTest::ShaderModule > vertex_shader( 
-    new VulkanTest::ShaderModule( "C:/Users/Michael/Desktop/VK/VulkanTest/shaders/vert.spv", vk::ShaderStageFlagBits::eVertex ) );
-  std::shared_ptr< VulkanTest::Shader > shader( new VulkanTest::Shader( { fragment_shader, vertex_shader } ) );
+  std::shared_ptr< VulkanEngine::ShaderModule > fragment_shader( 
+    new VulkanEngine::ShaderModule( "C:/Users/Michael/Desktop/VK/VulkanEngine/shaders/frag.spv", vk::ShaderStageFlagBits::eFragment ) );
+  std::shared_ptr< VulkanEngine::ShaderModule > vertex_shader( 
+    new VulkanEngine::ShaderModule( "C:/Users/Michael/Desktop/VK/VulkanEngine/shaders/vert.spv", vk::ShaderStageFlagBits::eVertex ) );
+  std::shared_ptr< VulkanEngine::Shader > shader( new VulkanEngine::Shader( { fragment_shader, vertex_shader } ) );
 
   mesh->setShader( shader );
 
@@ -49,7 +49,7 @@ int main() {
   int texture_height;
   int channels_in_file;
   unsigned char* image_data = stbi_load( 
-    "C:/Users/Michael/Desktop/VK/VulkanTest/models/spider_pumpkin_obj_0.jpg",
+    "C:/Users/Michael/Desktop/VK/VulkanEngine/models/spider_pumpkin_obj_0.jpg",
     &texture_width, &texture_height,
     &channels_in_file, 4 );
 
@@ -69,21 +69,21 @@ int main() {
   texture->createImageView( vk::ImageViewType::e2D, vk::ImageAspectFlagBits::eColor );
   texture->createSampler();
 
-  std::vector< std::shared_ptr< VulkanTest::UniformBuffer< MvpUbo > > > uniform_buffers;
+  std::vector< std::shared_ptr< VulkanEngine::UniformBuffer< MvpUbo > > > uniform_buffers;
   uniform_buffers.resize( 3 );
   for( auto& ub : uniform_buffers ) {
-    ub.reset( new VulkanTest::UniformBuffer< MvpUbo >( 0 ) );
+    ub.reset( new VulkanEngine::UniformBuffer< MvpUbo >( 0 ) );
   }
 
-  std::vector< std::vector< std::shared_ptr< VulkanTest::Descriptor > > > descriptors;
+  std::vector< std::vector< std::shared_ptr< VulkanEngine::Descriptor > > > descriptors;
   for( size_t i = 0; i < 3; ++i ) {
     descriptors.push_back( { texture, uniform_buffers[i] } );
   }
 
   shader->setDescriptors( descriptors );
 
-  std::shared_ptr< VulkanTest::Camera< float > > camera;
-  camera.reset( new VulkanTest::Camera< float >( 
+  std::shared_ptr< VulkanEngine::Camera< float > > camera;
+  camera.reset( new VulkanEngine::Camera< float >( 
     { 0, 150, -50 },
     { 0, 0, 0 },
     { 0, 1, 0 },

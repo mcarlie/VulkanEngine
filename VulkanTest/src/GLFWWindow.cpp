@@ -1,26 +1,26 @@
-#include <VulkanTest/GLFWWindow.h>
+#include <VulkanEngine/GLFWWindow.h>
 
 #include <iostream>
 
-VulkanTest::GLFWWindow::GLFWWindow( int _width, int _height, const std::string& _title, bool _full_screen ) 
+VulkanEngine::GLFWWindow::GLFWWindow( int _width, int _height, const std::string& _title, bool _full_screen ) 
   : glfw_window( nullptr ), Window( _width, _height, _title, _full_screen ) {
 
   glfwSetErrorCallback( errorCallback );
 
 }
 
-VulkanTest::GLFWWindow::~GLFWWindow() {
+VulkanEngine::GLFWWindow::~GLFWWindow() {
 
   glfwDestroyWindow( glfw_window );
   glfwTerminate();
 
 }
 
-void VulkanTest::GLFWWindow::update() {
+void VulkanEngine::GLFWWindow::update() {
   glfwPollEvents();
 }
 
-bool VulkanTest::GLFWWindow::initialize() {
+bool VulkanEngine::GLFWWindow::initialize() {
 
   if( !glfwInit() ) {
     return false;
@@ -53,7 +53,7 @@ bool VulkanTest::GLFWWindow::initialize() {
 
 }
 
-vk::SurfaceKHR VulkanTest::GLFWWindow::createVkSurface( const vk::Instance& instance ) {
+vk::SurfaceKHR VulkanEngine::GLFWWindow::createVkSurface( const vk::Instance& instance ) {
 
   VkSurfaceKHR surface;
   VkResult err = glfwCreateWindowSurface( instance, glfw_window, nullptr, &surface );
@@ -65,7 +65,7 @@ vk::SurfaceKHR VulkanTest::GLFWWindow::createVkSurface( const vk::Instance& inst
 
 }
 
-const std::vector< const char* > VulkanTest::GLFWWindow::getRequiredVulkanInstanceExtensions() {
+const std::vector< const char* > VulkanEngine::GLFWWindow::getRequiredVulkanInstanceExtensions() {
 
   uint32_t num_extensions;
   const char** extension_names;
@@ -78,13 +78,13 @@ const std::vector< const char* > VulkanTest::GLFWWindow::getRequiredVulkanInstan
 
 }
 
-bool VulkanTest::GLFWWindow::shouldClose() {
+bool VulkanEngine::GLFWWindow::shouldClose() {
 
   return glfwWindowShouldClose( glfw_window );
 
 }
 
-void VulkanTest::GLFWWindow::setWidth( uint32_t _width ) {
+void VulkanEngine::GLFWWindow::setWidth( uint32_t _width ) {
 
   if( glfw_window ) {
     glfwSetWindowSize( glfw_window, static_cast< int >( _width ), NULL );
@@ -94,7 +94,7 @@ void VulkanTest::GLFWWindow::setWidth( uint32_t _width ) {
 
 }
 
-void VulkanTest::GLFWWindow::setHeight( uint32_t _height ) {
+void VulkanEngine::GLFWWindow::setHeight( uint32_t _height ) {
 
   if( glfw_window ) {
     glfwSetWindowSize( glfw_window, NULL, static_cast< int >( _height ) );
@@ -104,13 +104,13 @@ void VulkanTest::GLFWWindow::setHeight( uint32_t _height ) {
 
 }
 
-void VulkanTest::GLFWWindow::errorCallback( int error, const char* description ) {
+void VulkanEngine::GLFWWindow::errorCallback( int error, const char* description ) {
 
   std::cerr << "GLFW error: " << description << " error code:" << error << std::endl;
 
 }
 
-void VulkanTest::GLFWWindow::framebufferResizeCallback( GLFWwindow* _glfw_window, int _width, int _height ) {
+void VulkanEngine::GLFWWindow::framebufferResizeCallback( GLFWwindow* _glfw_window, int _width, int _height ) {
 
   GLFWWindow* window = static_cast< GLFWWindow* >( glfwGetWindowUserPointer( _glfw_window ) );
   if( ( window->framebuffer_width != static_cast< uint32_t >( _width ) ) 
@@ -122,7 +122,7 @@ void VulkanTest::GLFWWindow::framebufferResizeCallback( GLFWwindow* _glfw_window
 
 }
 
-void VulkanTest::GLFWWindow::windowResizeCallback( GLFWwindow* _glfw_window, int _width, int _height ) {
+void VulkanEngine::GLFWWindow::windowResizeCallback( GLFWwindow* _glfw_window, int _width, int _height ) {
 
   GLFWWindow* window = static_cast< GLFWWindow* >( glfwGetWindowUserPointer( _glfw_window ) );
   if( ( window->width != static_cast< uint32_t >( _width ) ) 

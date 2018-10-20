@@ -1,12 +1,12 @@
 #ifndef BUFFER_H
 #define BUFFER_H
 
-#include <VulkanTest/StagedBufferDestination.h>
+#include <VulkanEngine/StagedBufferDestination.h>
 
 #include <vulkan/vulkan.hpp>
 #include <vk_mem_alloc.h>
 
-namespace VulkanTest {
+namespace VulkanEngine {
 
   /// Class which represents a single buffer using vk::Buffer
   class Buffer : public StagedBufferDestination {

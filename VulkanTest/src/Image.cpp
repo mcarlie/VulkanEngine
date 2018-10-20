@@ -1,11 +1,11 @@
 #ifndef IMAGE_CPP
 #define IMAGE_CPP
 
-#include <VulkanTest/Image.h>
-#include <VulkanTest/VulkanManager.h>
+#include <VulkanEngine/Image.h>
+#include <VulkanEngine/VulkanManager.h>
 
 template< vk::Format format, vk::ImageType image_type, vk::ImageTiling tiling, vk::SampleCountFlagBits sample_count_flags >
-VulkanTest::Image< format, image_type, tiling, sample_count_flags >::Image( 
+VulkanEngine::Image< format, image_type, tiling, sample_count_flags >::Image( 
   vk::ImageLayout initial_layout,
   vk::ImageUsageFlags usage_flags,
   VmaMemoryUsage vma_memory_usage,
@@ -27,18 +27,18 @@ VulkanTest::Image< format, image_type, tiling, sample_count_flags >::Image(
 }
 
 template< vk::Format format, vk::ImageType image_type, vk::ImageTiling tiling, vk::SampleCountFlagBits sample_count_flags >
-VulkanTest::Image< format, image_type, tiling, sample_count_flags >::~Image() {
+VulkanEngine::Image< format, image_type, tiling, sample_count_flags >::~Image() {
   VulkanManager::getInstance()->getVkDevice().destroyImageView( vk_image_view );
   vmaDestroyImage( VulkanManager::getInstance()->getVmaAllocator(), vk_image, vma_allocation );
 }
 
 template< vk::Format format, vk::ImageType image_type, vk::ImageTiling tiling, vk::SampleCountFlagBits sample_count_flags >
-void VulkanTest::Image< format, image_type, tiling, sample_count_flags >::setImageData( const void* data ) {
+void VulkanEngine::Image< format, image_type, tiling, sample_count_flags >::setImageData( const void* data ) {
   updateBuffer( data, data_size );
 }
 
 template< vk::Format format, vk::ImageType image_type, vk::ImageTiling tiling, vk::SampleCountFlagBits sample_count_flags >
-void VulkanTest::Image< format, image_type, tiling, sample_count_flags >::createImageView( vk::ImageViewType image_view_type, vk::ImageAspectFlags image_aspect_flags ) {
+void VulkanEngine::Image< format, image_type, tiling, sample_count_flags >::createImageView( vk::ImageViewType image_view_type, vk::ImageAspectFlags image_aspect_flags ) {
 
   auto subresource_range = vk::ImageSubresourceRange()
     .setAspectMask( image_aspect_flags )
@@ -61,7 +61,7 @@ void VulkanTest::Image< format, image_type, tiling, sample_count_flags >::create
 }
 
 template< vk::Format format, vk::ImageType image_type, vk::ImageTiling tiling, vk::SampleCountFlagBits sample_count_flags >
-void VulkanTest::Image< format, image_type, tiling, sample_count_flags >::transitionImageLayout( 
+void VulkanEngine::Image< format, image_type, tiling, sample_count_flags >::transitionImageLayout( 
   vk::ImageLayout new_layout, const vk::CommandBuffer& command_buffer ) {
 
   const vk::CommandBuffer& command_buffer_to_use = command_buffer ? command_buffer : single_use_command_buffer;
@@ -140,22 +140,22 @@ void VulkanTest::Image< format, image_type, tiling, sample_count_flags >::transi
 }
 
 template< vk::Format format, vk::ImageType image_type, vk::ImageTiling tiling, vk::SampleCountFlagBits sample_count_flags >
-const vk::Format VulkanTest::Image< format, image_type, tiling, sample_count_flags >::getVkFormat() {
+const vk::Format VulkanEngine::Image< format, image_type, tiling, sample_count_flags >::getVkFormat() {
   return format;
 }
 
 template< vk::Format format, vk::ImageType image_type, vk::ImageTiling tiling, vk::SampleCountFlagBits sample_count_flags >
-const vk::SampleCountFlagBits VulkanTest::Image< format, image_type, tiling, sample_count_flags >::getVkSampleCountFlags() {
+const vk::SampleCountFlagBits VulkanEngine::Image< format, image_type, tiling, sample_count_flags >::getVkSampleCountFlags() {
   return sample_count_flags;
 }
 
 template< vk::Format format, vk::ImageType image_type, vk::ImageTiling tiling, vk::SampleCountFlagBits sample_count_flags >
-const vk::ImageView& VulkanTest::Image< format, image_type, tiling, sample_count_flags >::getVkImageView() {
+const vk::ImageView& VulkanEngine::Image< format, image_type, tiling, sample_count_flags >::getVkImageView() {
   return vk_image_view;
 }
 
 template< vk::Format format, vk::ImageType image_type, vk::ImageTiling tiling, vk::SampleCountFlagBits sample_count_flags >
-void VulkanTest::Image< format, image_type, tiling, sample_count_flags >::insertTransferCommand( 
+void VulkanEngine::Image< format, image_type, tiling, sample_count_flags >::insertTransferCommand( 
   const vk::CommandBuffer& command_buffer, const vk::Buffer& source_buffer ) {
 
   transitionImageLayout( vk::ImageLayout::eTransferDstOptimal, command_buffer );
@@ -195,12 +195,12 @@ void VulkanTest::Image< format, image_type, tiling, sample_count_flags >::insert
 }
 
 template< vk::Format format, vk::ImageType image_type, vk::ImageTiling tiling, vk::SampleCountFlagBits sample_count_flags >
-size_t VulkanTest::Image< format, image_type, tiling, sample_count_flags >::getStagingBufferSize() {
+size_t VulkanEngine::Image< format, image_type, tiling, sample_count_flags >::getStagingBufferSize() {
   return data_size;
 }
 
 template< vk::Format format, vk::ImageType image_type, vk::ImageTiling tiling, vk::SampleCountFlagBits sample_count_flags >
-void VulkanTest::Image< format, image_type, tiling, sample_count_flags >::createImage( 
+void VulkanEngine::Image< format, image_type, tiling, sample_count_flags >::createImage( 
   vk::ImageUsageFlags usage_flags,
   VmaMemoryUsage vma_usage ) {
 
@@ -246,7 +246,7 @@ void VulkanTest::Image< format, image_type, tiling, sample_count_flags >::create
 }
 
 template< vk::Format format, vk::ImageType image_type, vk::ImageTiling tiling, vk::SampleCountFlagBits sample_count_flags >
-void VulkanTest::Image< format, image_type, tiling, sample_count_flags >::generateMipmaps( const vk::CommandBuffer& command_buffer ) {
+void VulkanEngine::Image< format, image_type, tiling, sample_count_flags >::generateMipmaps( const vk::CommandBuffer& command_buffer ) {
 
   auto subresource_range = vk::ImageSubresourceRange()
     .setAspectMask( vk::ImageAspectFlagBits::eColor )

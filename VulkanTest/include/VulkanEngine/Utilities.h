@@ -3,7 +3,7 @@
 
 #include <Eigen/Eigen>
 
-namespace VulkanTest {
+namespace VulkanEngine {
 
   /// Contains various utility classes, type definitions and functions
   namespace Utilities {
@@ -25,7 +25,7 @@ namespace VulkanTest {
         size_t seed = 0;
         for( int i = 0; i < matrix.size(); ++i ) {
           auto elem = *( matrix.data() + i );
-          VulkanTest::Utilities::hashCombine< typename T::Scalar >( seed, elem );
+          VulkanEngine::Utilities::hashCombine< typename T::Scalar >( seed, elem );
         }
         return seed;
       }  
@@ -54,8 +54,8 @@ namespace VulkanTest {
     struct std::hash< std::tuple< TupleArgs ... > > {
       size_t operator()( const std::tuple< TupleArgs... >& tuple_value ) const {
         size_t seed = 0;
-        VulkanTest::Utilities::tupleForEach( tuple_value, [ &seed ]( const auto& element ) {
-          VulkanTest::Utilities::hashCombine( seed, element );
+        VulkanEngine::Utilities::tupleForEach( tuple_value, [ &seed ]( const auto& element ) {
+          VulkanEngine::Utilities::hashCombine( seed, element );
         } );
         return seed;
       }

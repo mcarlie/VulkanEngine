@@ -1,14 +1,14 @@
 #ifndef VULKANMANAGER_H
 #define VULKANMANAGER_H
 
-#include <VulkanTest/Window.h>
-#include <VulkanTest/Shader.h>
-#include <VulkanTest/VertexAttribute.h>
-#include <VulkanTest/IndexAttribute.h>
-#include <VulkanTest/UniformBuffer.h>
-#include <VulkanTest/Camera.h>
-#include <VulkanTest/MeshBase.h>
-#include <VulkanTest/ShaderImage.h>
+#include <VulkanEngine/Window.h>
+#include <VulkanEngine/Shader.h>
+#include <VulkanEngine/VertexAttribute.h>
+#include <VulkanEngine/IndexAttribute.h>
+#include <VulkanEngine/UniformBuffer.h>
+#include <VulkanEngine/Camera.h>
+#include <VulkanEngine/MeshBase.h>
+#include <VulkanEngine/ShaderImage.h>
 
 #include <Eigen/Eigen>
 #include <vk_mem_alloc.h>
@@ -16,7 +16,7 @@
 #include <iostream>
 #include <memory>
 
-namespace VulkanTest {
+namespace VulkanEngine {
 
   class VulkanManager {
   

@@ -5,7 +5,7 @@
 
 #include <string>
 
-namespace VulkanTest {
+namespace VulkanEngine {
   
   /// Provides an abstract interface for window implementations
   class Window {

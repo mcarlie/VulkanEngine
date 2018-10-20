@@ -1,10 +1,10 @@
 #ifndef OBJLOADER_CPP
 #define OBJLOADER_CPP
 
-#include <VulkanTest/OBJLoader.h>
-#include <VulkanTest/VertexAttribute.h>
-#include <VulkanTest/Utilities.h>
-#include <VulkanTest/Mesh.h>
+#include <VulkanEngine/OBJLoader.h>
+#include <VulkanEngine/VertexAttribute.h>
+#include <VulkanEngine/Utilities.h>
+#include <VulkanEngine/Mesh.h>
 
 #include <Eigen/Eigen>
 #include <tiny_obj_loader.h>
@@ -13,7 +13,7 @@
 #include <chrono>
 #include <iostream>
 
-namespace VulkanTest {
+namespace VulkanEngine {
 
   namespace OBJLoader {
  
@@ -131,7 +131,7 @@ namespace VulkanTest {
 }
 
 template< typename ... AdditionalAttributeTypes >
-std::vector< std::shared_ptr< VulkanTest::MeshBase > > VulkanTest::OBJLoader::loadOBJ( 
+std::vector< std::shared_ptr< VulkanEngine::MeshBase > > VulkanEngine::OBJLoader::loadOBJ( 
   const char* obj_path,
   const char* base_path,
   AdditionalAttributeTypes ... additional_attributes ) {

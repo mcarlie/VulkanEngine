@@ -1,13 +1,13 @@
 #ifndef GLFWWINDOW_H
 #define GLFWWINDOW_H
 
-#include <VulkanTest/Window.h>
+#include <VulkanEngine/Window.h>
 
 #include <GLFW/glfw3.h>
 
-namespace VulkanTest {
+namespace VulkanEngine {
 
-  /// An implementation of VulkanTest::Window which uses the GLFW library
+  /// An implementation of VulkanEngine::Window which uses the GLFW library
   class GLFWWindow : public Window {
 
   public:

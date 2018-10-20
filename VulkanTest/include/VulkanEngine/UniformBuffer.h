@@ -1,12 +1,12 @@
 #ifndef UNIFORMBUFFER_H
 #define UNIFORMBUFFER_H
 
-#include <VulkanTest/Buffer.h>
-#include <VulkanTest/Descriptor.h>
+#include <VulkanEngine/Buffer.h>
+#include <VulkanEngine/Descriptor.h>
 
 #include <vulkan/vulkan.hpp>
 
-namespace VulkanTest {
+namespace VulkanEngine {
 
   /// Represents a uniform buffer
   /// \tparam The data type this UniformBuffer represents

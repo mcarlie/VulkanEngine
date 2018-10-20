@@ -6,7 +6,7 @@
 
 #include <Eigen/Eigen>
 
-namespace VulkanTest {
+namespace VulkanEngine {
 
   /// Contains definitions of various mathematical constants
   namespace Constants {

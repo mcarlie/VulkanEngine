@@ -1,11 +1,11 @@
 #ifndef IMAGE_H
 #define IMAGE_H
 
-#include <VulkanTest/StagedBufferDestination.h>
+#include <VulkanEngine/StagedBufferDestination.h>
 
 #include <vk_mem_alloc.h>
 
-namespace VulkanTest {
+namespace VulkanEngine {
 
   /// Represents an image
   /// \tparam format The vk::Format of the pixels in the image

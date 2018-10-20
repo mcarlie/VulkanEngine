@@ -1,11 +1,11 @@
 #ifndef ATTRIBUTE_H
 #define ATTRIBUTE_H
 
-#include <VulkanTest/StagedBuffer.h>
+#include <VulkanEngine/StagedBuffer.h>
 
 #include <vulkan/vulkan.hpp>
 
-namespace VulkanTest {
+namespace VulkanEngine {
 
   /// Abstract base class for shader attributes
   class Attribute : public StagedBuffer< Buffer > {

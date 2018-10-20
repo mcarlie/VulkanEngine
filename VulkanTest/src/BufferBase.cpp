@@ -1,7 +1,7 @@
-#include <VulkanTest/BufferBase.h>
-#include <VulkanTest/VulkanManager.h>
+#include <VulkanEngine/BufferBase.h>
+#include <VulkanEngine/VulkanManager.h>
 
-void VulkanTest::BufferBase::updateBuffer( const void* _data, size_t _data_size ) {
+void VulkanEngine::BufferBase::updateBuffer( const void* _data, size_t _data_size ) {
 
   void* mapped_memory = nullptr;
   const VmaAllocator& vma_allocator = VulkanManager::getInstance()->getVmaAllocator();

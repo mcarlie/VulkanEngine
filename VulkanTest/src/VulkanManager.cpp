@@ -1,23 +1,23 @@
-#include <VulkanTest/VulkanManager.h>
-#include <VulkanTest/OBJLoader.h>
+#include <VulkanEngine/VulkanManager.h>
+#include <VulkanEngine/OBJLoader.h>
 
 #define VMA_IMPLEMENTATION
 #include "vk_mem_alloc.h"
 
-VulkanTest::VulkanManager::VulkanManager() : frames_in_flight( 3 ), current_frame( 0 ) {
+VulkanEngine::VulkanManager::VulkanManager() : frames_in_flight( 3 ), current_frame( 0 ) {
 }
 
-VulkanTest::VulkanManager::~VulkanManager() {
+VulkanEngine::VulkanManager::~VulkanManager() {
   vk_device.waitIdle();
   cleanup();
 }
 
-std::shared_ptr< VulkanTest::VulkanManager >& VulkanTest::VulkanManager::getInstance() {
-  static std::shared_ptr< VulkanTest::VulkanManager > singleton_vulkan_manager_instance( new VulkanManager() );
+std::shared_ptr< VulkanEngine::VulkanManager >& VulkanEngine::VulkanManager::getInstance() {
+  static std::shared_ptr< VulkanEngine::VulkanManager > singleton_vulkan_manager_instance( new VulkanManager() );
   return singleton_vulkan_manager_instance;
 }
 
-void VulkanTest::VulkanManager::initialize( const std::shared_ptr< Window >& _window ) {
+void VulkanEngine::VulkanManager::initialize( const std::shared_ptr< Window >& _window ) {
 
   window = _window;
 
@@ -31,7 +31,7 @@ void VulkanTest::VulkanManager::initialize( const std::shared_ptr< Window >& _wi
 #endif
 
   auto app_info = vk::ApplicationInfo()
-    .setPApplicationName( "VulkanTest" )
+    .setPApplicationName( "VulkanEngine" )
     .setApplicationVersion( 1 )
     .setPEngineName( "No engine" )
     .setEngineVersion( 1 )
@@ -144,7 +144,7 @@ void VulkanTest::VulkanManager::initialize( const std::shared_ptr< Window >& _wi
 
 }
 
-void VulkanTest::VulkanManager::drawImage() {
+void VulkanEngine::VulkanManager::drawImage() {
 
   auto fence_result = vk_device.waitForFences( vk_in_flight_fences[current_frame], VK_TRUE, std::numeric_limits< uint32_t >::max() );
 
@@ -213,27 +213,27 @@ void VulkanTest::VulkanManager::drawImage() {
 
 }
 
-const vk::Device& VulkanTest::VulkanManager::getVkDevice() {
+const vk::Device& VulkanEngine::VulkanManager::getVkDevice() {
   return vk_device;
 };
 
-const vk::PhysicalDevice& VulkanTest::VulkanManager::getVKPhysicalDevice() {
+const vk::PhysicalDevice& VulkanEngine::VulkanManager::getVKPhysicalDevice() {
   return vk_physical_device;
 };
 
-const vk::CommandPool& VulkanTest::VulkanManager::getVkCommandPool() {
+const vk::CommandPool& VulkanEngine::VulkanManager::getVkCommandPool() {
   return vk_command_pool;
 }
 
-const vk::Queue& VulkanTest::VulkanManager::getVkGraphicsQueue() {
+const vk::Queue& VulkanEngine::VulkanManager::getVkGraphicsQueue() {
   return vk_graphics_queue;
 }
 
-const VmaAllocator& VulkanTest::VulkanManager::getVmaAllocator() {
+const VmaAllocator& VulkanEngine::VulkanManager::getVmaAllocator() {
   return vma_allocator;
 }
 
-void VulkanTest::VulkanManager::createSwapchain() {
+void VulkanEngine::VulkanManager::createSwapchain() {
 
   auto swapchain_info = vk::SwapchainCreateInfoKHR()
     .setSurface( vk_surface )
@@ -257,7 +257,7 @@ void VulkanTest::VulkanManager::createSwapchain() {
 
 }
 
-void VulkanTest::VulkanManager::createImageViews() {
+void VulkanEngine::VulkanManager::createImageViews() {
 
   vk_image_views.resize( vk_swapchain_images.size() );
 
@@ -280,7 +280,7 @@ void VulkanTest::VulkanManager::createImageViews() {
 
 }
 
-void VulkanTest::VulkanManager::createRenderPass() {
+void VulkanEngine::VulkanManager::createRenderPass() {
 
   depth_stencil_attachment.reset( 
     new DepthStencilImageAttachment(
@@ -376,7 +376,7 @@ void VulkanTest::VulkanManager::createRenderPass() {
 
 }
 
-void VulkanTest::VulkanManager::createGraphicsPipeline( const std::shared_ptr< MeshBase >& mesh ) {
+void VulkanEngine::VulkanManager::createGraphicsPipeline( const std::shared_ptr< MeshBase >& mesh ) {
 
   auto viewport = vk::Viewport()
     .setX( 0 )
@@ -454,7 +454,7 @@ void VulkanTest::VulkanManager::createGraphicsPipeline( const std::shared_ptr< M
 
 }
 
-void VulkanTest::VulkanManager::createSwapchainFramebuffers() {
+void VulkanEngine::VulkanManager::createSwapchainFramebuffers() {
 
   vk_swapchain_framebuffers.resize( vk_image_views.size() );
   for( size_t i = 0; i < vk_image_views.size(); ++i ) {
@@ -473,7 +473,7 @@ void VulkanTest::VulkanManager::createSwapchainFramebuffers() {
 
 }
 
-void VulkanTest::VulkanManager::createCommandBuffers( const std::shared_ptr< MeshBase >& mesh ) {
+void VulkanEngine::VulkanManager::createCommandBuffers( const std::shared_ptr< MeshBase >& mesh ) {
 
   auto command_buffer_allocate_info = vk::CommandBufferAllocateInfo()
     .setCommandBufferCount( static_cast< uint32_t >( vk_swapchain_framebuffers.size() ) )
@@ -521,7 +521,7 @@ void VulkanTest::VulkanManager::createCommandBuffers( const std::shared_ptr< Mes
 
 }
 
-void VulkanTest::VulkanManager::createSyncObjects() {
+void VulkanEngine::VulkanManager::createSyncObjects() {
 
   auto semaphore_info = vk::SemaphoreCreateInfo();
   auto fence_info = vk::FenceCreateInfo()
@@ -539,7 +539,7 @@ void VulkanTest::VulkanManager::createSyncObjects() {
 
 }
 
-void VulkanTest::VulkanManager::cleanup() {
+void VulkanEngine::VulkanManager::cleanup() {
 
   cleanupSwapchain();
 
@@ -561,7 +561,7 @@ void VulkanTest::VulkanManager::cleanup() {
 
 }
 
-void VulkanTest::VulkanManager::cleanupSwapchain() {
+void VulkanEngine::VulkanManager::cleanupSwapchain() {
 
   for( size_t i = 0; i < vk_swapchain_framebuffers.size(); ++i ) {
     vk_device.destroyFramebuffer( vk_swapchain_framebuffers[i] );
@@ -577,7 +577,7 @@ void VulkanTest::VulkanManager::cleanupSwapchain() {
 }
 
 #if defined( _DEBUG )
-VKAPI_ATTR VkBool32 VKAPI_CALL VulkanTest::VulkanManager::debugCallback(
+VKAPI_ATTR VkBool32 VKAPI_CALL VulkanEngine::VulkanManager::debugCallback(
   VkDebugUtilsMessageSeverityFlagBitsEXT message_severity,
   VkDebugUtilsMessageTypeFlagsEXT message_type,
   const VkDebugUtilsMessengerCallbackDataEXT* callback_data,

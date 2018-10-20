@@ -6,7 +6,7 @@
 #include <string>
 #include <vector>
 
-namespace VulkanTest {
+namespace VulkanEngine {
 
   /// Class which represents a module in the shader pipeline, e.g vertex or fragment shader
   class ShaderModule {

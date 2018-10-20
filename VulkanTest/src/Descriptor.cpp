@@ -1,6 +1,6 @@
-#include <VulkanTest/Descriptor.h>
+#include <VulkanEngine/Descriptor.h>
 
-VulkanTest::Descriptor::Descriptor( 
+VulkanEngine::Descriptor::Descriptor( 
   uint32_t _binding,
   uint32_t _desciptor_count,
   vk::DescriptorType _vk_descriptor_type,
@@ -8,10 +8,10 @@ VulkanTest::Descriptor::Descriptor(
   : binding( _binding ), descriptor_count( _desciptor_count ), vk_descriptor_type( _vk_descriptor_type ), vk_shader_stage_flags( _vk_shader_stage_flags ) {
 }
 
-VulkanTest::Descriptor::~Descriptor() {
+VulkanEngine::Descriptor::~Descriptor() {
 }
 
-const vk::DescriptorSetLayoutBinding VulkanTest::Descriptor::getVkDescriptorSetLayoutBinding() {
+const vk::DescriptorSetLayoutBinding VulkanEngine::Descriptor::getVkDescriptorSetLayoutBinding() {
 
   return vk::DescriptorSetLayoutBinding()
     .setBinding( binding )
@@ -21,7 +21,7 @@ const vk::DescriptorSetLayoutBinding VulkanTest::Descriptor::getVkDescriptorSetL
 
 }
 
-const vk::DescriptorPoolSize VulkanTest::Descriptor::getVkDescriptorPoolSize() {
+const vk::DescriptorPoolSize VulkanEngine::Descriptor::getVkDescriptorPoolSize() {
   
   return vk::DescriptorPoolSize()
     .setDescriptorCount( descriptor_count )

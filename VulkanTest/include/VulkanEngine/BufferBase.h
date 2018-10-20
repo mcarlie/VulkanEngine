@@ -3,7 +3,7 @@
 
 #include <vk_mem_alloc.h>
 
-namespace VulkanTest {
+namespace VulkanEngine {
 
   /// Base class for various classes which represent data buffers on the GPU/CPU
   class BufferBase {

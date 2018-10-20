@@ -3,7 +3,7 @@
 
 #include <vulkan/vulkan.hpp>
 
-namespace VulkanTest {
+namespace VulkanEngine {
 
   /// Base class for any classes which interface with the Vulkan resource descriptor concept
   class Descriptor {

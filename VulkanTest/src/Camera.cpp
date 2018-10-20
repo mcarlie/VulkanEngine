@@ -1,11 +1,11 @@
 #ifndef CAMERA_CPP
 #define CAMERA_CPP
 
-#include <VulkanTest/Camera.h>
-#include <VulkanTest/Constants.h>
+#include <VulkanEngine/Camera.h>
+#include <VulkanEngine/Constants.h>
 
 template< typename Scalar >
-VulkanTest::Camera< Scalar >::Camera( 
+VulkanEngine::Camera< Scalar >::Camera( 
   Eigen::Matrix< Scalar, 3, 1 > _position,
   Eigen::Matrix< Scalar, 3, 1 > _look_at,
   Eigen::Matrix< Scalar, 3, 1 > _up_vector,
@@ -26,12 +26,12 @@ VulkanTest::Camera< Scalar >::Camera(
 }
 
 template< typename Scalar > 
-VulkanTest::Camera< Scalar >::~Camera() {
+VulkanEngine::Camera< Scalar >::~Camera() {
 
 }
 
 template< typename Scalar > 
-const Eigen::Matrix< Scalar, 4, 4 > VulkanTest::Camera< Scalar >::getPerspectiveProjectionMatrix() {
+const Eigen::Matrix< Scalar, 4, 4 > VulkanEngine::Camera< Scalar >::getPerspectiveProjectionMatrix() {
 
   const Scalar tan_half_fov = std::tan( Constants::pi< Scalar >() * fov / ( static_cast< Scalar >( 2 * 180 ) ) );
   const Scalar aspect = width / static_cast< Scalar >( height );
@@ -57,7 +57,7 @@ const Eigen::Matrix< Scalar, 4, 4 > VulkanTest::Camera< Scalar >::getPerspective
 }
 
 template< typename Scalar > 
-const Eigen::Matrix< Scalar, 4, 4 > VulkanTest::Camera< Scalar >::getViewMatrix() {
+const Eigen::Matrix< Scalar, 4, 4 > VulkanEngine::Camera< Scalar >::getViewMatrix() {
 
 	const auto& z_axis = ( look_at - position ).normalized();
 	const auto& x_axis = z_axis.cross( up_vector ).normalized();

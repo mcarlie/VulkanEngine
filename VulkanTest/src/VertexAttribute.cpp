@@ -1,10 +1,10 @@
 #ifndef VERTEXATTRIBUTE_CPP
 #define VERTEXATTRIBUTE_CPP
 
-#include <VulkanTest/VertexAttribute.h>
+#include <VulkanEngine/VertexAttribute.h>
 
 template< typename T >
-VulkanTest::VertexAttribute< T >::VertexAttribute( 
+VulkanEngine::VertexAttribute< T >::VertexAttribute( 
   const T* data, size_t _num_elements, uint32_t _location, vk::Format _format ) : 
   Attribute( _num_elements, sizeof( T ), vk::BufferUsageFlagBits::eVertexBuffer ),
   location( _location ),
@@ -15,11 +15,11 @@ VulkanTest::VertexAttribute< T >::VertexAttribute(
 }
 
 template< typename T >
-VulkanTest::VertexAttribute< T >::~VertexAttribute() {
+VulkanEngine::VertexAttribute< T >::~VertexAttribute() {
 }
 
 template< typename T >
-const vk::VertexInputBindingDescription VulkanTest::VertexAttribute< T >::getVkVertexInputBindingDescription( uint32_t binding_index ) {
+const vk::VertexInputBindingDescription VulkanEngine::VertexAttribute< T >::getVkVertexInputBindingDescription( uint32_t binding_index ) {
 
   return vk::VertexInputBindingDescription()
     .setBinding( binding_index )
@@ -29,7 +29,7 @@ const vk::VertexInputBindingDescription VulkanTest::VertexAttribute< T >::getVkV
 }
 
 template< typename T >
-const vk::VertexInputAttributeDescription VulkanTest::VertexAttribute< T >::getVkVertexInputAttributeDescriptions( uint32_t binding_index ) {
+const vk::VertexInputAttributeDescription VulkanEngine::VertexAttribute< T >::getVkVertexInputAttributeDescriptions( uint32_t binding_index ) {
 
   return vk::VertexInputAttributeDescription()
     .setBinding( binding_index )
@@ -39,7 +39,7 @@ const vk::VertexInputAttributeDescription VulkanTest::VertexAttribute< T >::getV
 }
 
 template< typename T >
-vk::Format VulkanTest::VertexAttribute< T >::getVkFormat() {
+vk::Format VulkanEngine::VertexAttribute< T >::getVkFormat() {
   return format;
 }
 

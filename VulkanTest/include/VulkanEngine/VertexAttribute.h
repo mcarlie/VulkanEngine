@@ -1,13 +1,13 @@
 #ifndef VERTEXATTRIBUTE_H
 #define VERTEXATTRIBUTE_H
 
-#include <VulkanTest/Attribute.h>
+#include <VulkanEngine/Attribute.h>
 
 #include <vulkan/vulkan.hpp>
 
 #include <vector>
 
-namespace VulkanTest {
+namespace VulkanEngine {
 
   /// Class which represents a vertex attribute
   /// \tparam T The type to use to represent data elements

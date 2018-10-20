@@ -1,11 +1,11 @@
 #ifndef INDEXATTRIBUTE_H
 #define INDEXATTRIBUTE_H
 
-#include <VulkanTest/Attribute.h>
+#include <VulkanEngine/Attribute.h>
 
 #include <vulkan/vulkan.hpp>
 
-namespace VulkanTest {
+namespace VulkanEngine {
 
   /// Represents an index attribute for indexed rendering
   /// \tparam T The type to use for index elements

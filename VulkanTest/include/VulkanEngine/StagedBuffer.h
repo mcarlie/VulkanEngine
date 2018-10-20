@@ -1,9 +1,9 @@
 #ifndef STAGEDBUFFER_H
 #define STAGEDBUFFER_H
 
-#include <VulkanTest/Buffer.h>
+#include <VulkanEngine/Buffer.h>
 
-namespace VulkanTest {
+namespace VulkanEngine {
 
   /// Represents a temporary buffer used to transfer data to another StagedBufferDestination buffer
   /// This class can be templated on any class inheriting from StagedBufferDestination in order to provide

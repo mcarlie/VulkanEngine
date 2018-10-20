@@ -1,12 +1,12 @@
 #ifndef STAGEDBUFFERDESTINATION_H
 #define STAGEDBUFFERDESTINATION_H
 
-#include <VulkanTest/BufferBase.h>
-#include <VulkanTest/SingleUsageCommandBuffer.h>
+#include <VulkanEngine/BufferBase.h>
+#include <VulkanEngine/SingleUsageCommandBuffer.h>
 
 #include <vulkan/vulkan.hpp>
 
-namespace VulkanTest {
+namespace VulkanEngine {
 
   /// Base class for classes which are capable of being targets of a StagedBuffer.
   /// insertTransferCommand is called from StagedBuffer::tranferBuffer()

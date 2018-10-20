@@ -1,10 +1,10 @@
 #ifndef UNIFORMBUFFER_CPP
 #define UNIFORMBUFFER_CPP
 
-#include <VulkanTest/UniformBuffer.h>
+#include <VulkanEngine/UniformBuffer.h>
 
 template< typename T >
-VulkanTest::UniformBuffer< T >::UniformBuffer( uint32_t _binding, uint32_t _array_size, vk::ShaderStageFlags _vk_shader_stage_flags ) 
+VulkanEngine::UniformBuffer< T >::UniformBuffer( uint32_t _binding, uint32_t _array_size, vk::ShaderStageFlags _vk_shader_stage_flags ) 
   : Buffer( sizeof( T ) * _array_size, vk::BufferUsageFlagBits::eUniformBuffer,
     vk::MemoryPropertyFlagBits::eHostCoherent | vk::MemoryPropertyFlagBits::eHostVisible,
     VMA_MEMORY_USAGE_CPU_TO_GPU ),
@@ -13,11 +13,11 @@ VulkanTest::UniformBuffer< T >::UniformBuffer( uint32_t _binding, uint32_t _arra
 }
 
 template< typename T >
-VulkanTest::UniformBuffer< T >::~UniformBuffer() {
+VulkanEngine::UniformBuffer< T >::~UniformBuffer() {
 }
 
 template< typename T >
-void VulkanTest::UniformBuffer< T >::appendVkDescriptorSets(
+void VulkanEngine::UniformBuffer< T >::appendVkDescriptorSets(
   std::vector< vk::WriteDescriptorSet >& write_descriptor_sets,
   std::vector< vk::CopyDescriptorSet >& copy_descriptor_sets,
   const vk::DescriptorSet& destination_set ) {

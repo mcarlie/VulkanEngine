@@ -1,11 +1,11 @@
 #ifndef MESHBASE_H
 #define MESHBASE_H
 
-#include <VulkanTest/Shader.h>
+#include <VulkanEngine/Shader.h>
 
 #include <memory>
 
-namespace VulkanTest {
+namespace VulkanEngine {
 
   /// Provides an abstract interface for various types of Mesh classes
   class MeshBase {

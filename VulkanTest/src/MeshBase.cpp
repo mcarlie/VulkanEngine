@@ -1,22 +1,22 @@
 #ifndef MESH_CPP
 #define MESH_CPP
 
-#include <VulkanTest/MeshBase.h>
+#include <VulkanEngine/MeshBase.h>
 
-VulkanTest::MeshBase::MeshBase() {
+VulkanEngine::MeshBase::MeshBase() {
 }
 
-VulkanTest::MeshBase::MeshBase( const std::shared_ptr< Shader > _shader ) : shader( _shader ) {
+VulkanEngine::MeshBase::MeshBase( const std::shared_ptr< Shader > _shader ) : shader( _shader ) {
 }
 
-VulkanTest::MeshBase::~MeshBase() {
+VulkanEngine::MeshBase::~MeshBase() {
 }
 
-const std::shared_ptr< VulkanTest::Shader >& VulkanTest::MeshBase::getShader() {
+const std::shared_ptr< VulkanEngine::Shader >& VulkanEngine::MeshBase::getShader() {
   return shader;
 }
 
-void VulkanTest::MeshBase::setShader(const std::shared_ptr< VulkanTest::Shader >& _shader) {
+void VulkanEngine::MeshBase::setShader(const std::shared_ptr< VulkanEngine::Shader >& _shader) {
   shader = _shader;
 }
 

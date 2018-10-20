@@ -1,7 +1,7 @@
-#include <VulkanTest/Buffer.h>
-#include <VulkanTest/VulkanManager.h>
+#include <VulkanEngine/Buffer.h>
+#include <VulkanEngine/VulkanManager.h>
 
-VulkanTest::Buffer::Buffer( 
+VulkanEngine::Buffer::Buffer( 
   size_t _data_size,
   vk::BufferUsageFlags usage_flags,
   vk::MemoryPropertyFlags memory_property_flags,
@@ -9,18 +9,18 @@ VulkanTest::Buffer::Buffer(
   createBuffer( usage_flags, memory_property_flags, vma_memory_usage );
 }
 
-VulkanTest::Buffer::~Buffer() {
+VulkanEngine::Buffer::~Buffer() {
   vmaDestroyBuffer( 
     VulkanManager::getInstance()->getVmaAllocator(),
     static_cast< VkBuffer >( vk_buffer ), 
     vma_allocation );
 }
 
-const vk::Buffer& VulkanTest::Buffer::getVkBuffer() {
+const vk::Buffer& VulkanEngine::Buffer::getVkBuffer() {
   return vk_buffer;
 }
 
-void VulkanTest::Buffer::createBuffer( 
+void VulkanEngine::Buffer::createBuffer( 
   vk::BufferUsageFlags usage_flags,
   vk::MemoryPropertyFlags memory_property_flags,
   VmaMemoryUsage vma_memory_usage ) {
@@ -56,7 +56,7 @@ void VulkanTest::Buffer::createBuffer(
 
 }
 
-void VulkanTest::Buffer::insertTransferCommand( const vk::CommandBuffer& command_buffer, const vk::Buffer& source_buffer ) {
+void VulkanEngine::Buffer::insertTransferCommand( const vk::CommandBuffer& command_buffer, const vk::Buffer& source_buffer ) {
 
   auto buffer_copy = vk::BufferCopy()
     .setSrcOffset( 0 )
@@ -67,6 +67,6 @@ void VulkanTest::Buffer::insertTransferCommand( const vk::CommandBuffer& command
     
 }
 
-size_t VulkanTest::Buffer::getStagingBufferSize() {
+size_t VulkanEngine::Buffer::getStagingBufferSize() {
   return data_size;
 }

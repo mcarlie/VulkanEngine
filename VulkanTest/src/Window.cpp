@@ -1,45 +1,45 @@
-#include <VulkanTest/Window.h>
+#include <VulkanEngine/Window.h>
 
-VulkanTest::Window::Window( uint32_t _width, uint32_t _height, const std::string& _title, bool _full_screen ) 
+VulkanEngine::Window::Window( uint32_t _width, uint32_t _height, const std::string& _title, bool _full_screen ) 
   : width( _width ), height( _height ), title( _title ), full_screen( _full_screen ), size_changed( false ) {
 }
 
-VulkanTest::Window::~Window() {
+VulkanEngine::Window::~Window() {
 }
 
-void VulkanTest::Window::setWidth( uint32_t _width ) {
+void VulkanEngine::Window::setWidth( uint32_t _width ) {
   width = _width;
 }
 
-void VulkanTest::Window::setHeight( uint32_t _height ) {
+void VulkanEngine::Window::setHeight( uint32_t _height ) {
   height = _height;
 }
 
-uint32_t VulkanTest::Window::getWidth() { 
+uint32_t VulkanEngine::Window::getWidth() { 
   return width;
 }
 
-uint32_t VulkanTest::Window::getHeight() { 
+uint32_t VulkanEngine::Window::getHeight() { 
   return height; 
 }
 
-uint32_t VulkanTest::Window::getFramebufferWidth() {
+uint32_t VulkanEngine::Window::getFramebufferWidth() {
   return framebuffer_width;
 }
 
-uint32_t VulkanTest::Window::getFramebufferHeight() {
+uint32_t VulkanEngine::Window::getFramebufferHeight() {
   return framebuffer_height;
 }
 
-const std::string& VulkanTest::Window::getTitle() {
+const std::string& VulkanEngine::Window::getTitle() {
   return title;
 }
 
-bool VulkanTest::Window::isFullScreen() {
+bool VulkanEngine::Window::isFullScreen() {
   return full_screen;
 }
 
-bool VulkanTest::Window::sizeHasChanged() {
+bool VulkanEngine::Window::sizeHasChanged() {
   bool tmp_size_changed = size_changed;
   size_changed = false;
   return tmp_size_changed;

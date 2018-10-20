@@ -1,13 +1,13 @@
 #ifndef MESH_H
 #define MESH_H
 
-#include <VulkanTest/MeshBase.h>
-#include <VulkanTest/VertexAttribute.h>
-#include <VulkanTest/IndexAttribute.h>
+#include <VulkanEngine/MeshBase.h>
+#include <VulkanEngine/VertexAttribute.h>
+#include <VulkanEngine/IndexAttribute.h>
 
 #include <Eigen/Eigen>
 
-namespace VulkanTest {
+namespace VulkanEngine {
 
   /// Represents a mesh consisting of VertexAttribute instances
   /// The mesh will at the very least support positions and indices. Any additional

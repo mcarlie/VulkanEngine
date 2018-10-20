@@ -1,7 +1,7 @@
-#include <VulkanTest/Shader.h>
-#include <VulkanTest/VulkanManager.h>
+#include <VulkanEngine/Shader.h>
+#include <VulkanEngine/VulkanManager.h>
 
-VulkanTest::Shader::Shader( const std::vector< std::shared_ptr< ShaderModule > >& shader_modules ) 
+VulkanEngine::Shader::Shader( const std::vector< std::shared_ptr< ShaderModule > >& shader_modules ) 
   : current_descriptor_set_index( 0 ) {
 
   for( const auto& sm : shader_modules ) {
@@ -14,7 +14,7 @@ VulkanTest::Shader::Shader( const std::vector< std::shared_ptr< ShaderModule > >
 
 }
 
-VulkanTest::Shader::~Shader() {
+VulkanEngine::Shader::~Shader() {
   const auto& vk_device = VulkanManager::getInstance()->getVkDevice();
   vk_device.destroyDescriptorPool( vk_descriptor_pool );
   vk_device.destroyPipelineLayout( vk_pipeline_layout );
@@ -23,7 +23,7 @@ VulkanTest::Shader::~Shader() {
   }
 }
 
-void VulkanTest::Shader::setDescriptors( const std::vector< std::vector< std::shared_ptr< Descriptor > > >& _descriptors ) {
+void VulkanEngine::Shader::setDescriptors( const std::vector< std::vector< std::shared_ptr< Descriptor > > >& _descriptors ) {
 
   const auto& vk_device = VulkanManager::getInstance()->getVkDevice();
 
@@ -87,7 +87,7 @@ void VulkanTest::Shader::setDescriptors( const std::vector< std::vector< std::sh
 
 }
 
-void VulkanTest::Shader::bindDescriptorSet( const vk::CommandBuffer& command_buffer, uint32_t descriptor_set_index ) {
+void VulkanEngine::Shader::bindDescriptorSet( const vk::CommandBuffer& command_buffer, uint32_t descriptor_set_index ) {
 
   command_buffer.bindDescriptorSets( 
     vk::PipelineBindPoint::eGraphics,
@@ -95,11 +95,11 @@ void VulkanTest::Shader::bindDescriptorSet( const vk::CommandBuffer& command_buf
 
 }
 
-const std::vector< vk::PipelineShaderStageCreateInfo >& VulkanTest::Shader::getVkShaderStages() {
+const std::vector< vk::PipelineShaderStageCreateInfo >& VulkanEngine::Shader::getVkShaderStages() {
   return shader_stages;
 }
 
-const vk::PipelineLayout VulkanTest::Shader::getVkPipelineLayout() {
+const vk::PipelineLayout VulkanEngine::Shader::getVkPipelineLayout() {
 
   if( !vk_pipeline_layout ) {
     auto pipeline_layout_info = vk::PipelineLayoutCreateInfo()

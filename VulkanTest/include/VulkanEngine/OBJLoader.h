@@ -1,11 +1,11 @@
 #ifndef OBJLOADER_H
 #define OBJLOADER_H
 
-#include <VulkanTest/MeshBase.h>
+#include <VulkanEngine/MeshBase.h>
 
 #include <memory>
 
-namespace VulkanTest {
+namespace VulkanEngine {
 
   /// Contains functions for loading OBJ mesh files and associated MTL files
   namespace OBJLoader {

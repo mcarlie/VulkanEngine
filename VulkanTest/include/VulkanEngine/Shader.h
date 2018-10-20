@@ -1,10 +1,10 @@
 #ifndef SHADER_H
 #define SHADER_H
 
-#include <VulkanTest/ShaderModule.h>
-#include <VulkanTest/Descriptor.h>
+#include <VulkanEngine/ShaderModule.h>
+#include <VulkanEngine/Descriptor.h>
 
-namespace VulkanTest {
+namespace VulkanEngine {
 
   /// Class which encapsulates a single shader consisting of several ShaderModule instances
   class Shader {

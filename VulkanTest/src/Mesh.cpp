@@ -1,14 +1,14 @@
 #ifndef MESH_CPP
 #define MESH_CPP
 
-#include <VulkanTest/Mesh.h>
+#include <VulkanEngine/Mesh.h>
 
 template< typename PositionType, typename IndexType, class ... AdditionalAttributeTypes >
-VulkanTest::Mesh< PositionType, IndexType, AdditionalAttributeTypes ... >::Mesh() {
+VulkanEngine::Mesh< PositionType, IndexType, AdditionalAttributeTypes ... >::Mesh() {
 }
 
 template< typename PositionType, typename IndexType, class ... AdditionalAttributeTypes >
-VulkanTest::Mesh< PositionType, IndexType, AdditionalAttributeTypes ... >::Mesh( 
+VulkanEngine::Mesh< PositionType, IndexType, AdditionalAttributeTypes ... >::Mesh( 
   const std::shared_ptr< VertexAttribute< PositionType > >& _positions,
   const std::shared_ptr< IndexAttribute< IndexType > >& _indices,
   const std::tuple< AttributeContainer< AdditionalAttributeTypes > ... >& _attributes,
@@ -17,29 +17,29 @@ VulkanTest::Mesh< PositionType, IndexType, AdditionalAttributeTypes ... >::Mesh(
 }
     
 template< typename PositionType, typename IndexType, class ... AdditionalAttributeTypes >
-VulkanTest::Mesh< PositionType, IndexType, AdditionalAttributeTypes ... >::~Mesh() {
+VulkanEngine::Mesh< PositionType, IndexType, AdditionalAttributeTypes ... >::~Mesh() {
 }
 
 template< typename PositionType, typename IndexType, class ... AdditionalAttributeTypes >
-void VulkanTest::Mesh< PositionType, IndexType, AdditionalAttributeTypes ... >::setPositions( 
+void VulkanEngine::Mesh< PositionType, IndexType, AdditionalAttributeTypes ... >::setPositions( 
   const std::shared_ptr< VertexAttribute< PositionType > >& _positions ) {
   positions = _positions;
 }
     
 template< typename PositionType, typename IndexType, class ... AdditionalAttributeTypes >
-void VulkanTest::Mesh< PositionType, IndexType, AdditionalAttributeTypes ... >::setIndices( 
+void VulkanEngine::Mesh< PositionType, IndexType, AdditionalAttributeTypes ... >::setIndices( 
   const std::shared_ptr< IndexAttribute< IndexType > >& _indices ) {
   indices = _indices;
 }
     
 template< typename PositionType, typename IndexType, class ... AdditionalAttributeTypes >
-void VulkanTest::Mesh< PositionType, IndexType, AdditionalAttributeTypes ... >::setAttributes( 
+void VulkanEngine::Mesh< PositionType, IndexType, AdditionalAttributeTypes ... >::setAttributes( 
 const std::tuple< AttributeContainer< AdditionalAttributeTypes > ... >& _additional_attributes ) {
   additional_attributes = _additional_attributes;
 }
 
 template< typename PositionType, typename IndexType, class ... AdditionalAttributeTypes >
-const vk::PipelineVertexInputStateCreateInfo VulkanTest::Mesh< 
+const vk::PipelineVertexInputStateCreateInfo VulkanEngine::Mesh< 
   PositionType, IndexType, AdditionalAttributeTypes ... >::getVkPipelineVertexInputStateCreateInfo() {
 
   uint32_t binding_index = 0;
@@ -66,7 +66,7 @@ const vk::PipelineVertexInputStateCreateInfo VulkanTest::Mesh<
 }
 
 template< typename PositionType, typename IndexType, class ... AdditionalAttributeTypes >
-const vk::PipelineInputAssemblyStateCreateInfo VulkanTest::Mesh< 
+const vk::PipelineInputAssemblyStateCreateInfo VulkanEngine::Mesh< 
   PositionType, IndexType, AdditionalAttributeTypes ... >::getVkPipelineInputAssemblyStateCreateInfo() {
 
   return vk::PipelineInputAssemblyStateCreateInfo()
@@ -76,7 +76,7 @@ const vk::PipelineInputAssemblyStateCreateInfo VulkanTest::Mesh<
 }
 
 template< typename PositionType, typename IndexType, class ... AdditionalAttributeTypes >
-void VulkanTest::Mesh< PositionType, IndexType, AdditionalAttributeTypes ... >::transferBuffers(
+void VulkanEngine::Mesh< PositionType, IndexType, AdditionalAttributeTypes ... >::transferBuffers(
   const vk::CommandBuffer& command_buffer ) {
 
   if( !positions.get() ) {
@@ -100,7 +100,7 @@ void VulkanTest::Mesh< PositionType, IndexType, AdditionalAttributeTypes ... >::
 }
 
 template< typename PositionType, typename IndexType, class ... AdditionalAttributeTypes >
-void VulkanTest::Mesh< PositionType, IndexType, AdditionalAttributeTypes ... >::bindVertexBuffers( const vk::CommandBuffer& command_buffer ) {
+void VulkanEngine::Mesh< PositionType, IndexType, AdditionalAttributeTypes ... >::bindVertexBuffers( const vk::CommandBuffer& command_buffer ) {
 
   if( !positions.get() ) {
     throw std::runtime_error( "No position vertex buffer to bind for mesh!" );
@@ -123,7 +123,7 @@ void VulkanTest::Mesh< PositionType, IndexType, AdditionalAttributeTypes ... >::
 }
 
 template< typename PositionType, typename IndexType, class ... AdditionalAttributeTypes >
-void VulkanTest::Mesh< PositionType, IndexType, AdditionalAttributeTypes ... >::bindIndexBuffer( const vk::CommandBuffer& command_buffer ) {
+void VulkanEngine::Mesh< PositionType, IndexType, AdditionalAttributeTypes ... >::bindIndexBuffer( const vk::CommandBuffer& command_buffer ) {
 
   if( indices.get() ) {
     command_buffer.bindIndexBuffer( 
@@ -133,7 +133,7 @@ void VulkanTest::Mesh< PositionType, IndexType, AdditionalAttributeTypes ... >::
 }
 
 template< typename PositionType, typename IndexType, class ... AdditionalAttributeTypes >
-void VulkanTest::Mesh< PositionType, IndexType, AdditionalAttributeTypes ... >::draw( const vk::CommandBuffer& command_buffer ) {
+void VulkanEngine::Mesh< PositionType, IndexType, AdditionalAttributeTypes ... >::draw( const vk::CommandBuffer& command_buffer ) {
 
   if( indices.get() ) {
     command_buffer.drawIndexed( static_cast< uint32_t >( indices->getNumElements() ), 1, 0, 0, 0 );

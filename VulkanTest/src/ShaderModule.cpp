@@ -1,10 +1,10 @@
-#include <VulkanTest/ShaderModule.h>
-#include <VulkanTest/VulkanManager.h>
+#include <VulkanEngine/ShaderModule.h>
+#include <VulkanEngine/VulkanManager.h>
 
 #include <fstream>
 #include <iostream>
 
-VulkanTest::ShaderModule::ShaderModule( const std::string& file_path, vk::ShaderStageFlagBits shader_stage_flag ) 
+VulkanEngine::ShaderModule::ShaderModule( const std::string& file_path, vk::ShaderStageFlagBits shader_stage_flag ) 
   : vk_shader_stage_flag( shader_stage_flag ) {
 
   std::vector< char > bytecode;
@@ -21,19 +21,19 @@ VulkanTest::ShaderModule::ShaderModule( const std::string& file_path, vk::Shader
 
 }
 
-VulkanTest::ShaderModule::~ShaderModule() {
+VulkanEngine::ShaderModule::~ShaderModule() {
   VulkanManager::getInstance()->getVkDevice().destroyShaderModule( vk_shader_module );
 }
 
-const vk::ShaderStageFlagBits VulkanTest::ShaderModule::getVkShaderStageFlag() {
+const vk::ShaderStageFlagBits VulkanEngine::ShaderModule::getVkShaderStageFlag() {
   return vk_shader_stage_flag;
 }
 
-const vk::ShaderModule& VulkanTest::ShaderModule::getVkShaderModule() {
+const vk::ShaderModule& VulkanEngine::ShaderModule::getVkShaderModule() {
   return vk_shader_module;
 }
 
-void VulkanTest::ShaderModule::readSource( const std::string& file_path, std::vector< char >& bytecode ) {
+void VulkanEngine::ShaderModule::readSource( const std::string& file_path, std::vector< char >& bytecode ) {
 
   std::ifstream file( file_path, std::ios::ate | std::ios::binary );
 

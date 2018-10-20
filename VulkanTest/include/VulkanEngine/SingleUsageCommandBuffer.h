@@ -3,7 +3,7 @@
 
 #include <vulkan/vulkan.hpp>
 
-namespace VulkanTest {
+namespace VulkanEngine {
 
   /// Class which provides the ability to generate vulkan command buffer for one time recording and submission
   class SingleUsageCommandBuffer {

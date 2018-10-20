@@ -1,12 +1,12 @@
 #ifndef SHADERIMAGE_H
 #define SHADERIMAGE_H
 
-#include <VulkanTest/Descriptor.h>
+#include <VulkanEngine/Descriptor.h>
 
 #include <vulkan/vulkan.hpp>
 #include <vk_mem_alloc.h>
 
-namespace VulkanTest {
+namespace VulkanEngine {
 
   // Forward declaration
   template< vk::Format format, vk::ImageType image_type, vk::ImageTiling tiling, vk::SampleCountFlagBits sample_count_flags >
