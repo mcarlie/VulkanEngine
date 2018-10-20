@@ -32,7 +32,8 @@ namespace VulkanTest {
       uint32_t _width,
       uint32_t _height,
       uint32_t _depth,
-      size_t pixel_size );
+      size_t pixel_size,
+      bool generate_mip_maps = true );
 
     /// Destructor
     ~Image();
@@ -71,6 +72,10 @@ namespace VulkanTest {
       vk::ImageUsageFlags usage_flags,
       VmaMemoryUsage vma_usage );
 
+    /// Generate mipmap images for this image
+    /// \param command_buffer The command buffer to use for generating the mipmaps
+    void generateMipmaps( const vk::CommandBuffer& command_buffer );
+
   protected:
 
     /// The width of the Image
@@ -84,6 +89,9 @@ namespace VulkanTest {
 
     /// The total size of Image's data
     size_t data_size;
+
+    /// The number of mipmap images to generate
+    uint32_t mipmap_levels;
 
     /// The current vk::ImageLayout. \see transitionImageLayout()
     vk::ImageLayout vk_image_layout;

@@ -19,7 +19,12 @@ struct MvpUbo {
 };
 
 using RGBATexture2D1S 
-  = VulkanTest::StagedBuffer< VulkanTest::ShaderImage< vk::Format::eR8G8B8A8Unorm, vk::ImageType::e2D, vk::ImageTiling::eOptimal, vk::SampleCountFlagBits::e1 > >;
+  = VulkanTest::StagedBuffer< 
+  VulkanTest::ShaderImage< 
+  vk::Format::eR8G8B8A8Unorm,
+  vk::ImageType::e2D,
+  vk::ImageTiling::eOptimal,
+  vk::SampleCountFlagBits::e1 > >;
 
 int main() {
 
@@ -32,8 +37,10 @@ int main() {
   std::shared_ptr< VulkanTest::MeshBase > mesh;
   mesh = VulkanTest::OBJLoader::loadOBJ( "C:/Users/Michael/Desktop/VK/VulkanTest/models/spider_pumpkin_obj.obj", "" )[0];
 
-  std::shared_ptr< VulkanTest::ShaderModule > fragment_shader( new VulkanTest::ShaderModule( "C:/Users/Michael/Desktop/VK/VulkanTest/shaders/frag.spv", vk::ShaderStageFlagBits::eFragment ) );
-  std::shared_ptr< VulkanTest::ShaderModule > vertex_shader( new VulkanTest::ShaderModule( "C:/Users/Michael/Desktop/VK/VulkanTest/shaders/vert.spv", vk::ShaderStageFlagBits::eVertex ) );
+  std::shared_ptr< VulkanTest::ShaderModule > fragment_shader( 
+    new VulkanTest::ShaderModule( "C:/Users/Michael/Desktop/VK/VulkanTest/shaders/frag.spv", vk::ShaderStageFlagBits::eFragment ) );
+  std::shared_ptr< VulkanTest::ShaderModule > vertex_shader( 
+    new VulkanTest::ShaderModule( "C:/Users/Michael/Desktop/VK/VulkanTest/shaders/vert.spv", vk::ShaderStageFlagBits::eVertex ) );
   std::shared_ptr< VulkanTest::Shader > shader( new VulkanTest::Shader( { fragment_shader, vertex_shader } ) );
 
   mesh->setShader( shader );
@@ -41,11 +48,15 @@ int main() {
   int texture_width;
   int texture_height;
   int channels_in_file;
-  unsigned char* image_data = stbi_load( "C:/Users/Michael/Desktop/VK/VulkanTest/models/spider_pumpkin_obj_0.jpg", &texture_width, &texture_height, &channels_in_file, 4 );
+  unsigned char* image_data = stbi_load( 
+    "C:/Users/Michael/Desktop/VK/VulkanTest/models/spider_pumpkin_obj_0.jpg",
+    &texture_width, &texture_height,
+    &channels_in_file, 4 );
+
   std::shared_ptr< RGBATexture2D1S > texture;
   texture.reset( new RGBATexture2D1S( 
     vk::ImageLayout::eUndefined,
-    vk::ImageUsageFlagBits::eTransferDst | vk::ImageUsageFlagBits::eSampled,
+    vk::ImageUsageFlagBits::eTransferDst | vk::ImageUsageFlagBits::eTransferSrc | vk::ImageUsageFlagBits::eSampled, /// TODO These could be template parameters instead
     VMA_MEMORY_USAGE_GPU_ONLY,
     static_cast< uint32_t >( texture_width ),
     static_cast< uint32_t >( texture_height ),

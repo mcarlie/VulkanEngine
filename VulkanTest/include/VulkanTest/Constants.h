@@ -8,6 +8,7 @@
 
 namespace VulkanTest {
 
+  /// Contains definitions of various mathematical constants
   namespace Constants {
   
     /// Definition of pi to use in application

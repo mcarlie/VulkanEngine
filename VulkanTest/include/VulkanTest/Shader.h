@@ -19,7 +19,7 @@ namespace VulkanTest {
 
     void setDescriptors( const std::vector< std::vector< std::shared_ptr< Descriptor > > >& _descriptors );
 
-    void bindCurrentDescriptorSet( const vk::CommandBuffer& command_buffer, uint32_t descriptor_set_index );
+    void bindDescriptorSet( const vk::CommandBuffer& command_buffer, uint32_t descriptor_set_index );
 
     const std::vector< vk::PipelineShaderStageCreateInfo >& getVkShaderStages();
 

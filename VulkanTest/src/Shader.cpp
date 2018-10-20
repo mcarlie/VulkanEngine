@@ -87,7 +87,7 @@ void VulkanTest::Shader::setDescriptors( const std::vector< std::vector< std::sh
 
 }
 
-void VulkanTest::Shader::bindCurrentDescriptorSet( const vk::CommandBuffer& command_buffer, uint32_t descriptor_set_index ) {
+void VulkanTest::Shader::bindDescriptorSet( const vk::CommandBuffer& command_buffer, uint32_t descriptor_set_index ) {
 
   command_buffer.bindDescriptorSets( 
     vk::PipelineBindPoint::eGraphics,

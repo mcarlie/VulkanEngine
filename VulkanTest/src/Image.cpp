@@ -12,8 +12,17 @@ VulkanTest::Image< format, image_type, tiling, sample_count_flags >::Image(
   uint32_t _width,
   uint32_t _height,
   uint32_t _depth,
-  size_t pixel_size ) 
-  : width( _width ), height( _height ), depth( _depth ), vk_image_layout( initial_layout ), data_size( pixel_size * width * height * depth ) {
+  size_t pixel_size,
+  bool generate_mip_maps ) : 
+  width( _width ),
+  height( _height ), 
+  depth( _depth ),
+  mipmap_levels( 1 ),
+  vk_image_layout( initial_layout ),
+  data_size( pixel_size * width * height * depth ) {
+  if( generate_mip_maps ) {
+    mipmap_levels = static_cast< uint32_t >( std::floor( std::log2( std::max( width, height ) ) ) );
+  }
   createImage( usage_flags, vma_memory_usage );
 }
 
@@ -34,7 +43,7 @@ void VulkanTest::Image< format, image_type, tiling, sample_count_flags >::create
   auto subresource_range = vk::ImageSubresourceRange()
     .setAspectMask( image_aspect_flags )
     .setBaseMipLevel( 0 )
-    .setLevelCount( 1 )
+    .setLevelCount( mipmap_levels )
     .setBaseArrayLayer( 0 )
     .setLayerCount( 1 );
 
@@ -65,7 +74,7 @@ void VulkanTest::Image< format, image_type, tiling, sample_count_flags >::transi
   auto subresource_range = vk::ImageSubresourceRange()
     .setAspectMask( vk::ImageAspectFlagBits::eColor )
     .setBaseMipLevel( 0 )
-    .setLevelCount( 1 )
+    .setLevelCount( mipmap_levels )
     .setBaseArrayLayer( 0 )
     .setLayerCount( 1 );
 
@@ -167,12 +176,14 @@ void VulkanTest::Image< format, image_type, tiling, sample_count_flags >::insert
 
   command_buffer.copyBufferToImage( source_buffer, vk_image, vk::ImageLayout::eTransferDstOptimal, buffer_image_copy );
 
-  transitionImageLayout( vk::ImageLayout::eShaderReadOnlyOptimal, command_buffer );
+  if( mipmap_levels > 1 ) {
+    generateMipmaps( command_buffer );
+  } else {
+    transitionImageLayout( vk::ImageLayout::eShaderReadOnlyOptimal, command_buffer );
+  }
 
 }
 
-/// Override to return the required data size of the staging buffer in order to transfer all data to this Image
-/// \return The data size for the staging buffer
 template< vk::Format format, vk::ImageType image_type, vk::ImageTiling tiling, vk::SampleCountFlagBits sample_count_flags >
 size_t VulkanTest::Image< format, image_type, tiling, sample_count_flags >::getStagingBufferSize() {
   return data_size;
@@ -191,7 +202,7 @@ void VulkanTest::Image< format, image_type, tiling, sample_count_flags >::create
   auto image_info = vk::ImageCreateInfo()
     .setImageType( image_type )
     .setExtent( image_extent )
-    .setMipLevels( 1 )
+    .setMipLevels( mipmap_levels )
     .setArrayLayers( 1 )
     .setFormat( format )
     .setTiling( tiling )
@@ -221,6 +232,93 @@ void VulkanTest::Image< format, image_type, tiling, sample_count_flags >::create
   }
 
   vk_image = c_image_handle;
+
+}
+
+template< vk::Format format, vk::ImageType image_type, vk::ImageTiling tiling, vk::SampleCountFlagBits sample_count_flags >
+void VulkanTest::Image< format, image_type, tiling, sample_count_flags >::generateMipmaps( const vk::CommandBuffer& command_buffer ) {
+
+  auto subresource_range = vk::ImageSubresourceRange()
+    .setAspectMask( vk::ImageAspectFlagBits::eColor )
+    .setLevelCount( 1 )
+    .setBaseArrayLayer( 0 )
+    .setLayerCount( 1 );
+
+  auto image_memory_barrier = vk::ImageMemoryBarrier()
+    .setImage( vk_image )
+    .setSrcQueueFamilyIndex( VK_QUEUE_FAMILY_IGNORED )
+    .setDstQueueFamilyIndex( VK_QUEUE_FAMILY_IGNORED );
+  
+  uint32_t mip_width = width;
+  uint32_t mip_height = height;
+
+  for( uint32_t i = 1; i < mipmap_levels; ++i ) {
+
+    subresource_range.setBaseMipLevel( i - 1 );
+
+    image_memory_barrier
+      .setSubresourceRange( subresource_range )
+      .setOldLayout( vk::ImageLayout::eTransferDstOptimal )
+      .setNewLayout( vk::ImageLayout::eTransferSrcOptimal )
+      .setSrcAccessMask( vk::AccessFlagBits::eTransferWrite )
+      .setDstAccessMask( vk::AccessFlagBits::eTransferRead );
+
+    image_memory_barrier.setSubresourceRange( subresource_range );
+
+    command_buffer.pipelineBarrier( 
+      vk::PipelineStageFlagBits::eTransfer,
+      vk::PipelineStageFlagBits::eTransfer,
+      vk::DependencyFlags(), 0, 0, image_memory_barrier  );
+
+    auto blit_src_subresource = vk::ImageSubresourceLayers()
+      .setAspectMask( vk::ImageAspectFlagBits::eColor )
+      .setMipLevel( i - 1 )
+      .setBaseArrayLayer( 0 )
+      .setLayerCount( 1 );
+
+    auto blit_dst_subresource = vk::ImageSubresourceLayers()
+      .setAspectMask( vk::ImageAspectFlagBits::eColor )
+      .setMipLevel( i )
+      .setBaseArrayLayer( 0 )
+      .setLayerCount( 1 );
+
+    std::array< vk::Offset3D, 2 > blit_src_offsets = { vk::Offset3D( 0, 0, 0 ), vk::Offset3D( mip_width, mip_height, 1 ) };
+    std::array< vk::Offset3D, 2 > blit_dst_offsets = { vk::Offset3D( 0, 0, 0 ), 
+      vk::Offset3D( mip_width > 1 ? mip_width / 2 : 1, mip_height > 1 ? mip_height / 2 : 1, 1 ) };
+    auto image_blit = vk::ImageBlit()
+      .setSrcOffsets( blit_src_offsets ) /// TODO Support higher depth level
+      .setSrcSubresource( blit_src_subresource )
+      .setDstOffsets( blit_dst_offsets )
+      .setDstSubresource( blit_dst_subresource );
+
+    command_buffer.blitImage( 
+      vk_image,
+      vk::ImageLayout::eTransferSrcOptimal,
+      vk_image,
+      vk::ImageLayout::eTransferDstOptimal,
+      1, &image_blit, vk::Filter::eLinear ); // TODO: Make filtering optional as template parameter 
+
+    if( mip_width > 1 ) {
+      mip_width /= 2;
+    }
+
+    if( mip_height > 1 ) {
+      mip_height /= 2;
+    }
+
+  }
+
+  subresource_range.setBaseMipLevel( mipmap_levels - 1 );
+  image_memory_barrier.setSubresourceRange( subresource_range )
+    .setOldLayout( vk::ImageLayout::eTransferDstOptimal )
+    .setNewLayout( vk::ImageLayout::eShaderReadOnlyOptimal )
+    .setSrcAccessMask( vk::AccessFlagBits::eTransferWrite )
+    .setDstAccessMask( vk::AccessFlagBits::eShaderWrite );
+
+  command_buffer.pipelineBarrier( 
+    vk::PipelineStageFlagBits::eTransfer,
+    vk::PipelineStageFlagBits::eFragmentShader,
+    vk::DependencyFlags(), 0, nullptr, 0, nullptr, 1, &image_memory_barrier );
 
 }
 

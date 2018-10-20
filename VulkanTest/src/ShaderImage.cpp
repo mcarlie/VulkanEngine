@@ -44,7 +44,7 @@ void VulkanTest::ShaderImage< format, image_type, tiling, sample_count_flags >::
     .setMipmapMode( vk::SamplerMipmapMode::eLinear )
     .setMipLodBias( 0.0f )
     .setMinLod( 0.0f )
-    .setMaxLod( 0.0f );
+    .setMaxLod( static_cast< float >( mipmap_levels ) );
 
   vk_sampler = VulkanManager::getInstance()->getVkDevice().createSampler( sampler_create_info );
   if( !vk_sampler ) {

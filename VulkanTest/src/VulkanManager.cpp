@@ -160,6 +160,7 @@ void VulkanTest::VulkanManager::drawImage() {
 
     // If the window size has changed or the image view is out of date according to Vulkan
     // then recreate the pipeline from the swapchain stage
+    // TODO These errors are generated when submitting the graphics queue
     if( result == vk::Result::eErrorOutOfDateKHR || window->sizeHasChanged() ) {
       cleanupSwapchain();
       createSwapchain();
@@ -285,7 +286,7 @@ void VulkanTest::VulkanManager::createRenderPass() {
       vk::ImageLayout::eUndefined,
       vk::ImageUsageFlagBits::eDepthStencilAttachment,
       VmaMemoryUsage::VMA_MEMORY_USAGE_GPU_ONLY,
-      window->getWidth(), window->getHeight(), 1, 4 ) );
+      window->getWidth(), window->getHeight(), 1, 4, false ) );
 
   depth_stencil_attachment->createImageView( vk::ImageViewType::e2D, vk::ImageAspectFlagBits::eDepth );
   depth_stencil_attachment->transitionImageLayout( vk::ImageLayout::eDepthStencilAttachmentOptimal );
@@ -480,7 +481,7 @@ void VulkanTest::VulkanManager::createCommandBuffers( const std::shared_ptr< Mes
 
     mesh->bindVertexBuffers( vk_command_buffers[i] );
     mesh->bindIndexBuffer( vk_command_buffers[i] );
-    mesh->getShader()->bindCurrentDescriptorSet( vk_command_buffers[i], static_cast< uint32_t >( i ) );
+    mesh->getShader()->bindDescriptorSet( vk_command_buffers[i], static_cast< uint32_t >( i ) );
 
     mesh->draw( vk_command_buffers[i] );
 
