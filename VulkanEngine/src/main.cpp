@@ -35,12 +35,12 @@ int main() {
   vulkan_manager->initialize( window );
 
   std::shared_ptr< VulkanEngine::MeshBase > mesh;
-  mesh = VulkanEngine::OBJLoader::loadOBJ( "C:/Users/Michael/Desktop/VK/VulkanEngine/models/spider_pumpkin_obj.obj", "" )[0];
+  mesh = VulkanEngine::OBJLoader::loadOBJ( "C:/Users/Michael/Desktop/VK/models/spider_pumpkin_obj.obj", "" )[0];
 
   std::shared_ptr< VulkanEngine::ShaderModule > fragment_shader( 
-    new VulkanEngine::ShaderModule( "C:/Users/Michael/Desktop/VK/VulkanEngine/shaders/frag.spv", vk::ShaderStageFlagBits::eFragment ) );
+    new VulkanEngine::ShaderModule( "C:/Users/Michael/Desktop/VK/shaders/frag.spv", vk::ShaderStageFlagBits::eFragment ) );
   std::shared_ptr< VulkanEngine::ShaderModule > vertex_shader( 
-    new VulkanEngine::ShaderModule( "C:/Users/Michael/Desktop/VK/VulkanEngine/shaders/vert.spv", vk::ShaderStageFlagBits::eVertex ) );
+    new VulkanEngine::ShaderModule( "C:/Users/Michael/Desktop/VK/shaders/vert.spv", vk::ShaderStageFlagBits::eVertex ) );
   std::shared_ptr< VulkanEngine::Shader > shader( new VulkanEngine::Shader( { fragment_shader, vertex_shader } ) );
 
   mesh->setShader( shader );
@@ -49,7 +49,7 @@ int main() {
   int texture_height;
   int channels_in_file;
   unsigned char* image_data = stbi_load( 
-    "C:/Users/Michael/Desktop/VK/VulkanEngine/models/spider_pumpkin_obj_0.jpg",
+    "C:/Users/Michael/Desktop/VK/models/spider_pumpkin_obj_0.jpg",
     &texture_width, &texture_height,
     &channels_in_file, 4 );
 
