@@ -12,24 +12,24 @@ namespace VulkanEngine {
 
   public:
 
-    /// Constructor
+    /// Constructor.
     /// \param _num_elements The number of elements in this attribute buffer
     /// \param _element_size The size of a single element in the attribute buffer
     /// \param flags The attribute's vk::BufferUsageFlags
     Attribute( size_t _num_elements, size_t _element_size, vk::BufferUsageFlags flags );
     
-    /// Destructor
+    /// Destructor.
     ~Attribute();
 
-    /// \return The number of elements in this Attribute
+    /// \return The number of elements in this Attribute.
     size_t getNumElements();
 
   protected:
 
-    /// The number of elements in this attribute
+    /// The number of elements in this attribute.
     size_t num_elements;
 
-    /// The data size of the elements which this attribute is represented by
+    /// The data size of the elements which this attribute is represented by.
     size_t element_size;
 
   };

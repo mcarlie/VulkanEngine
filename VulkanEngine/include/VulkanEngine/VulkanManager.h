@@ -22,50 +22,50 @@ namespace VulkanEngine {
   
   private:
 
-    /// Constructor
-    /// Private so that an instance may only be created from getInstance()
+    /// Constructor.
+    /// Private so that an instance may only be created from getInstance().
     VulkanManager();
 
   public:
 
-    /// Destructor
+    /// Destructor.
     ~VulkanManager();
 
-    /// Delete copy constructor to disallow duplicates
+    /// Delete copy constructor to disallow duplicates.
     VulkanManager( const VulkanManager& ) = delete;
 
-    /// Delete assignment operator to disallow duplicates
+    /// Delete assignment operator to disallow duplicates.
     void operator=( const VulkanManager& ) = delete;
 
-    /// Get the singleton instance of the VulkanManager
-    /// Creates the instance when first called
-    /// \return The singleton VulkanManager instance
+    /// Get the singleton instance of the VulkanManager.
+    /// Creates the instance when first called.
+    /// \return The singleton VulkanManager instance.
     static std::shared_ptr< VulkanManager >& getInstance();
 
-    /// Initialize the VulkanManager
-    /// \param _window The Window instance to use with the manager
+    /// Initialize the VulkanManager.
+    /// \param _window The Window instance to use with the manager.
     void initialize( const std::shared_ptr< Window >& _window );
 
     void createGraphicsPipeline( const std::shared_ptr< MeshBase >& mesh );
 
     void createCommandBuffers( const std::shared_ptr< MeshBase >& mesh );
 
-    /// Executes all command buffers and swaps buffers
+    /// Executes all command buffers and swaps buffers.
     void drawImage();
 
-    /// \return The manager's vk::Device instance
+    /// \return The manager's vk::Device instance.
     const vk::Device& getVkDevice();
 
-    /// \return The manager's vk::PhysicalDevice instance
+    /// \return The manager's vk::PhysicalDevice instance.
     const vk::PhysicalDevice& getVKPhysicalDevice();
 
-    /// \return The manager's vk::CommandPool for allocating command buffers
+    /// \return The manager's vk::CommandPool for allocating command buffers.
     const vk::CommandPool& getVkCommandPool();
 
-    /// \return The manager's vk::Queue for submitting graphics related command buffers
+    /// \return The manager's vk::Queue for submitting graphics related command buffers.
     const vk::Queue& getVkGraphicsQueue();
 
-    /// \return The VmaAllocator instance for performing allocations with Vulkan memory allocator
+    /// \return The VmaAllocator instance for performing allocations with Vulkan memory allocator.
     const VmaAllocator& getVmaAllocator();
 
   private:
@@ -80,23 +80,23 @@ namespace VulkanEngine {
     void cleanup();
     void cleanupSwapchain();
 
-    /// The window instance used with the manager
+    /// The window instance used with the manager.
     std::shared_ptr< Window > window;
 
     /// The main Vulkan instance
     vk::Instance vk_instance;
 
-    /// The Vulkan surface object used with the windowing system
+    /// The Vulkan surface object used with the windowing system.
     vk::SurfaceKHR vk_surface;
 
     vk::RenderPass vk_render_pass;
 
     vk::SwapchainKHR vk_swapchain;
 
-    /// The physical device used for rendering
+    /// The physical device used for rendering.
     vk::PhysicalDevice vk_physical_device;
 
-    /// The logical device used to interface with the physice_device
+    /// The logical device used to interface with the physice_device.
     vk::Device vk_device;
 
     VmaAllocator vma_allocator;
@@ -133,7 +133,7 @@ namespace VulkanEngine {
     std::vector< vk::Semaphore > vk_rendering_finished_semaphores;
     std::vector< vk::Fence > vk_in_flight_fences;
 
-    /// Class which allows for dynamic loading of certain functions within Vulkan classes
+    /// Class which allows for dynamic loading of certain functions within Vulkan classes.
     vk::DispatchLoaderDynamic vk_dispatch_loader_dynamic;
 
 #if defined( _DEBUG )

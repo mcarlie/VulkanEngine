@@ -8,23 +8,23 @@
 
 namespace VulkanEngine {
 
-  /// Represents a uniform buffer
-  /// \tparam The data type this UniformBuffer represents
+  /// Represents a uniform buffer.
+  /// \tparam The data type this UniformBuffer represents.
   template< typename T >
   class UniformBuffer : public Buffer, public Descriptor {
 
   public:
 
-    /// Constructor
-    /// \param _binding The binding index
-    /// \param _array_size For arrays, specify the array size
-    /// \param _vk_shader_stage_flags Specify which shader stages will access the buffer
+    /// Constructor.
+    /// \param _binding The binding index.
+    /// \param _array_size For arrays, specify the array size.
+    /// \param _vk_shader_stage_flags Specify which shader stages will access the buffer.
     UniformBuffer( 
       uint32_t _binding,
       uint32_t _array_size = 1,
       vk::ShaderStageFlags _vk_shader_stage_flags = vk::ShaderStageFlagBits::eAllGraphics );
     
-    /// Destructor
+    /// Destructor.
     ~UniformBuffer();
 
     virtual void appendVkDescriptorSets( 
@@ -34,7 +34,7 @@ namespace VulkanEngine {
 
   private:
 
-    /// For arrays, specifies the array size
+    /// For arrays, specifies the array size.
     uint32_t array_size;
 
     std::vector< vk::DescriptorBufferInfo > vk_descriptor_buffer_infos;

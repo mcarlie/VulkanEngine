@@ -17,14 +17,14 @@ namespace VulkanEngine {
 
   public:
 
-    /// Constructor
-    /// \param initial_layout The initial vk::ImageLayout of the image
-    /// \param usage_flags vk::ImageUsageFlags specifying how the image will be used
-    /// \param vma_memory_usage VmaMemoryUsage flags to pass to the Vulkan memory allocator library when allocating the image
-    /// \param _width The width of the image
-    /// \param _height The height of the image
-    /// \param _depth The depth of the image
-    /// \param pixel_size The data size of a single pixel in the image
+    /// Constructor.
+    /// \param initial_layout The initial vk::ImageLayout of the image.
+    /// \param usage_flags vk::ImageUsageFlags specifying how the image will be used.
+    /// \param vma_memory_usage VmaMemoryUsage flags to pass to the Vulkan memory allocator library when allocating the image.
+    /// \param _width The width of the image.
+    /// \param _height The height of the image.
+    /// \param _depth The depth of the image.
+    /// \param pixel_size The data size of a single pixel in the image.
     ShaderImage( 
       vk::ImageLayout initial_layout,
       vk::ImageUsageFlags usage_flags,
@@ -38,7 +38,7 @@ namespace VulkanEngine {
       vk::DescriptorType descriptor_type,
       vk::ShaderStageFlags shader_stage_flags );
 
-    /// Destructor
+    /// Destructor.
     ~ShaderImage();
 
     void createSampler();
@@ -52,7 +52,7 @@ namespace VulkanEngine {
 
   private:
 
-    /// The vk::Sampler created in createSampler()
+    /// The vk::Sampler created in createSampler().
     vk::Sampler vk_sampler;
 
     vk::DescriptorImageInfo vk_descriptor_image_info;

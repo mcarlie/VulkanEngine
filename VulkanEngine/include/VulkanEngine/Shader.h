@@ -6,16 +6,16 @@
 
 namespace VulkanEngine {
 
-  /// Class which encapsulates a single shader consisting of several ShaderModule instances
+  /// Class which encapsulates a single shader consisting of several ShaderModule instances.
   class Shader {
 
   public:
-
-    /// Constructor
-    /// \param shader_modules ShaderModule instances to use in this shader
+    
+    /// Constructor.
+    /// \param shader_modules ShaderModule instances to use in this shader.
     Shader( const std::vector< std::shared_ptr< ShaderModule > >& shader_modules );
     
-    /// Destructor
+    /// Destructor.
     ~Shader();
 
     void setDescriptors( const std::vector< std::vector< std::shared_ptr< Descriptor > > >& _descriptors );
@@ -32,7 +32,7 @@ namespace VulkanEngine {
 
     std::vector< vk::PipelineShaderStageCreateInfo > shader_stages;
 
-    /// All Descriptor objects used in this shader
+    /// All Descriptor objects used in this shader.
     std::vector< std::vector< std::shared_ptr< Descriptor > > > descriptors;
 
     vk::DescriptorPool vk_descriptor_pool;
