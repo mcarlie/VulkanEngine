@@ -365,7 +365,7 @@ void VulkanEngine::VulkanManager::createRenderPass() {
     color_attachment_resolve_description };
 
   auto render_pass_info = vk::RenderPassCreateInfo()
-    .setAttachmentCount( attachment_descriptions.size() )
+    .setAttachmentCount( static_cast< uint32_t >( attachment_descriptions.size() ) )
     .setPAttachments( attachment_descriptions.data() )
     .setSubpassCount( 1 )
     .setPSubpasses( &subpass_description )
@@ -462,7 +462,7 @@ void VulkanEngine::VulkanManager::createSwapchainFramebuffers() {
 
     auto framebuffer_info = vk::FramebufferCreateInfo()
       .setRenderPass( vk_render_pass )
-      .setAttachmentCount( attachments.size() )
+      .setAttachmentCount( static_cast< uint32_t >( attachments.size() ) )
       .setPAttachments( attachments.data() )
       .setWidth( window->getWidth() )
       .setHeight( window->getHeight() )
@@ -502,7 +502,7 @@ void VulkanEngine::VulkanManager::createCommandBuffers( const std::shared_ptr< M
       .setRenderPass( vk_render_pass )
       .setFramebuffer( vk_swapchain_framebuffers[i] )
       .setRenderArea( vk::Rect2D( { 0, 0 }, { window->getWidth(), window->getHeight() } ) )
-      .setClearValueCount( clear_values.size() )
+      .setClearValueCount( static_cast< uint32_t >( clear_values.size() ) )
       .setPClearValues( clear_values.data() );
 
     vk_command_buffers[i].beginRenderPass( render_pass_info, vk::SubpassContents::eInline );

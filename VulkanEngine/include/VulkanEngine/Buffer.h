@@ -15,7 +15,7 @@ namespace VulkanEngine {
 
     /// Constructor
     /// Creates the buffer given the parameters
-    /// \param data_size The total size of the data in the buffer
+    /// \param _data_size The total size of the data in the buffer
     /// \param usage_flags vk::BufferUsageFlags for this buffer
     /// \param memory_property_flags vk::MemoryPropertyFlags for this buffer
     /// \param vma_memory_usage VmaMemoryUsage flags to use when allocating

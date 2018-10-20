@@ -12,6 +12,10 @@ set(REQUIRED_LIBS "")
 # Include directories to add
 include_directories("VulkanEngine/include" "VulkanEngine/src")
 
+# Create VulkanEngine library
+file( GLOB SOURCES "VulkanEngine/include/VulkanEngine/*.h" "VulkanEngine/src/*.cpp" )
+add_library(VulkanEngine ${SOURCES})
+
 # Directory containing libraries
 set(LIBS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/Libs")
 
@@ -20,10 +24,6 @@ include_directories("${LIBS_DIR}/eigen-3.3.5" )
 include_directories("${LIBS_DIR}/tinyobjloader-1.0.6" )
 include_directories("${LIBS_DIR}/stb" )
 include_directories("${LIBS_DIR}/VulkanMemoryAllocator-2.1.0/src" )
-
-# Add sources to project
-file( GLOB SOURCES "VulkanEngine/include/VulkanEngine/*.h" "VulkanEngine/src/*.cpp" )
-add_executable(VulkanEngine ${SOURCES})
 
 # Find Vulkan
 find_package(Vulkan REQUIRED)
@@ -37,3 +37,8 @@ set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 set(GLFW_INSTALL OFF CACHE BOOL "" FORCE)
 add_subdirectory("${LIBS_DIR}/glfw-3.2.1")
 target_link_libraries(VulkanEngine glfw)
+
+# Add examples
+file( GLOB SOURCES "examples/SimpleScene/*.cpp" "examples/SimpleScene/*.h" )
+add_executable(SimpleScene ${SOURCES})
+target_link_libraries(SimpleScene VulkanEngine)
