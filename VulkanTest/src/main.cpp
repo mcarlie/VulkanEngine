@@ -28,7 +28,7 @@ using RGBATexture2D1S
 
 int main() {
 
-  std::shared_ptr< VulkanTest::Window > window( new VulkanTest::GLFWWindow( 800, 600, "VulkanTest", false ) );
+  std::shared_ptr< VulkanTest::Window > window( new VulkanTest::GLFWWindow( 1280, 800, "VulkanTest", false ) );
   window->initialize();
 
   auto vulkan_manager = VulkanTest::VulkanManager::getInstance();
@@ -84,7 +84,7 @@ int main() {
 
   std::shared_ptr< VulkanTest::Camera< float > > camera;
   camera.reset( new VulkanTest::Camera< float >( 
-    { 0, 300, -100 },
+    { 0, 150, -50 },
     { 0, 0, 0 },
     { 0, 1, 0 },
     0.1,

@@ -96,6 +96,16 @@ void VulkanTest::Image< format, image_type, tiling, sample_count_flags >::transi
     source_stage = vk::PipelineStageFlagBits::eTopOfPipe;
     destination_stage = vk::PipelineStageFlagBits::eTransfer;
 
+  } else if( vk_image_layout == vk::ImageLayout::eUndefined && new_layout == vk::ImageLayout::eColorAttachmentOptimal ) {
+
+    subresource_range.setAspectMask( vk::ImageAspectFlagBits::eColor );
+
+    image_memory_barrier.setSrcAccessMask( vk::AccessFlags() );
+    image_memory_barrier.setDstAccessMask( vk::AccessFlagBits::eColorAttachmentRead | vk::AccessFlagBits::eColorAttachmentWrite );
+
+    source_stage = vk::PipelineStageFlagBits::eTopOfPipe;
+    destination_stage = vk::PipelineStageFlagBits::eColorAttachmentOutput;
+
   } else if( vk_image_layout == vk::ImageLayout::eUndefined && new_layout == vk::ImageLayout::eDepthStencilAttachmentOptimal ) {
 
     subresource_range.setAspectMask( vk::ImageAspectFlagBits::eDepth | vk::ImageAspectFlagBits::eStencil );

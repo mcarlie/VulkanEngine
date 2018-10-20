@@ -12,6 +12,7 @@ namespace VulkanTest {
   public:
 
     /// Constructor
+    /// \param shader_modules ShaderModule instances to use in this shader
     Shader( const std::vector< std::shared_ptr< ShaderModule > >& shader_modules );
     
     /// Destructor

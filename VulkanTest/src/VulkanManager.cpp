@@ -100,7 +100,8 @@ void VulkanTest::VulkanManager::initialize( const std::shared_ptr< Window >& _wi
 
   auto physical_device_features = vk::PhysicalDeviceFeatures()
     .setSamplerAnisotropy( VK_TRUE )
-    .setFragmentStoresAndAtomics( VK_TRUE );
+    .setFragmentStoresAndAtomics( VK_TRUE )
+    .setSampleRateShading( VK_TRUE );
 
   auto device_info = vk::DeviceCreateInfo()
 #if defined( _DEBUG )
@@ -305,7 +306,31 @@ void VulkanTest::VulkanManager::createRenderPass() {
     .setAttachment( 1 )
     .setLayout( vk::ImageLayout::eDepthStencilAttachmentOptimal );
 
-  auto attachment_description = vk::AttachmentDescription()
+  color_attachment.reset(
+    new ColorAttachment(
+      vk::ImageLayout::eUndefined,
+      vk::ImageUsageFlagBits::eColorAttachment,
+      VmaMemoryUsage::VMA_MEMORY_USAGE_GPU_ONLY,
+      window->getWidth(), window->getHeight(), 1, 4, false ) );
+
+  color_attachment->createImageView( vk::ImageViewType::e2D, vk::ImageAspectFlagBits::eColor );
+  color_attachment->transitionImageLayout( vk::ImageLayout::eColorAttachmentOptimal );
+
+  auto color_attachment_description = vk::AttachmentDescription()
+    .setFormat( color_attachment->getVkFormat() )
+    .setSamples( color_attachment->getVkSampleCountFlags() )
+    .setLoadOp( vk::AttachmentLoadOp::eClear )
+    .setStoreOp( vk::AttachmentStoreOp::eStore )
+    .setStencilLoadOp( vk::AttachmentLoadOp::eDontCare )
+    .setStencilStoreOp( vk::AttachmentStoreOp::eDontCare )
+    .setInitialLayout( vk::ImageLayout::eUndefined )
+    .setFinalLayout( vk::ImageLayout::eColorAttachmentOptimal );
+
+  auto color_attachment_reference = vk::AttachmentReference()
+    .setAttachment( 0 )
+    .setLayout( vk::ImageLayout::eColorAttachmentOptimal );
+
+  auto color_attachment_resolve_description = vk::AttachmentDescription()
     .setFormat( vk::Format::eB8G8R8A8Unorm )
     .setSamples( vk::SampleCountFlagBits::e1 )
     .setLoadOp( vk::AttachmentLoadOp::eClear )
@@ -315,15 +340,16 @@ void VulkanTest::VulkanManager::createRenderPass() {
     .setInitialLayout( vk::ImageLayout::eUndefined )
     .setFinalLayout( vk::ImageLayout::ePresentSrcKHR );
 
-  auto attachment_reference = vk::AttachmentReference()
-    .setAttachment( 0 )
+  auto color_attachment_resolve_reference = vk::AttachmentReference()
+    .setAttachment( 2 )
     .setLayout( vk::ImageLayout::eColorAttachmentOptimal );
 
   auto subpass_description = vk::SubpassDescription()
     .setPipelineBindPoint( vk::PipelineBindPoint::eGraphics )
     .setColorAttachmentCount( 1 )
-    .setPColorAttachments( &attachment_reference )
-    .setPDepthStencilAttachment( &depth_attachment_reference );
+    .setPColorAttachments( &color_attachment_reference )
+    .setPDepthStencilAttachment( &depth_attachment_reference )
+    .setPResolveAttachments( &color_attachment_resolve_reference );
 
   VkSubpassDependency dependency = {};
   dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
@@ -333,7 +359,10 @@ void VulkanTest::VulkanManager::createRenderPass() {
   dependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
   dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
 
-  std::array< vk::AttachmentDescription, 2 > attachment_descriptions = { attachment_description, depth_attachment_description };
+  std::array< vk::AttachmentDescription, 3 > attachment_descriptions = { 
+    color_attachment_description,
+    depth_attachment_description,
+    color_attachment_resolve_description };
 
   auto render_pass_info = vk::RenderPassCreateInfo()
     .setAttachmentCount( attachment_descriptions.size() )
@@ -376,8 +405,8 @@ void VulkanTest::VulkanManager::createGraphicsPipeline( const std::shared_ptr< M
     .setDepthBiasEnable( VK_FALSE );
 
   auto multisampling_info = vk::PipelineMultisampleStateCreateInfo()
-    .setSampleShadingEnable( VK_FALSE )
-    .setRasterizationSamples( vk::SampleCountFlagBits::e1 );
+    .setSampleShadingEnable( VK_TRUE )
+    .setRasterizationSamples( vk::SampleCountFlagBits::e8 );
 
   auto colorblend_attachment_info = vk::PipelineColorBlendAttachmentState()
     .setColorWriteMask( 
@@ -429,7 +458,7 @@ void VulkanTest::VulkanManager::createSwapchainFramebuffers() {
 
   vk_swapchain_framebuffers.resize( vk_image_views.size() );
   for( size_t i = 0; i < vk_image_views.size(); ++i ) {
-    std::array< vk::ImageView, 2 > attachments = { vk_image_views[i], depth_stencil_attachment->getVkImageView() };
+    std::array< vk::ImageView, 3 > attachments = { color_attachment->getVkImageView(), depth_stencil_attachment->getVkImageView(), vk_image_views[i] };
 
     auto framebuffer_info = vk::FramebufferCreateInfo()
       .setRenderPass( vk_render_pass )
@@ -459,7 +488,7 @@ void VulkanTest::VulkanManager::createCommandBuffers( const std::shared_ptr< Mes
   auto clear_depth_stencil = vk::ClearValue()
     .setDepthStencil( vk::ClearDepthStencilValue( { 1.0f, 0 } ) );
 
-  std::array< vk::ClearValue, 2 > clear_values = { clear_color, clear_depth_stencil };
+  std::array< vk::ClearValue, 3 > clear_values = { clear_color, clear_depth_stencil, clear_color };
 
   for( size_t i = 0; i < vk_command_buffers.size(); ++i ) {
 

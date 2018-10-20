@@ -5,7 +5,7 @@
 
 namespace VulkanTest {
 
-  /// Base class for any classes interface with the Vulkan resource descriptor concept
+  /// Base class for any classes which interface with the Vulkan resource descriptor concept
   class Descriptor {
 
   public:
