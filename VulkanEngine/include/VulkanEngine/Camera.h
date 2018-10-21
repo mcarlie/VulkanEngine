@@ -33,6 +33,10 @@ namespace VulkanEngine {
     /// Destructor
     ~Camera();
 
+    void setLookAt( const Eigen::Matrix< Scalar, 3, 1 >& _look_at );
+
+    Eigen::Matrix< Scalar, 3, 1 > getPosition();
+
     /// \return The projection matrix of the Camera.
     const Eigen::Matrix< Scalar, 4, 4 > getPerspectiveProjectionMatrix();
 

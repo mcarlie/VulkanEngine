@@ -1,6 +1,8 @@
 #ifndef UTILITIES_H
 #define UTILITIES_H
 
+#include <VulkanEngine/Constants.h>
+
 #include <Eigen/Eigen>
 
 namespace VulkanEngine {
@@ -8,6 +10,10 @@ namespace VulkanEngine {
   /// Contains various utility classes, type definitions and functions.
   namespace Utilities {
   
+    /// Convert degrees to radian
+    template< typename T >
+    T toRadians( const T& val ) { return val * Constants::pi< T >() / static_cast< T >( 180 ); }
+
     /// Helper function for combining the hash of one type with another.
     /// \tparam T The type to hash.
     /// \param seed The hash to combine with.

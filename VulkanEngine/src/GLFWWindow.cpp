@@ -49,6 +49,12 @@ bool VulkanEngine::GLFWWindow::initialize() {
   glfwSetWindowSizeCallback( glfw_window, &windowResizeCallback );
   glfwSetFramebufferSizeCallback( glfw_window, &framebufferResizeCallback );
 
+  glfwSetCursorPosCallback( glfw_window, &cursorPositionCallback );
+  glfwSetMouseButtonCallback( glfw_window, &mouseButtonCallback );
+  glfwSetKeyCallback( glfw_window, &keyCallback );
+
+  mouse_input.reset( new MouseInput );
+
   return true;
 
 }
@@ -110,6 +116,18 @@ void VulkanEngine::GLFWWindow::errorCallback( int error, const char* description
 
 }
 
+void VulkanEngine::GLFWWindow::windowResizeCallback( GLFWwindow* _glfw_window, int _width, int _height ) {
+
+  GLFWWindow* window = static_cast< GLFWWindow* >( glfwGetWindowUserPointer( _glfw_window ) );
+  if( ( window->width != static_cast< uint32_t >( _width ) ) 
+    || ( window->height != static_cast< uint32_t >( _height ) ) ) {
+    window->size_changed = true;
+  }
+  window->width = static_cast< uint32_t >( _width );
+  window->height = static_cast< uint32_t >( _height );
+
+}
+
 void VulkanEngine::GLFWWindow::framebufferResizeCallback( GLFWwindow* _glfw_window, int _width, int _height ) {
 
   GLFWWindow* window = static_cast< GLFWWindow* >( glfwGetWindowUserPointer( _glfw_window ) );
@@ -122,14 +140,39 @@ void VulkanEngine::GLFWWindow::framebufferResizeCallback( GLFWwindow* _glfw_wind
 
 }
 
-void VulkanEngine::GLFWWindow::windowResizeCallback( GLFWwindow* _glfw_window, int _width, int _height ) {
+void VulkanEngine::GLFWWindow::cursorPositionCallback(GLFWwindow* _glfw_window, double xpos, double ypos) {
 
   GLFWWindow* window = static_cast< GLFWWindow* >( glfwGetWindowUserPointer( _glfw_window ) );
-  if( ( window->width != static_cast< uint32_t >( _width ) ) 
-    || ( window->height != static_cast< uint32_t >( _height ) ) ) {
-    window->size_changed = true;
-  }
-  window->width = static_cast< uint32_t >( _width );
-  window->height = static_cast< uint32_t >( _height );
+  window->mousePositionCallback( xpos, ypos );
 
+}
+
+void VulkanEngine::GLFWWindow::mouseButtonCallback( GLFWwindow* _glfw_window, int button, int action, int mods ) {
+  GLFWWindow* window = static_cast< GLFWWindow* >( glfwGetWindowUserPointer( _glfw_window ) );
+  bool left = false;
+  bool right = false;
+  bool middle = false;
+
+  if( button == GLFW_MOUSE_BUTTON_LEFT ) {
+    left = action == GLFW_PRESS;
+    right = glfwGetMouseButton( _glfw_window, GLFW_MOUSE_BUTTON_RIGHT ) == GLFW_PRESS;
+    middle = glfwGetMouseButton( _glfw_window, GLFW_MOUSE_BUTTON_MIDDLE ) == GLFW_PRESS;
+  } else if( button == GLFW_MOUSE_BUTTON_RIGHT ) {
+    left = glfwGetMouseButton( _glfw_window, GLFW_MOUSE_BUTTON_LEFT ) == GLFW_PRESS;
+    right = action == GLFW_PRESS;
+    middle = glfwGetMouseButton( _glfw_window, GLFW_MOUSE_BUTTON_MIDDLE ) == GLFW_PRESS;
+  } else if( button == GLFW_MOUSE_BUTTON_MIDDLE ) {
+    left = glfwGetMouseButton( _glfw_window, GLFW_MOUSE_BUTTON_LEFT ) == GLFW_PRESS;
+    right = glfwGetMouseButton( _glfw_window, GLFW_MOUSE_BUTTON_RIGHT ) == GLFW_PRESS;
+    middle = action == GLFW_PRESS;
+  } else {
+    left = glfwGetMouseButton( _glfw_window, GLFW_MOUSE_BUTTON_LEFT ) == GLFW_PRESS;
+    right = glfwGetMouseButton( _glfw_window, GLFW_MOUSE_BUTTON_RIGHT ) == GLFW_PRESS;
+    middle = glfwGetMouseButton( _glfw_window, GLFW_MOUSE_BUTTON_MIDDLE ) == GLFW_PRESS;
+  }
+
+  window->mouseButtonPressedCallback( left, middle, right );
+}
+
+void VulkanEngine::GLFWWindow::keyCallback( GLFWwindow* _glfw_window, int key, int scancode, int action, int mods ) {
 }

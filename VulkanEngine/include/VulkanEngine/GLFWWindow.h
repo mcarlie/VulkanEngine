@@ -71,6 +71,21 @@ namespace VulkanEngine {
     /// \param _height The new height of the framebuffer.
     static void framebufferResizeCallback( GLFWwindow* _glfw_window, int _width, int _height );
 
+    /// Callback which gives the current position of the mouse.
+    /// \param _glfw_window The window which recieved the event.
+    /// \param xpos The x position of the mouse.
+    /// \param ypos The y position of the mouse.
+    static void cursorPositionCallback( GLFWwindow* _glfw_window, double xpos, double ypos );
+
+    /// Callback which gives which buttons are current clicked on the mouse.
+    /// \param _glfw_window The window which recieved the event.
+    /// \param button The button which has an event.
+    /// \param action The action performed on the button.
+    /// \param mods The modifier buttons pressed.
+    static void mouseButtonCallback( GLFWwindow* _glfw_window, int button, int action, int mods );
+
+    static void keyCallback( GLFWwindow* _glfw_window, int key, int scancode, int action, int mods );
+
   };
 
 }

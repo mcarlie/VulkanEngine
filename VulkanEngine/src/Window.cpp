@@ -7,6 +7,10 @@ VulkanEngine::Window::Window( uint32_t _width, uint32_t _height, const std::stri
 VulkanEngine::Window::~Window() {
 }
 
+std::shared_ptr< VulkanEngine::MouseInput > VulkanEngine::Window::getMouseInput() {
+  return mouse_input;
+}
+
 void VulkanEngine::Window::setWidth( uint32_t _width ) {
   width = _width;
 }
@@ -43,4 +47,24 @@ bool VulkanEngine::Window::sizeHasChanged() {
   bool tmp_size_changed = size_changed;
   size_changed = false;
   return tmp_size_changed;
+}
+
+void VulkanEngine::Window::mousePositionCallback( double xpos, double ypos ) {
+
+  if( mouse_input.get() ){
+    mouse_input->setPosition( xpos, ypos );
+  }
+
+}
+
+void VulkanEngine::Window::mouseButtonPressedCallback( bool left_pressed, bool right_pressed, bool middle_pressed ) {
+
+  if( mouse_input.get() ){
+    mouse_input->setButtons( left_pressed, right_pressed, middle_pressed );
+  }
+
+}
+
+void keyboardButtonPressedCallback( const char* key, int scancode ) {
+
 }

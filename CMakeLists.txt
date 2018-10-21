@@ -25,7 +25,7 @@ include_directories("${LIBS_DIR}/tinyobjloader-1.0.6" )
 include_directories("${LIBS_DIR}/stb" )
 include_directories("${LIBS_DIR}/VulkanMemoryAllocator-2.1.0/src" )
 
-# Find Vulkan
+# Vulkan
 find_package(Vulkan REQUIRED)
 include_directories(${Vulkan_INCLUDE_DIRS})
 target_link_libraries(VulkanEngine ${Vulkan_LIBRARIES})

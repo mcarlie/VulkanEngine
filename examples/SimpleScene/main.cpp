@@ -31,11 +31,13 @@ int main() {
   std::shared_ptr< VulkanEngine::Window > window( new VulkanEngine::GLFWWindow( 1280, 800, "VulkanEngine", false ) );
   window->initialize();
 
+  std::shared_ptr< VulkanEngine::MouseInput > mouse_input = window->getMouseInput();
+
   auto vulkan_manager = VulkanEngine::VulkanManager::getInstance();
   vulkan_manager->initialize( window );
 
   std::shared_ptr< VulkanEngine::MeshBase > mesh;
-  mesh = VulkanEngine::OBJLoader::loadOBJ( "C:/Users/Michael/Desktop/VK/models/spider_pumpkin_obj.obj", "" )[0];
+  mesh = VulkanEngine::OBJLoader::loadOBJ( "C:/Users/Michael/Desktop/VK/models/chalet.obj", "" )[0];
 
   std::shared_ptr< VulkanEngine::ShaderModule > fragment_shader( 
     new VulkanEngine::ShaderModule( "C:/Users/Michael/Desktop/VK/shaders/frag.spv", vk::ShaderStageFlagBits::eFragment ) );
@@ -49,7 +51,7 @@ int main() {
   int texture_height;
   int channels_in_file;
   unsigned char* image_data = stbi_load( 
-    "C:/Users/Michael/Desktop/VK/models/spider_pumpkin_obj_0.jpg",
+    "C:/Users/Michael/Desktop/VK/models/chalet.jpg",
     &texture_width, &texture_height,
     &channels_in_file, 4 );
 
@@ -84,7 +86,7 @@ int main() {
 
   std::shared_ptr< VulkanEngine::Camera< float > > camera;
   camera.reset( new VulkanEngine::Camera< float >( 
-    { 0, 150, -50 },
+    { 0, 5, -5  },
     { 0, 0, 0 },
     { 0, 1, 0 },
     0.1,
@@ -99,7 +101,37 @@ int main() {
   mesh->transferBuffers();
   texture->transferBuffer();
 
+  double camera_yaw = 0;
+  double camera_pitch = 0;
+
   while( !window->shouldClose() ) {
+
+    if( mouse_input->leftButtonPressed() ){
+
+      double x, y, px, py;
+      mouse_input->getPosition( x, y );
+      mouse_input->getPreviousPosition( px, py );
+
+      camera_yaw += ( x - px ) * 0.05;
+      camera_pitch += ( py - y ) * 0.05;
+
+      if( camera_pitch > 89.0f ) {
+        camera_pitch = 89.0f;
+      }
+      if( camera_pitch < -89.0f ) {
+        camera_pitch = -89.0f;
+      }
+
+      Eigen::Vector3f camera_dir( 
+        std::cos( VulkanEngine::Utilities::toRadians< double >( camera_yaw ) ) * std::cos( VulkanEngine::Utilities::toRadians< double >( camera_pitch ) ),
+        std::sin( VulkanEngine::Utilities::toRadians< double >( camera_pitch ) ),
+        std::sin( VulkanEngine::Utilities::toRadians< double >( camera_yaw ) ) * std::cos( VulkanEngine::Utilities::toRadians< double >( camera_pitch ) )
+      );
+      camera_dir.normalized();   
+
+      camera->setLookAt( camera->getPosition() + camera_dir );
+
+    }
 
     MvpUbo vp_data;
     vp_data.projection = camera->getPerspectiveProjectionMatrix();

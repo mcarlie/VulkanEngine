@@ -31,6 +31,16 @@ VulkanEngine::Camera< Scalar >::~Camera() {
 }
 
 template< typename Scalar > 
+void VulkanEngine::Camera< Scalar >::setLookAt( const Eigen::Matrix< Scalar, 3, 1 >& _look_at ) {
+  look_at = _look_at;
+}
+
+template< typename Scalar > 
+Eigen::Matrix< Scalar, 3, 1 > VulkanEngine::Camera< Scalar >::getPosition() {
+  return position;
+}
+
+template< typename Scalar > 
 const Eigen::Matrix< Scalar, 4, 4 > VulkanEngine::Camera< Scalar >::getPerspectiveProjectionMatrix() {
 
   const Scalar tan_half_fov = std::tan( Constants::pi< Scalar >() * fov / ( static_cast< Scalar >( 2 * 180 ) ) );

@@ -1,6 +1,8 @@
 #ifndef WINDOW_H
 #define WINDOW_H
 
+#include <VulkanEngine/MouseInput.h>
+
 #include <vulkan/vulkan.hpp>
 
 #include <string>
@@ -34,8 +36,11 @@ namespace VulkanEngine {
     /// \return The created vk::SurfaceKHR.
     virtual vk::SurfaceKHR createVkSurface( const vk::Instance& instance ) = 0;
 
+    /// Get a MouseInfo instance which retrieves values from this Window instance
+    virtual std::shared_ptr< MouseInput> getMouseInput();
+
     /// Do anything needed to update the window.
-    virtual void update() {};
+    virtual void update() = 0;
 
     /// \return True if the window should close.
     virtual bool shouldClose() = 0;
@@ -71,6 +76,16 @@ namespace VulkanEngine {
 
   protected:
 
+    /// Callback which gets the current position of the mouse
+    /// \param xpos The x position of the mouse
+    /// \param ypos The y position of the mouse
+    void mousePositionCallback( double xpos, double ypos );
+
+    /// Callback which gets the current status of mouse buttons
+    void mouseButtonPressedCallback( bool left_pressed, bool right_pressed, bool middle_pressed );
+
+    void keyboardButtonPressedCallback( const char* key, int scancode );
+
     /// The current width of the window.
     uint32_t width;
 
@@ -92,6 +107,9 @@ namespace VulkanEngine {
     /// If true the window or framebuffer size has changed.
     /// Reset when calling sizeHasChanged().
     bool size_changed;
+
+    /// The MouseInput instances connected to this Window
+    std::shared_ptr< MouseInput > mouse_input; 
 
   };
 
