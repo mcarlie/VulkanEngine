@@ -17,7 +17,7 @@ VulkanEngine::ShaderImage< format, image_type, tiling, sample_count_flags >::Sha
   uint32_t decriptor_count,
   vk::DescriptorType descriptor_type,
   vk::ShaderStageFlags shader_stage_flags ) 
-  : Image( initial_layout, usage_flags, vma_memory_usage, width, height, depth, pixel_size ),
+  : Image< format, image_type, tiling, sample_count_flags >( initial_layout, usage_flags, vma_memory_usage, width, height, depth, pixel_size ),
     Descriptor( binding, decriptor_count, descriptor_type, shader_stage_flags ) {
 }
 
@@ -44,7 +44,7 @@ void VulkanEngine::ShaderImage< format, image_type, tiling, sample_count_flags >
     .setMipmapMode( vk::SamplerMipmapMode::eLinear )
     .setMipLodBias( 0.0f )
     .setMinLod( 0.0f )
-    .setMaxLod( static_cast< float >( mipmap_levels ) );
+    .setMaxLod( static_cast< float >( this->mipmap_levels ) );
 
   vk_sampler = VulkanManager::getInstance()->getVkDevice().createSampler( sampler_create_info );
   if( !vk_sampler ) {
@@ -58,8 +58,8 @@ vk::DescriptorImageInfo VulkanEngine::ShaderImage< format, image_type, tiling, s
 
   return vk::DescriptorImageInfo()
     .setSampler( vk_sampler )
-    .setImageView( vk_image_view )
-    .setImageLayout( vk_image_layout );
+    .setImageView( this->vk_image_view )
+    .setImageLayout( this->vk_image_layout );
 
 }
 
@@ -71,8 +71,8 @@ void VulkanEngine::ShaderImage< format, image_type, tiling, sample_count_flags >
 
     vk_descriptor_image_info = vk::DescriptorImageInfo()
       .setSampler( vk_sampler )
-      .setImageView( vk_image_view )
-      .setImageLayout( vk_image_layout );
+      .setImageView( this->vk_image_view )
+      .setImageLayout( this->vk_image_layout );
 
     write_descriptor_sets.push_back( vk::WriteDescriptorSet()
       .setDstBinding( binding )

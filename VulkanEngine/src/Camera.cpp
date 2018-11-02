@@ -4,17 +4,15 @@
 #include <VulkanEngine/Camera.h>
 #include <VulkanEngine/Constants.h>
 
-template< typename Scalar >
-VulkanEngine::Camera< Scalar >::Camera( 
-  Eigen::Matrix< Scalar, 3, 1 > _position,
-  Eigen::Matrix< Scalar, 3, 1 > _look_at,
-  Eigen::Matrix< Scalar, 3, 1 > _up_vector,
-  Scalar _z_near,
-  Scalar _z_far,
-  Scalar _fov,
+VulkanEngine::Camera::Camera( 
+  Eigen::Vector3f _position,
+  Eigen::Vector3f _look_at,
+  Eigen::Vector3f _up_vector,
+  float _z_near,
+  float _z_far,
+  float _fov,
   uint32_t _width,
   uint32_t _height ) :
-  position( _position ),
   look_at( _look_at ),
   up_vector( _up_vector ),
   z_near( _z_near ),
@@ -25,55 +23,57 @@ VulkanEngine::Camera< Scalar >::Camera(
 
 }
 
-template< typename Scalar > 
-VulkanEngine::Camera< Scalar >::~Camera() {
+VulkanEngine::Camera::~Camera() {
 
 }
 
-template< typename Scalar > 
-void VulkanEngine::Camera< Scalar >::setLookAt( const Eigen::Matrix< Scalar, 3, 1 >& _look_at ) {
+void VulkanEngine::Camera::updateCallback( SceneState& scene_state ) {
+
+  scene_state.setViewMatrix( getViewMatrix() );
+  scene_state.setProjectionMatrix( getPerspectiveProjectionMatrix() );
+
+}
+
+void VulkanEngine::Camera::setLookAt( const Eigen::Vector3f& _look_at ) {
   look_at = _look_at;
 }
 
-template< typename Scalar > 
-Eigen::Matrix< Scalar, 3, 1 > VulkanEngine::Camera< Scalar >::getPosition() {
-  return position;
+Eigen::Vector3f VulkanEngine::Camera::getPosition() {
+  return transform.col( 3 ).head< 3 >();
 }
 
-template< typename Scalar > 
-const Eigen::Matrix< Scalar, 4, 4 > VulkanEngine::Camera< Scalar >::getPerspectiveProjectionMatrix() {
+const Eigen::Matrix4f VulkanEngine::Camera::getPerspectiveProjectionMatrix() {
 
-  const Scalar tan_half_fov = std::tan( Constants::pi< Scalar >() * fov / ( static_cast< Scalar >( 2 * 180 ) ) );
-  const Scalar aspect = width / static_cast< Scalar >( height );
+  const float tan_half_fov = std::tan( Constants::pi< float >() * fov / ( 2.0f * 180.0f ) );
+  const float aspect = width / static_cast< float >( height );
 
-	Eigen::Matrix< Scalar, 4, 4 > result;
+	Eigen::Matrix4f result;
   result.setZero();
-  result( 0, 0 ) = 1 / ( aspect * tan_half_fov );
-	result( 1, 1 ) = 1 / tan_half_fov;
+  result( 0, 0 ) = 1.0f / ( aspect * tan_half_fov );
+	result( 1, 1 ) = 1.0f / tan_half_fov;
 	result( 2, 2 ) = z_far / ( z_near - z_far );
-	result( 3, 2 ) = -1;
+	result( 3, 2 ) = -1.0f;
 	result( 2, 3 ) = -( z_far * z_near ) / ( z_far - z_near );
 
-  Eigen::Matrix< Scalar, 4, 4 > clip;
+  Eigen::Matrix4f clip;
   clip.setZero();
-  clip( 0, 0 ) = 1;
-  clip( 1, 1 ) = -1;
-  clip( 2, 2 ) = 1 / static_cast< Scalar >( 2 );
-  clip( 2, 3 ) = 1 / static_cast< Scalar >( 2 );
-  clip( 3, 3 ) = 1;
+  clip( 0, 0 ) = 1.0f;
+  clip( 1, 1 ) = -1.0f;
+  clip( 2, 2 ) = 0.5f;
+  clip( 2, 3 ) = 0.5f;
+  clip( 3, 3 ) = 1.0f;
 
   return clip * result;
 
 }
 
-template< typename Scalar > 
-const Eigen::Matrix< Scalar, 4, 4 > VulkanEngine::Camera< Scalar >::getViewMatrix() {
+const Eigen::Matrix4f VulkanEngine::Camera::getViewMatrix() {
 
-	const auto& z_axis = ( look_at - position ).normalized();
+	const auto& z_axis = ( look_at - getPosition() ).normalized();
 	const auto& x_axis = z_axis.cross( up_vector ).normalized();
 	const auto& y_axis = x_axis.cross( z_axis );
 
-	Eigen::Matrix< Scalar, 4, 4 > result = Eigen::Matrix< Scalar, 4, 4 >::Identity();
+	Eigen::Matrix4f result = Eigen::Matrix4f::Identity();
 	result( 0, 0 ) = x_axis( 0 );
 	result( 0, 1 ) = x_axis( 1 );
 	result( 0, 2 ) = x_axis( 2 );
@@ -83,9 +83,9 @@ const Eigen::Matrix< Scalar, 4, 4 > VulkanEngine::Camera< Scalar >::getViewMatri
 	result( 2, 0 ) = -z_axis( 0 );
 	result( 2, 1 ) = -z_axis( 1 );
 	result( 2, 2 ) = -z_axis( 2 );
-	result( 0, 3 ) = -x_axis.dot( position );
-	result( 1, 3 ) = -y_axis.dot( position );
-	result( 2, 3 ) = z_axis.dot( position );
+	result( 0, 3 ) = -x_axis.dot( getPosition() );
+	result( 1, 3 ) = -y_axis.dot( getPosition() );
+	result( 2, 3 ) = z_axis.dot( getPosition() );
 
   return result;
 

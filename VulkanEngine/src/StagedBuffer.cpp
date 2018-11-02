@@ -6,7 +6,7 @@
 template< class DestinationClass >
 template< class ... DestinationClassArgs >
 VulkanEngine::StagedBuffer< DestinationClass >::StagedBuffer( DestinationClassArgs ... args ) 
-  : source_buffer( getStagingBufferSize(),
+  : source_buffer( this->getStagingBufferSize(),
     vk::BufferUsageFlagBits::eTransferSrc,
     vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent,
     VMA_MEMORY_USAGE_CPU_ONLY ), DestinationClass( args ... ) {
@@ -19,17 +19,17 @@ VulkanEngine::StagedBuffer< DestinationClass >::~StagedBuffer() {
 template< class DestinationClass >
 void VulkanEngine::StagedBuffer< DestinationClass >::transferBuffer( const vk::CommandBuffer& command_buffer ) {
 
-  const vk::CommandBuffer& command_buffer_to_use = command_buffer ? command_buffer : single_use_command_buffer;
+  const vk::CommandBuffer& command_buffer_to_use = command_buffer ? command_buffer : this->single_use_command_buffer;
   bool created_single_use_command_buffer = false;
   if( !command_buffer_to_use ) {
     created_single_use_command_buffer = true;
-    beginSingleUsageCommandBuffer();
+    this->beginSingleUsageCommandBuffer();
   }
 
-  insertTransferCommand( command_buffer_to_use, source_buffer.getVkBuffer() );
+  this->insertTransferCommand( command_buffer_to_use, source_buffer.getVkBuffer() );
 
   if( created_single_use_command_buffer ){
-    endSingleUsageCommandBuffer();
+    this->endSingleUsageCommandBuffer();
   }
 
 }

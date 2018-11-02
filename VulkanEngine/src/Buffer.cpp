@@ -26,7 +26,6 @@ void VulkanEngine::Buffer::createBuffer(
   VmaMemoryUsage vma_memory_usage ) {
 
   auto vulkan_manager = VulkanManager::getInstance();
-  const vk::Device& vk_device = vulkan_manager->getVkDevice();
 
   auto buffer_info = vk::BufferCreateInfo()
     .setSize( data_size )

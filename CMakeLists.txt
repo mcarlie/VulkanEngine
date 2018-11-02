@@ -4,7 +4,7 @@ project(VulkanEngine)
 set(VulkanEngine_VERSION_MAJOR 0)
 set(VulkanEngine_VERSION_MINOR 1)
 
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 14)
 
 # Required libraries to link against
 set(REQUIRED_LIBS "")
@@ -22,8 +22,16 @@ set(LIBS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/Libs")
 # Add header only libraries
 include_directories("${LIBS_DIR}/eigen-3.3.5" )
 include_directories("${LIBS_DIR}/tinyobjloader-1.0.6" )
-include_directories("${LIBS_DIR}/stb" )
 include_directories("${LIBS_DIR}/VulkanMemoryAllocator-2.1.0/src" )
+
+# Makes VULKAN_SDK env variable settable by user
+if( DEFINED ENV{VULKAN_SDK} )
+  set( DEFAULT_VULKAN_SDK_PATH $ENV{VULKAN_SDK} )
+else()
+  set( DEFAULT_VULKAN_SDK_PATH "" )
+endif()
+set( VULKAN_SDK ${DEFAULT_VULKAN_SDK_PATH} CACHE PATH "Path to Vulkan SDK" )
+set( ENV{VULKAN_SDK} ${VULKAN_SDK} )
 
 # Vulkan
 find_package(Vulkan REQUIRED)
@@ -39,6 +47,8 @@ add_subdirectory("${LIBS_DIR}/glfw-3.2.1")
 target_link_libraries(VulkanEngine glfw)
 
 # Add examples
+include_directories("${LIBS_DIR}/stb" )
+
 file( GLOB SOURCES "examples/SimpleScene/*.cpp" "examples/SimpleScene/*.h" )
 add_executable(SimpleScene ${SOURCES})
 target_link_libraries(SimpleScene VulkanEngine)

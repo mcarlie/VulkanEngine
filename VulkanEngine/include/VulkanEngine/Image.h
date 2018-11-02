@@ -101,6 +101,8 @@ namespace VulkanEngine {
   
     /// The vk::ImageView created in createImageView().
     vk::ImageView vk_image_view;
+    
+    VkImageCreateInfo image_create_info;
 
   };
 

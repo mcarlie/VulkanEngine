@@ -8,7 +8,6 @@
 #include <VulkanEngine/UniformBuffer.h>
 #include <VulkanEngine/Camera.h>
 #include <VulkanEngine/MeshBase.h>
-#include <VulkanEngine/ShaderImage.h>
 
 #include <Eigen/Eigen>
 #include <vk_mem_alloc.h>
@@ -18,6 +17,10 @@
 
 namespace VulkanEngine {
 
+  // Forward decleration
+  template< vk::Format format, vk::ImageType image_type, vk::ImageTiling tiling, vk::SampleCountFlagBits sample_count_flags >
+  class Image;
+  
   class VulkanManager {
   
   private:
@@ -46,7 +49,7 @@ namespace VulkanEngine {
     /// \param _window The Window instance to use with the manager.
     void initialize( const std::shared_ptr< Window >& _window );
 
-    void createGraphicsPipeline( const std::shared_ptr< MeshBase >& mesh );
+    void createGraphicsPipeline( const std::shared_ptr< MeshBase >& mesh, const std::shared_ptr< Shader >& shader );
 
     void createCommandBuffers( const std::shared_ptr< MeshBase >& mesh );
 

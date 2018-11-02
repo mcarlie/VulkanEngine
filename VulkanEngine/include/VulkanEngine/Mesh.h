@@ -25,7 +25,7 @@ namespace VulkanEngine {
       "Mesh IndexType template parameter must be the same size as either uint16_t or uint32_t" );
 
   public:
-
+    
     /// Defines the container for storing additional attributes.
     /// \tparam T The type of the VertexAttribute.
     template< typename T >
@@ -59,13 +59,13 @@ namespace VulkanEngine {
     
     /// Sets the additional attributes of the Mesh.
     /// \param _additional_attributes A list of additional VertexAttribute instances which will be used when rendering the Mesh.
-    void setAttributes( const std::tuple< AttributeContainer< AdditionalAttributeTypes > ... >& _additional_attributes );
+    void setAttributes( const std::tuple< AttributeContainer< AdditionalAttributeTypes > ... >& _attributes );
 
     /// \return The vk::PipelineVertexInputStateCreateInfo instance describing the attributes that constitute the Mesh.
-    virtual const vk::PipelineVertexInputStateCreateInfo getVkPipelineVertexInputStateCreateInfo();
+    virtual const vk::PipelineVertexInputStateCreateInfo& getVkPipelineVertexInputStateCreateInfo();
 
     /// \return The vk::PipelineInputAssemblyStateCreateInfo describing how to handle the input assembly stage for the Mesh.
-    virtual const vk::PipelineInputAssemblyStateCreateInfo getVkPipelineInputAssemblyStateCreateInfo();
+    virtual const vk::PipelineInputAssemblyStateCreateInfo& getVkPipelineInputAssemblyStateCreateInfo();
 
     /// Start transfer of data belonging to all associated VertexAttribute instances
     /// from staging buffer to vertex buffer memory.
@@ -94,13 +94,17 @@ namespace VulkanEngine {
     std::shared_ptr< IndexAttribute< IndexType > > indices;
 
     /// Any additional attributes such as color and so on.
-    std::tuple< AttributeContainer< AdditionalAttributeTypes > ... > additional_attributes;
+    std::tuple< AttributeContainer< AdditionalAttributeTypes > ... > attributes;
 
     /// vk::VertexInputBindingDescription for each attribute.
     std::vector< vk::VertexInputBindingDescription > binding_descriptions;
     
     /// vk::VertexInputAttributeDescription for each attribute.
     std::vector< vk::VertexInputAttributeDescription > attribute_descriptions;
+    
+    vk::PipelineVertexInputStateCreateInfo pipeline_vertex_input_state_info;
+    
+    vk::PipelineInputAssemblyStateCreateInfo pipeline_input_assembly_state_info;
 
   };
 

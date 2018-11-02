@@ -209,7 +209,7 @@ void VulkanEngine::Image< format, image_type, tiling, sample_count_flags >::crea
     .setHeight( height )
     .setDepth( depth );
 
-  auto image_info = vk::ImageCreateInfo()
+  image_create_info = static_cast< VkImageCreateInfo >( vk::ImageCreateInfo()
     .setImageType( image_type )
     .setExtent( image_extent )
     .setMipLevels( mipmap_levels )
@@ -219,9 +219,9 @@ void VulkanEngine::Image< format, image_type, tiling, sample_count_flags >::crea
     .setInitialLayout( vk_image_layout )
     .setUsage( usage_flags )
     .setSharingMode( vk::SharingMode::eExclusive )
-    .setSamples( sample_count_flags );
+    .setSamples( sample_count_flags ) );
 
-  vk_image = VulkanManager::getInstance()->getVkDevice().createImage( image_info );
+  vk_image = VulkanManager::getInstance()->getVkDevice().createImage( image_create_info );
   if( !vk_image ) {
     throw std::runtime_error( "Could not create image!" );
   }
@@ -229,10 +229,12 @@ void VulkanEngine::Image< format, image_type, tiling, sample_count_flags >::crea
   VmaAllocationCreateInfo allocate_info = {};
   allocate_info.usage = vma_usage;
 
+  
+  
   VkImage c_image_handle;
   auto allocation_result = vmaCreateImage( 
     VulkanManager::getInstance()->getVmaAllocator(),
-    &static_cast< VkImageCreateInfo >( image_info ),
+    &image_create_info,
     &allocate_info,
     &c_image_handle,
     &vma_allocation,

@@ -1,15 +1,15 @@
 #ifndef CAMERA_H
 #define CAMERA_H
 
+#include <VulkanEngine/SceneObject.h>
+
 #include <Eigen/Eigen>
 #include <vulkan/vulkan.hpp>
 
 namespace VulkanEngine {
 
-  /// Represents a camera or viewpoint in the scene.
-  /// \tparam Scalar The scalar type to use when calculating matrices.
-  template< typename Scalar >
-  class Camera {
+  /// Represents a camera in the scene.
+  class Camera : public SceneObject {
 
   public:
 
@@ -21,47 +21,50 @@ namespace VulkanEngine {
     /// \param _z_far The distance from the Camera's position to the far plane.
     /// \param _fov The field of view of the Camera.
     Camera( 
-      Eigen::Matrix< Scalar, 3, 1 > _position = { 0, 0, -200 },
-      Eigen::Matrix< Scalar, 3, 1 > _look_at = { 0, 0, 0 },
-      Eigen::Matrix< Scalar, 3, 1 > _up_vector = { 0, 1, 0 },
-      Scalar _z_near = static_cast< Scalar >( 0.1 ),
-      Scalar _z_far = 1000,
-      Scalar _fov = 45,
+      Eigen::Vector3f _position = { 0.0f, 0.0f, -200.0f },
+      Eigen::Vector3f _look_at = { 0.0f, 0.0f, 0.0f },
+      Eigen::Vector3f _up_vector = { 0.0f, 1.0f, 0.0f },
+      float _z_near = 0.1f,
+      float _z_far = 1000.0f,
+      float _fov = 45.0f,
       uint32_t _width = 800,
       uint32_t _height = 600 );
 
-    /// Destructor
+    /// Destructor.
     ~Camera();
 
-    void setLookAt( const Eigen::Matrix< Scalar, 3, 1 >& _look_at );
+    void setLookAt( const Eigen::Vector3f& _look_at );
 
-    Eigen::Matrix< Scalar, 3, 1 > getPosition();
+    Eigen::Vector3f getPosition();
 
     /// \return The projection matrix of the Camera.
-    const Eigen::Matrix< Scalar, 4, 4 > getPerspectiveProjectionMatrix();
+    const Eigen::Matrix4f getPerspectiveProjectionMatrix();
 
     /// \return The view matrix of the Camera.
-    const Eigen::Matrix< Scalar, 4, 4 > getViewMatrix();
+    const Eigen::Matrix4f getViewMatrix();
+
+  protected:
+
+    /// Update the camera. Updates the projection and view matrix in \c scene_state with the camera's values.
+    /// \param scene_state Represents the current state of the scene.
+    virtual void updateCallback( SceneState& scene_state );
 
   private:
 
-    /// The position of the Camera.
-    Eigen::Matrix< Scalar, 3, 1 > position;
-
     /// What position the Camera is oriented towards.
-    Eigen::Matrix< Scalar, 3, 1 > look_at;
+    Eigen::Vector3f look_at;
 
     /// The up direction of the Camera.
-    Eigen::Matrix< Scalar, 3, 1 > up_vector;
+    Eigen::Vector3f up_vector;
 
     /// The distance from the Camera's position to the near plane.
-    Scalar z_near;
+    float z_near;
 
     /// The distance from the Camera's position to the far plane.
-    Scalar z_far;
+    float z_far;
 
     /// The field of view of the Camera.
-    Scalar fov;
+    float fov;
 
     /// The current width of the Camera.
     uint32_t width;
@@ -72,7 +75,5 @@ namespace VulkanEngine {
   };
 
 }
-
-#include <Camera.cpp>
 
 #endif /* CAMERA_H */

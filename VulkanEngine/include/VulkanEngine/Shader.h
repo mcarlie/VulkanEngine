@@ -28,8 +28,6 @@ namespace VulkanEngine {
 
   private:
 
-    uint32_t current_descriptor_set_index;
-
     std::vector< vk::PipelineShaderStageCreateInfo > shader_stages;
 
     /// All Descriptor objects used in this shader.

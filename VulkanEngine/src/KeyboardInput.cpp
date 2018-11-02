@@ -8,5 +8,5 @@ VulkanEngine::KeyboardInput::~KeyboardInput() {
 
 }
 
-void setKeyStatus(int scan_code) {
+void setKeyStatus( int scan_code ) {
 }

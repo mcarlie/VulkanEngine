@@ -1,5 +1,4 @@
 #include <VulkanEngine/Attribute.h>
-#include <VulkanEngine/VulkanManager.h>
 
 VulkanEngine::Attribute::Attribute( size_t _num_elements, size_t _element_size, vk::BufferUsageFlags flags ) 
   : StagedBuffer< Buffer >( 

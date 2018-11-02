@@ -2,6 +2,7 @@
 #define MESH_CPP
 
 #include <VulkanEngine/Mesh.h>
+#include <VulkanEngine/Utilities.h>
 
 template< typename PositionType, typename IndexType, class ... AdditionalAttributeTypes >
 VulkanEngine::Mesh< PositionType, IndexType, AdditionalAttributeTypes ... >::Mesh() {
@@ -12,8 +13,7 @@ VulkanEngine::Mesh< PositionType, IndexType, AdditionalAttributeTypes ... >::Mes
   const std::shared_ptr< VertexAttribute< PositionType > >& _positions,
   const std::shared_ptr< IndexAttribute< IndexType > >& _indices,
   const std::tuple< AttributeContainer< AdditionalAttributeTypes > ... >& _attributes,
-  const std::shared_ptr< Shader >& _shader
-  ) : MeshBase( _shader ), positions( _positions ), indices( _indices ), attributes( _attributes ) {
+  const std::shared_ptr< Shader >& _shader ) : positions( _positions ), indices( _indices ), attributes( _attributes ) {
 }
     
 template< typename PositionType, typename IndexType, class ... AdditionalAttributeTypes >
@@ -34,12 +34,12 @@ void VulkanEngine::Mesh< PositionType, IndexType, AdditionalAttributeTypes ... >
     
 template< typename PositionType, typename IndexType, class ... AdditionalAttributeTypes >
 void VulkanEngine::Mesh< PositionType, IndexType, AdditionalAttributeTypes ... >::setAttributes( 
-const std::tuple< AttributeContainer< AdditionalAttributeTypes > ... >& _additional_attributes ) {
-  additional_attributes = _additional_attributes;
+const std::tuple< AttributeContainer< AdditionalAttributeTypes > ... >& _attributes ) {
+  attributes = _attributes;
 }
 
 template< typename PositionType, typename IndexType, class ... AdditionalAttributeTypes >
-const vk::PipelineVertexInputStateCreateInfo VulkanEngine::Mesh< 
+const vk::PipelineVertexInputStateCreateInfo& VulkanEngine::Mesh<
   PositionType, IndexType, AdditionalAttributeTypes ... >::getVkPipelineVertexInputStateCreateInfo() {
 
   uint32_t binding_index = 0;
@@ -47,31 +47,37 @@ const vk::PipelineVertexInputStateCreateInfo VulkanEngine::Mesh<
   binding_descriptions.push_back( positions->getVkVertexInputBindingDescription( binding_index ) );
   attribute_descriptions.push_back( positions->getVkVertexInputAttributeDescriptions( binding_index ) );
 
-  Utilities::tupleForEach( additional_attributes, [ this, &binding_index ]( const auto& attrib_vec ){
+  auto visitor = [ this, &binding_index ]( const auto& attrib_vec ){
     for( const auto& attrib : attrib_vec ) {
       if( attrib.get() ) {
         ++binding_index;
         binding_descriptions.push_back( attrib->getVkVertexInputBindingDescription( binding_index ) );
-        attribute_descriptions.push_back( attrib->getVkVertexInputAttributeDescriptions( binding_index ) );      
+        attribute_descriptions.push_back( attrib->getVkVertexInputAttributeDescriptions( binding_index ) );
       }
-    } 
-  } );
+    }
+  };
+    
+  Utilities::tupleForEach( attributes, visitor );
 
-  return vk::PipelineVertexInputStateCreateInfo()
+  pipeline_vertex_input_state_info = vk::PipelineVertexInputStateCreateInfo()
     .setPVertexBindingDescriptions( binding_descriptions.data() )
     .setVertexBindingDescriptionCount( static_cast< uint32_t >( binding_descriptions.size() ) )
     .setPVertexAttributeDescriptions( attribute_descriptions.data() )
     .setVertexAttributeDescriptionCount( static_cast< uint32_t >( attribute_descriptions.size() ) );
+    
+  return pipeline_vertex_input_state_info;
 
 }
 
 template< typename PositionType, typename IndexType, class ... AdditionalAttributeTypes >
-const vk::PipelineInputAssemblyStateCreateInfo VulkanEngine::Mesh< 
+const vk::PipelineInputAssemblyStateCreateInfo& VulkanEngine::Mesh< 
   PositionType, IndexType, AdditionalAttributeTypes ... >::getVkPipelineInputAssemblyStateCreateInfo() {
 
-  return vk::PipelineInputAssemblyStateCreateInfo()
+  pipeline_input_assembly_state_info = vk::PipelineInputAssemblyStateCreateInfo()
       .setPrimitiveRestartEnable( VK_FALSE )
       .setTopology( vk::PrimitiveTopology::eTriangleList );
+    
+  return pipeline_input_assembly_state_info;
 
 }
 
@@ -89,13 +95,15 @@ void VulkanEngine::Mesh< PositionType, IndexType, AdditionalAttributeTypes ... >
     indices->transferBuffer();
   }
 
-  Utilities::tupleForEach( additional_attributes, []( const auto& attrib_vec ){
+  auto visitor = []( const auto& attrib_vec ) {
     for( const auto& attrib : attrib_vec ) {
       if( attrib.get() ) {
         attrib->transferBuffer();
       }
-    } 
-  } );
+    }
+  };
+  
+  Utilities::tupleForEach( attributes, visitor );
 
 }
 
@@ -109,13 +117,15 @@ void VulkanEngine::Mesh< PositionType, IndexType, AdditionalAttributeTypes ... >
   std::vector< vk::Buffer > buffers;
   buffers.push_back( positions->getVkBuffer() );
 
-  Utilities::tupleForEach( additional_attributes, [ &buffers ]( const auto& attrib_vec ){
+  auto visitor = [ &buffers ]( const auto& attrib_vec ) {
     for( const auto& attrib : attrib_vec ) {
       if( attrib.get() ) {
         buffers.push_back( attrib->getVkBuffer() );
       }
-    } 
-  } );
+    }
+  };
+  
+  Utilities::tupleForEach( attributes, visitor );
 
   std::vector< vk::DeviceSize > offsets( buffers.size(), 0 );
   command_buffer.bindVertexBuffers( 0, buffers, offsets );

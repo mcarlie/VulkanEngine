@@ -1,5 +1,5 @@
 #include <VulkanEngine/VulkanManager.h>
-#include <VulkanEngine/OBJLoader.h>
+#include <VulkanEngine/Image.h>
 
 #define VMA_IMPLEMENTATION
 #include "vk_mem_alloc.h"
@@ -351,13 +351,13 @@ void VulkanEngine::VulkanManager::createRenderPass() {
     .setPDepthStencilAttachment( &depth_attachment_reference )
     .setPResolveAttachments( &color_attachment_resolve_reference );
 
-  VkSubpassDependency dependency = {};
-  dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
-  dependency.dstSubpass = 0;
-  dependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-  dependency.srcAccessMask = 0;
-  dependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-  dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+  auto dependency = vk::SubpassDependency()
+  .setSrcSubpass( VK_SUBPASS_EXTERNAL )
+  .setDstSubpass( 0 )
+  .setSrcStageMask( vk::PipelineStageFlagBits::eColorAttachmentOutput )
+  .setDstStageMask( vk::PipelineStageFlagBits::eColorAttachmentOutput )
+  .setSrcAccessMask( vk::AccessFlags() )
+  .setDstAccessMask( vk::AccessFlagBits::eColorAttachmentRead | vk::AccessFlagBits::eColorAttachmentWrite );
 
   std::array< vk::AttachmentDescription, 3 > attachment_descriptions = { 
     color_attachment_description,
@@ -370,13 +370,13 @@ void VulkanEngine::VulkanManager::createRenderPass() {
     .setSubpassCount( 1 )
     .setPSubpasses( &subpass_description )
     .setDependencyCount( 1 )
-    .setPDependencies( &static_cast< vk::SubpassDependency >( dependency ) );
+    .setPDependencies( &dependency );
 
   vk_render_pass = vk_device.createRenderPass( render_pass_info );
 
 }
 
-void VulkanEngine::VulkanManager::createGraphicsPipeline( const std::shared_ptr< MeshBase >& mesh ) {
+void VulkanEngine::VulkanManager::createGraphicsPipeline( const std::shared_ptr< MeshBase >& mesh, const std::shared_ptr< Shader >& shader ) {
 
   auto viewport = vk::Viewport()
     .setX( 0 )
@@ -436,8 +436,8 @@ void VulkanEngine::VulkanManager::createGraphicsPipeline( const std::shared_ptr<
     .setMaxDepthBounds( 1.0f );
 
   auto graphics_pipeline_info = vk::GraphicsPipelineCreateInfo()
-    .setStageCount( static_cast< uint32_t >( mesh->getShader()->getVkShaderStages().size() ) )
-    .setPStages( mesh->getShader()->getVkShaderStages().data() )
+    .setStageCount( static_cast< uint32_t >( shader->getVkShaderStages().size() ) )
+    .setPStages( shader->getVkShaderStages().data() )
     .setPVertexInputState( &mesh->getVkPipelineVertexInputStateCreateInfo() )
     .setPInputAssemblyState( &mesh->getVkPipelineInputAssemblyStateCreateInfo() )
     .setPViewportState( &viewport_info )
@@ -446,7 +446,7 @@ void VulkanEngine::VulkanManager::createGraphicsPipeline( const std::shared_ptr<
     .setPDepthStencilState( &depth_stencil_state_create_info )
     .setPColorBlendState( &colorblend_info )
     .setPDynamicState( nullptr )
-    .setLayout( mesh->getShader()->getVkPipelineLayout() )
+    .setLayout( shader->getVkPipelineLayout() )
     .setRenderPass( vk_render_pass )
     .setSubpass( 0 );
 
@@ -486,7 +486,7 @@ void VulkanEngine::VulkanManager::createCommandBuffers( const std::shared_ptr< M
   auto clear_color = vk::ClearValue()
     .setColor( vk::ClearColorValue( clear_color_array ) );
   auto clear_depth_stencil = vk::ClearValue()
-    .setDepthStencil( vk::ClearDepthStencilValue( { 1.0f, 0 } ) );
+    .setDepthStencil( vk::ClearDepthStencilValue( 1.0f, 0 ) );
 
   std::array< vk::ClearValue, 3 > clear_values = { clear_color, clear_depth_stencil, clear_color };
 
@@ -510,7 +510,7 @@ void VulkanEngine::VulkanManager::createCommandBuffers( const std::shared_ptr< M
 
     mesh->bindVertexBuffers( vk_command_buffers[i] );
     mesh->bindIndexBuffer( vk_command_buffers[i] );
-    mesh->getShader()->bindDescriptorSet( vk_command_buffers[i], static_cast< uint32_t >( i ) );
+    //mesh->getShader()->bindDescriptorSet( vk_command_buffers[i], static_cast< uint32_t >( i ) );
 
     mesh->draw( vk_command_buffers[i] );
 

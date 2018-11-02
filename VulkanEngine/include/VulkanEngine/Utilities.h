@@ -23,24 +23,10 @@ namespace VulkanEngine {
       seed ^= std::hash< T >()( v ) + 0x9e3779b9 + ( seed << 6 ) + ( seed >> 2 );
     }
 
-    /// Add std::hash definition for Eigen::Matrix.
-    template< typename _Scalar, int _Rows, int _Cols, int _Options, int _MaxRows, int _MaxCols >
-    struct std::hash< Eigen::Matrix< _Scalar, _Rows, _Cols, _Options, _MaxRows, _MaxCols > > {
-      typedef Eigen::Matrix< _Scalar, _Rows, _Cols, _Options, _MaxRows, _MaxCols > T;
-      size_t operator()( T const& matrix ) const {
-        size_t seed = 0;
-        for( int i = 0; i < matrix.size(); ++i ) {
-          auto elem = *( matrix.data() + i );
-          VulkanEngine::Utilities::hashCombine< typename T::Scalar >( seed, elem );
-        }
-        return seed;
-      }  
-    };
-
     /// Allows iterating over a tuple using a visitor function pointer.
     /// https://gist.github.com/jks-liu/738976c06a0fbd547a64
     template< std::size_t i = 0, class C, class... Types >
-    typename std::enable_if< i >= sizeof ... ( Types ), typename C >::type
+    typename std::enable_if< i >= sizeof ... ( Types ), C >::type
 	    tupleForEach( const std::tuple< Types ... >& t, C& op ) {
 	    return op;
     }
@@ -48,27 +34,42 @@ namespace VulkanEngine {
     /// Allows iterating over a tuple using a visitor function pointer.
     /// https://gist.github.com/jks-liu/738976c06a0fbd547a64
     template< size_t i = 0, class C, class... Types >
-    typename std::enable_if< i < sizeof ... ( Types ), typename C >::type
+    typename std::enable_if< i < sizeof ... ( Types ), C >::type
 	  tupleForEach( const std::tuple< Types ... >& t, C& op ) {
       op( std::get < i >( t ) );
       return tupleForEach< i + 1, C, Types... >( t, op );
     }
-
-    /// Hash a tuple by combining the hashes of each element.
-    /// \tparam TupleArgs The template arguments passed to the tuple definition.
-    template< class ... TupleArgs >
-    struct std::hash< std::tuple< TupleArgs ... > > {
-      size_t operator()( const std::tuple< TupleArgs... >& tuple_value ) const {
-        size_t seed = 0;
-        VulkanEngine::Utilities::tupleForEach( tuple_value, [ &seed ]( const auto& element ) {
-          VulkanEngine::Utilities::hashCombine( seed, element );
-        } );
-        return seed;
-      }
-    };
   
   }
 
 }
+    
+/// Add std::hash definition for Eigen::Matrix.
+template< typename _Scalar, int _Rows, int _Cols, int _Options, int _MaxRows, int _MaxCols >
+struct std::hash< Eigen::Matrix< _Scalar, _Rows, _Cols, _Options, _MaxRows, _MaxCols > > {
+  typedef Eigen::Matrix< _Scalar, _Rows, _Cols, _Options, _MaxRows, _MaxCols > T;
+  size_t operator()( T const& matrix ) const {
+    size_t seed = 0;
+    for( int i = 0; i < matrix.size(); ++i ) {
+      auto elem = *( matrix.data() + i );
+      VulkanEngine::Utilities::hashCombine< typename T::Scalar >( seed, elem );
+    }
+    return seed;
+  }
+};
+    
+/// Hash a tuple by combining the hashes of each element.
+/// \tparam TupleArgs The template arguments passed to the tuple definition.
+template< class ... TupleArgs >
+struct std::hash< std::tuple< TupleArgs ... > > {
+  size_t operator()( const std::tuple< TupleArgs... >& tuple_value ) const {
+    size_t seed = 0;
+    auto visitor = [ &seed ]( const auto& element ) {
+      VulkanEngine::Utilities::hashCombine( seed, element );
+    };
+    VulkanEngine::Utilities::tupleForEach( tuple_value, visitor );
+    return seed;
+  }
+};
 
 #endif /* UTILITIES_H */

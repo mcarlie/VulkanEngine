@@ -1,7 +1,7 @@
 #ifndef KEYBOARDINPUT_H
 #define KEYBOARDINPUT_H
 
-#include <unordered_map>
+//#include <unordered_map>
 
 namespace VulkanEngine {
 
@@ -25,7 +25,7 @@ namespace VulkanEngine {
 
     void setKeyStatus( int scan_code );
 
-    std::unordered_map< std::string, KeyStatus > key_status;
+//    std::unordered_map< std::string, KeyStatus > key_status;
 
   };
 

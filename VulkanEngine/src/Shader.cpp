@@ -1,8 +1,7 @@
 #include <VulkanEngine/Shader.h>
 #include <VulkanEngine/VulkanManager.h>
 
-VulkanEngine::Shader::Shader( const std::vector< std::shared_ptr< ShaderModule > >& shader_modules ) 
-  : current_descriptor_set_index( 0 ) {
+VulkanEngine::Shader::Shader( const std::vector< std::shared_ptr< ShaderModule > >& shader_modules ) {
 
   for( const auto& sm : shader_modules ) {
     auto shader_stage_info = vk::PipelineShaderStageCreateInfo()
