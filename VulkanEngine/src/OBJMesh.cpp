@@ -140,32 +140,67 @@ VulkanEngine::OBJMesh::OBJMesh(
   // Create a shader if one isn't provided
   if( !shader.get() ) {
     std::shared_ptr< ShaderModule > fragment_shader( 
-      new ShaderModule( "C:/Users/Michael/Desktop/VK/shaders/frag.spv", vk::ShaderStageFlagBits::eFragment ) );
+      new ShaderModule( "/Users/michael/Desktop/VK/shaders/frag.spv", vk::ShaderStageFlagBits::eFragment ) );
     std::shared_ptr< ShaderModule > vertex_shader( 
-      new ShaderModule( "C:/Users/Michael/Desktop/VK/shaders/vert.spv", vk::ShaderStageFlagBits::eVertex ) );
+      new ShaderModule( "/Users/michael/Desktop/VK/shaders/vert.spv", vk::ShaderStageFlagBits::eVertex ) );
     shader.reset( new Shader( { fragment_shader, vertex_shader } ) );
   }
-
-}
-
-void VulkanEngine::OBJMesh::updateCallback( SceneState& scene_state ) {
-
+  
+  int texture_width;
+  int texture_height;
+  int channels_in_file;
+  unsigned char* image_data = stbi_load( "/Users/michael/Desktop/VK/models/spider_pumpkin_obj_0.jpg",
+                                        &texture_width, &texture_height,
+                                        &channels_in_file, 4 );
+  
+  using RGBATexture2D1S
+  = VulkanEngine::StagedBuffer<
+  VulkanEngine::ShaderImage<
+  vk::Format::eR8G8B8A8Unorm,
+  vk::ImageType::e2D,
+  vk::ImageTiling::eOptimal,
+  vk::SampleCountFlagBits::e1 > >;
+  
+  std::shared_ptr< RGBATexture2D1S > texture;
+  texture.reset( new RGBATexture2D1S( vk::ImageLayout::eUndefined,
+                                      vk::ImageUsageFlagBits::eTransferDst
+                                      | vk::ImageUsageFlagBits::eTransferSrc
+                                      | vk::ImageUsageFlagBits::eSampled, /// TODO These could be template parameters instead
+                                      VMA_MEMORY_USAGE_GPU_ONLY,
+                                      static_cast< uint32_t >( texture_width ),
+                                      static_cast< uint32_t >( texture_height ),
+                                      1, sizeof( unsigned char ) * 4, 1,
+                                      1, // TODO
+                                      vk::DescriptorType::eCombinedImageSampler,
+                                      vk::ShaderStageFlagBits::eFragment ) );
+  
+  texture->setImageData( image_data );
+  texture->createImageView( vk::ImageViewType::e2D, vk::ImageAspectFlagBits::eColor );
+  texture->createSampler();
+  texture->transferBuffer();
+  
   // TODO baseclass which handles pipeline
-  VulkanEngine::VulkanManager::getInstance()->createGraphicsPipeline( meshes[0], shader ); 
-
+  VulkanEngine::VulkanManager::getInstance()->createGraphicsPipeline( meshes[0], shader );
+  
   struct MvpUbo {
     Eigen::Matrix4f model;
     Eigen::Matrix4f view;
     Eigen::Matrix4f projection;
   };
-
+  
   std::vector< std::shared_ptr< VulkanEngine::UniformBuffer< MvpUbo > > > uniform_buffers;
   uniform_buffers.resize( 3 );
+  
+  std::vector< std::vector< std::shared_ptr< VulkanEngine::Descriptor > > > descriptors;
+  for( size_t i = 0; i < 3; ++i ) {
+    descriptors.push_back( { texture, uniform_buffers[i] } );
+  }
 
-  //std::vector< std::vector< std::shared_ptr< VulkanEngine::Descriptor > > > descriptors;
-  //for( size_t i = 0; i < 3; ++i ) {
-  //  descriptors.push_back( { tex, uniform_buffers[i] } );
-  //}
+  shader->setDescriptors( descriptors );
+  
+}
+
+void VulkanEngine::OBJMesh::updateCallback( SceneState& scene_state ) {
 
 }
 
