@@ -50,13 +50,14 @@ set( ENV{VK_ICD_FILENAMES} ${VULKAN_SDK} )
 find_package(Vulkan REQUIRED)
 include_directories(${Vulkan_INCLUDE_DIRS})
 target_link_libraries(VulkanEngine ${Vulkan_LIBRARIES})
+link_directories(AFTER "${VULKAN_SDK}/lib")
 
 # GLFW3
 set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 set(GLFW_INSTALL OFF CACHE BOOL "" FORCE)
-add_subdirectory("${LIBS_DIR}/glfw-3.2.1")
+add_subdirectory("${LIBS_DIR}/glfw")
 target_link_libraries(VulkanEngine glfw)
 
 # Add examples
