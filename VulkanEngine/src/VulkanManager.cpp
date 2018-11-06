@@ -473,7 +473,7 @@ void VulkanEngine::VulkanManager::createSwapchainFramebuffers() {
 
 }
 
-void VulkanEngine::VulkanManager::createCommandBuffers( const std::shared_ptr< MeshBase >& mesh ) {
+void VulkanEngine::VulkanManager::createCommandBuffers( const std::shared_ptr< MeshBase >& mesh, const std::shared_ptr< Shader > shader ) {
 
   auto command_buffer_allocate_info = vk::CommandBufferAllocateInfo()
     .setCommandBufferCount( static_cast< uint32_t >( vk_swapchain_framebuffers.size() ) )
@@ -510,7 +510,7 @@ void VulkanEngine::VulkanManager::createCommandBuffers( const std::shared_ptr< M
 
     mesh->bindVertexBuffers( vk_command_buffers[i] );
     mesh->bindIndexBuffer( vk_command_buffers[i] );
-    //mesh->getShader()->bindDescriptorSet( vk_command_buffers[i], static_cast< uint32_t >( i ) );
+    shader->bindDescriptorSet( vk_command_buffers[i], static_cast< uint32_t >( i ) );
 
     mesh->draw( vk_command_buffers[i] );
 

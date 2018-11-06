@@ -133,7 +133,7 @@ VulkanEngine::OBJMesh::OBJMesh(
   loadOBJ( obj_file.c_str(), mtl_path.c_str() );
 
   // Transfer mesh vertex data to GPU
-  for( const auto& m : meshes ){
+  for( const auto& m : meshes ) {
     m->transferBuffers();
   }
 
@@ -179,29 +179,35 @@ VulkanEngine::OBJMesh::OBJMesh(
   texture->createSampler();
   texture->transferBuffer();
   
-  // TODO baseclass which handles pipeline
-  VulkanEngine::VulkanManager::getInstance()->createGraphicsPipeline( meshes[0], shader );
-  
-  struct MvpUbo {
-    Eigen::Matrix4f model;
-    Eigen::Matrix4f view;
-    Eigen::Matrix4f projection;
-  };
-  
-  std::vector< std::shared_ptr< VulkanEngine::UniformBuffer< MvpUbo > > > uniform_buffers;
-  uniform_buffers.resize( 3 );
+  mvp_buffers.resize( 3 );
+  for( auto& ub : mvp_buffers ) {
+    ub.reset( new VulkanEngine::UniformBuffer< MvpUbo >( 0 ) );
+  }
   
   std::vector< std::vector< std::shared_ptr< VulkanEngine::Descriptor > > > descriptors;
   for( size_t i = 0; i < 3; ++i ) {
-    descriptors.push_back( { texture, uniform_buffers[i] } );
+    descriptors.push_back( { texture, mvp_buffers[i] } );
   }
 
   shader->setDescriptors( descriptors );
+  
+  // TODO baseclass which handles pipeline
+  VulkanEngine::VulkanManager::getInstance()->createGraphicsPipeline( meshes[0], shader );
+  VulkanEngine::VulkanManager::getInstance()->createCommandBuffers( meshes[0], shader );
   
 }
 
 void VulkanEngine::OBJMesh::updateCallback( SceneState& scene_state ) {
 
+  MvpUbo ubo_data;
+  ubo_data.projection = scene_state.getProjectionMatrix();
+  ubo_data.view = scene_state.getViewMatrix();
+  ubo_data.model = scene_state.getTotalTransform();
+  
+  for( auto& ub : mvp_buffers ) {
+    ub->updateBuffer( &ubo_data, sizeof( ubo_data ) );
+  }
+  
 }
 
 void VulkanEngine::OBJMesh::loadOBJ( const char* obj_path, const char* mtl_path ) {

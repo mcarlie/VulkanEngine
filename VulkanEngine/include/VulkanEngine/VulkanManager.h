@@ -51,7 +51,7 @@ namespace VulkanEngine {
 
     void createGraphicsPipeline( const std::shared_ptr< MeshBase >& mesh, const std::shared_ptr< Shader >& shader );
 
-    void createCommandBuffers( const std::shared_ptr< MeshBase >& mesh );
+    void createCommandBuffers( const std::shared_ptr< MeshBase >& mesh, const std::shared_ptr< Shader > shader );
 
     /// Executes all command buffers and swaps buffers.
     void drawImage();

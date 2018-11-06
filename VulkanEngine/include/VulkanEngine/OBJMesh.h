@@ -3,6 +3,7 @@
 
 #include <VulkanEngine/SceneObject.h>
 #include <VulkanEngine/MeshBase.h>
+#include <VulkanEngine/UniformBuffer.h>
 
 #include <unordered_map>
 
@@ -20,6 +21,12 @@ namespace VulkanEngine {
 
   private:
 
+    struct MvpUbo {
+      Eigen::Matrix4f model;
+      Eigen::Matrix4f view;
+      Eigen::Matrix4f projection;
+    };
+    
     /// Called from update before updating children.
     /// \param scene_state Contains information about the current state of the scene.
     virtual void updateCallback( SceneState& scene_state );
@@ -32,6 +39,8 @@ namespace VulkanEngine {
     /// The shader to use for rendering the OBJMesh.
     std::shared_ptr< Shader > shader;
 
+    std::vector< std::shared_ptr< UniformBuffer< MvpUbo > > > mvp_buffers;
+    
     /// Textures belonging to this mesh
     std::unordered_map< std::string, std::shared_ptr< Descriptor > > textures;
 

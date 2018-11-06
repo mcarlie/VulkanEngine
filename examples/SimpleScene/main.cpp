@@ -9,12 +9,6 @@
 #include <iostream>
 #include <vector>
 
-struct MvpUbo {
-  Eigen::Matrix4f model;
-  Eigen::Matrix4f view;
-  Eigen::Matrix4f projection;
-};
-
 int main() {
 
   std::shared_ptr< VulkanEngine::Window > window( new VulkanEngine::GLFWWindow( 1280, 800, "VulkanEngine", false ) );
@@ -39,12 +33,6 @@ int main() {
     45.0f,
     window->getWidth(),
     window->getHeight() ) );
-
-//  vulkan_manager->createGraphicsPipeline( mesh );
-//  vulkan_manager->createCommandBuffers( mesh );
-//
-//  mesh->transferBuffers();
-//  texture->transferBuffer();
 
   double camera_yaw = 0.0;
   double camera_pitch = 0.0;
@@ -78,12 +66,9 @@ int main() {
 
     }
 
-    MvpUbo vp_data;
-    vp_data.projection = camera->getPerspectiveProjectionMatrix();
-    vp_data.view = camera->getViewMatrix();
-//    for( auto& ub : uniform_buffers ) {
-//      ub->updateBuffer( &vp_data, sizeof( vp_data ) );
-//    }
+    VulkanEngine::SceneState scene_state;
+    scene->update( scene_state );
+    
     vulkan_manager->drawImage();
     window->update();
 
