@@ -19,7 +19,7 @@ int main() {
   
   std::shared_ptr< VulkanEngine::Scene > scene( new VulkanEngine::Scene() );
   
-  std::shared_ptr< VulkanEngine::OBJMesh > obj_mesh( new VulkanEngine::OBJMesh( "/Users/michael/Desktop/VK/models/spider_pumpkin_obj.obj", "/Users/michael/Desktop/VK/models/" ) );
+  std::shared_ptr< VulkanEngine::OBJMesh > obj_mesh( new VulkanEngine::OBJMesh( "C:/Users/Michael/Desktop/VK/models/spider_pumpkin_obj.obj", "C:/Users/Michael/Desktop/VK/models/" ) );
 
   std::shared_ptr< VulkanEngine::MouseInput > mouse_input = window->getMouseInput();
 

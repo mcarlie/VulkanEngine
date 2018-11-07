@@ -151,7 +151,7 @@ void VulkanEngine::VulkanManager::drawImage() {
   uint32_t image_index;
   while( true ) {
 
-    /// Acquire the next available swapchain image that we can write to
+    // Acquire the next available swapchain image that we can write to
     vk::Result result = vk_device.acquireNextImageKHR( 
       vk_swapchain,
       std::numeric_limits< uint32_t >::max(),
@@ -179,7 +179,7 @@ void VulkanEngine::VulkanManager::drawImage() {
 
   }
 
-  //// Submit commands to the queue
+  // Submit commands to the queue
   vk::Semaphore wait_semaphores[] = { vk_image_available_semaphores[current_frame] };
   vk::Semaphore signal_semaphores[] = { vk_rendering_finished_semaphores[current_frame] };
   vk::PipelineStageFlags wait_stages[] = { vk::PipelineStageFlagBits::eColorAttachmentOutput };
@@ -248,7 +248,7 @@ void VulkanEngine::VulkanManager::createSwapchain() {
     .setPQueueFamilyIndices( nullptr )
     .setPreTransform( vk::SurfaceTransformFlagBitsKHR::eIdentity )
     .setCompositeAlpha( vk::CompositeAlphaFlagBitsKHR::eOpaque )
-    .setPresentMode( vk::PresentModeKHR::eMailbox )
+    .setPresentMode( vk::PresentModeKHR::eFifo )
     .setClipped( VK_TRUE )
     .setOldSwapchain( nullptr );
 

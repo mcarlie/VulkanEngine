@@ -13,7 +13,7 @@ namespace VulkanEngine {
     
     /// Constructor.
     /// \param shader_modules ShaderModule instances to use in this shader.
-    Shader( const std::vector< std::shared_ptr< ShaderModule > >& shader_modules );
+    Shader( const std::vector< std::shared_ptr< ShaderModule > >& _shader_modules );
     
     /// Destructor.
     ~Shader();
@@ -29,6 +29,8 @@ namespace VulkanEngine {
   private:
 
     std::vector< vk::PipelineShaderStageCreateInfo > shader_stages;
+
+	std::vector< std::shared_ptr< ShaderModule > > shader_modules;
 
     /// All Descriptor objects used in this shader.
     std::vector< std::vector< std::shared_ptr< Descriptor > > > descriptors;

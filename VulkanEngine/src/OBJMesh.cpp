@@ -140,16 +140,16 @@ VulkanEngine::OBJMesh::OBJMesh(
   // Create a shader if one isn't provided
   if( !shader.get() ) {
     std::shared_ptr< ShaderModule > fragment_shader( 
-      new ShaderModule( "/Users/michael/Desktop/VK/shaders/frag.spv", vk::ShaderStageFlagBits::eFragment ) );
+      new ShaderModule( "C:/Users/Michael/Desktop/VK/shaders/frag.spv", vk::ShaderStageFlagBits::eFragment ) );
     std::shared_ptr< ShaderModule > vertex_shader( 
-      new ShaderModule( "/Users/michael/Desktop/VK/shaders/vert.spv", vk::ShaderStageFlagBits::eVertex ) );
+      new ShaderModule( "C:/Users/Michael/Desktop/VK/shaders/vert.spv", vk::ShaderStageFlagBits::eVertex ) );
     shader.reset( new Shader( { fragment_shader, vertex_shader } ) );
   }
   
   int texture_width;
   int texture_height;
   int channels_in_file;
-  unsigned char* image_data = stbi_load( "/Users/michael/Desktop/VK/models/spider_pumpkin_obj_0.jpg",
+  unsigned char* image_data = stbi_load( "C:/Users/Michael/Desktop/VK/models/spider_pumpkin_obj_0.jpg",
                                         &texture_width, &texture_height,
                                         &channels_in_file, 4 );
   
