@@ -42,9 +42,9 @@ if(APPLE)
   else()
     set(DEFAULT_VK_ICD_FILENAMES "${VULKAN_SDK}/etc/vulkan/icd.d/MoltenVK_icd.json")
   endif()
+  set( VK_ICD_FILENAMES ${DEFAULT_VK_ICD_FILENAMES} CACHE PATH "Path to the MoltenVK ICD" )
+  set( ENV{VK_ICD_FILENAMES} ${VULKAN_SDK} )
 endif()
-set( VK_ICD_FILENAMES ${DEFAULT_VK_ICD_FILENAMES} CACHE PATH "Path to the MoltenVK ICD" )
-set( ENV{VK_ICD_FILENAMES} ${VULKAN_SDK} )
 
 # Vulkan
 find_package(Vulkan REQUIRED)
