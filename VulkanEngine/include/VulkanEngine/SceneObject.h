@@ -20,6 +20,8 @@ namespace VulkanEngine {
     /// \param scene_state Contains information about the current state of the scene.
     void update( SceneState& scene_state );
 
+    void addChildren( const std::vector< std::shared_ptr< SceneObject > >& _children );
+
   protected:
 
     /// The transformation matrix of this SceneObject.

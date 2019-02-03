@@ -13,6 +13,7 @@ VulkanEngine::Camera::Camera(
   float _fov,
   uint32_t _width,
   uint32_t _height ) :
+  position( _position ),
   look_at( _look_at ),
   up_vector( _up_vector ),
   z_near( _z_near ),
@@ -38,8 +39,8 @@ void VulkanEngine::Camera::setLookAt( const Eigen::Vector3f& _look_at ) {
   look_at = _look_at;
 }
 
-Eigen::Vector3f VulkanEngine::Camera::getPosition() {
-  return transform.col( 3 ).head< 3 >();
+const Eigen::Vector3f VulkanEngine::Camera::getPosition() {
+  return position;
 }
 
 const Eigen::Matrix4f VulkanEngine::Camera::getPerspectiveProjectionMatrix() {
@@ -69,7 +70,7 @@ const Eigen::Matrix4f VulkanEngine::Camera::getPerspectiveProjectionMatrix() {
 
 const Eigen::Matrix4f VulkanEngine::Camera::getViewMatrix() {
 
-	const auto& z_axis = ( look_at - getPosition() ).normalized();
+	const auto& z_axis = ( look_at - position ).normalized();
 	const auto& x_axis = z_axis.cross( up_vector ).normalized();
 	const auto& y_axis = x_axis.cross( z_axis );
 
@@ -83,9 +84,9 @@ const Eigen::Matrix4f VulkanEngine::Camera::getViewMatrix() {
 	result( 2, 0 ) = -z_axis( 0 );
 	result( 2, 1 ) = -z_axis( 1 );
 	result( 2, 2 ) = -z_axis( 2 );
-	result( 0, 3 ) = -x_axis.dot( getPosition() );
-	result( 1, 3 ) = -y_axis.dot( getPosition() );
-	result( 2, 3 ) = z_axis.dot( getPosition() );
+	result( 0, 3 ) = -x_axis.dot( position );
+	result( 1, 3 ) = -y_axis.dot( position );
+	result( 2, 3 ) = z_axis.dot( position );
 
   return result;
 

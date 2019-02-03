@@ -18,5 +18,9 @@ void VulkanEngine::SceneObject::update( SceneState& scene_state ) {
 
 }
 
+void VulkanEngine::SceneObject::addChildren( const std::vector< std::shared_ptr< SceneObject > >& _children ) {
+  children.insert( children.end(), _children.cbegin(), _children.cend() );
+}
+
 void VulkanEngine::SceneObject::updateCallback( SceneState& scene_state ) {
 }

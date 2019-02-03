@@ -35,7 +35,8 @@ namespace VulkanEngine {
 
     void setLookAt( const Eigen::Vector3f& _look_at );
 
-    Eigen::Vector3f getPosition();
+    /// \return The position of the camera.
+    const Eigen::Vector3f getPosition();
 
     /// \return The projection matrix of the Camera.
     const Eigen::Matrix4f getPerspectiveProjectionMatrix();
@@ -50,6 +51,9 @@ namespace VulkanEngine {
     virtual void updateCallback( SceneState& scene_state );
 
   private:
+
+    /// The position of the camera.
+    Eigen::Vector3f position;
 
     /// What position the Camera is oriented towards.
     Eigen::Vector3f look_at;

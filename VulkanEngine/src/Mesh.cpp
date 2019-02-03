@@ -7,15 +7,12 @@
 template< typename PositionType, typename IndexType, class ... AdditionalAttributeTypes >
 VulkanEngine::Mesh< PositionType, IndexType, AdditionalAttributeTypes ... >::Mesh() {
 }
-
-template< typename PositionType, typename IndexType, class ... AdditionalAttributeTypes >
-VulkanEngine::Mesh< PositionType, IndexType, AdditionalAttributeTypes ... >::Mesh( 
-  const std::shared_ptr< VertexAttribute< PositionType > >& _positions,
-  const std::shared_ptr< IndexAttribute< IndexType > >& _indices,
-  const std::tuple< AttributeContainer< AdditionalAttributeTypes > ... >& _attributes,
-  const std::shared_ptr< Shader >& _shader ) : positions( _positions ), indices( _indices ), attributes( _attributes ) {
-}
     
+//template<typename PositionType, typename IndexType, class ...AdditionalAttributeTypes>
+//VulkanEngine::Mesh<PositionType, IndexType, AdditionalAttributeTypes ... >::Mesh(const std::shared_ptr<VertexAttribute<PositionType>>& _positions, const std::shared_ptr<IndexAttribute<IndexType>>& _indices, const std::tuple<AttributeContainer<AdditionalAttributeTypes>...>& _attributes, const std::shared_ptr<Shader>& _shader)
+//{
+//}
+
 template< typename PositionType, typename IndexType, class ... AdditionalAttributeTypes >
 VulkanEngine::Mesh< PositionType, IndexType, AdditionalAttributeTypes ... >::~Mesh() {
 }
@@ -32,11 +29,11 @@ void VulkanEngine::Mesh< PositionType, IndexType, AdditionalAttributeTypes ... >
   indices = _indices;
 }
     
-template< typename PositionType, typename IndexType, class ... AdditionalAttributeTypes >
-void VulkanEngine::Mesh< PositionType, IndexType, AdditionalAttributeTypes ... >::setAttributes( 
-const std::tuple< AttributeContainer< AdditionalAttributeTypes > ... >& _attributes ) {
-  attributes = _attributes;
-}
+//template< typename PositionType, typename IndexType, class ... AdditionalAttributeTypes >
+//void VulkanEngine::Mesh< PositionType, IndexType, AdditionalAttributeTypes ... >::setAttributes( 
+//const std::tuple< AttributeContainer< AdditionalAttributeTypes > ... >& _attributes ) {
+//  attributes = _attributes;
+//}
 
 template< typename PositionType, typename IndexType, class ... AdditionalAttributeTypes >
 const vk::PipelineVertexInputStateCreateInfo& VulkanEngine::Mesh<

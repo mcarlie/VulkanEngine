@@ -116,7 +116,7 @@ namespace OBJMeshInternal {
     MeshType* mesh = new MeshType();
     mesh->setPositions( position_attribute );
     mesh->setIndices( index_attribute );
-    mesh->setAttributes( additional_attributes );
+    //mesh->setAttributes( additional_attributes );
 
     return std::shared_ptr< VulkanEngine::MeshBase >( mesh );
 
@@ -146,38 +146,38 @@ VulkanEngine::OBJMesh::OBJMesh(
     shader.reset( new Shader( { fragment_shader, vertex_shader } ) );
   }
   
-  int texture_width;
-  int texture_height;
-  int channels_in_file;
-  unsigned char* image_data = stbi_load( "C:/Users/Michael/Desktop/VK/models/spider_pumpkin_obj_0.jpg",
-                                        &texture_width, &texture_height,
-                                        &channels_in_file, 4 );
+  //int texture_width;
+  //int texture_height;
+  //int channels_in_file;
+  //unsigned char* image_data = stbi_load( "C:/Users/Michael/Desktop/VK/models/spider_pumpkin_obj_0.jpg",
+  //                                      &texture_width, &texture_height,
+  //                                      &channels_in_file, 4 );
   
-  using RGBATexture2D1S
-  = VulkanEngine::StagedBuffer<
-  VulkanEngine::ShaderImage<
-  vk::Format::eR8G8B8A8Unorm,
-  vk::ImageType::e2D,
-  vk::ImageTiling::eOptimal,
-  vk::SampleCountFlagBits::e1 > >;
-  
-  std::shared_ptr< RGBATexture2D1S > texture;
-  texture.reset( new RGBATexture2D1S( vk::ImageLayout::eUndefined,
-                                      vk::ImageUsageFlagBits::eTransferDst
-                                      | vk::ImageUsageFlagBits::eTransferSrc
-                                      | vk::ImageUsageFlagBits::eSampled, /// TODO These could be template parameters instead
-                                      VMA_MEMORY_USAGE_GPU_ONLY,
-                                      static_cast< uint32_t >( texture_width ),
-                                      static_cast< uint32_t >( texture_height ),
-                                      1, sizeof( unsigned char ) * 4, 1,
-                                      1, // TODO
-                                      vk::DescriptorType::eCombinedImageSampler,
-                                      vk::ShaderStageFlagBits::eFragment ) );
-  
-  texture->setImageData( image_data );
-  texture->createImageView( vk::ImageViewType::e2D, vk::ImageAspectFlagBits::eColor );
-  texture->createSampler();
-  texture->transferBuffer();
+  //using RGBATexture2D1S
+  //= VulkanEngine::StagedBuffer<
+  //VulkanEngine::ShaderImage<
+  //vk::Format::eR8G8B8A8Unorm,
+  //vk::ImageType::e2D,
+  //vk::ImageTiling::eOptimal,
+  //vk::SampleCountFlagBits::e1 > >;
+  //
+  //std::shared_ptr< RGBATexture2D1S > texture;
+  //texture.reset( new RGBATexture2D1S( vk::ImageLayout::eUndefined,
+  //                                    vk::ImageUsageFlagBits::eTransferDst
+  //                                    | vk::ImageUsageFlagBits::eTransferSrc
+  //                                    | vk::ImageUsageFlagBits::eSampled, /// TODO These could be template parameters instead
+  //                                    VMA_MEMORY_USAGE_GPU_ONLY,
+  //                                    static_cast< uint32_t >( texture_width ),
+  //                                    static_cast< uint32_t >( texture_height ),
+  //                                    1, sizeof( unsigned char ) * 4, 1,
+  //                                    1, // TODO
+  //                                    vk::DescriptorType::eCombinedImageSampler,
+  //                                    vk::ShaderStageFlagBits::eFragment ) );
+  //
+  //texture->setImageData( image_data );
+  //texture->createImageView( vk::ImageViewType::e2D, vk::ImageAspectFlagBits::eColor );
+  //texture->createSampler();
+  //texture->transferBuffer();
   
   mvp_buffers.resize( 3 );
   for( auto& ub : mvp_buffers ) {
@@ -186,7 +186,7 @@ VulkanEngine::OBJMesh::OBJMesh(
   
   std::vector< std::vector< std::shared_ptr< VulkanEngine::Descriptor > > > descriptors;
   for( size_t i = 0; i < 3; ++i ) {
-    descriptors.push_back( { texture, mvp_buffers[i] } );
+    descriptors.push_back( { /*texture,*/ mvp_buffers[i] } );
   }
 
   shader->setDescriptors( descriptors );

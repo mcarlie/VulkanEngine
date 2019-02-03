@@ -11,10 +11,13 @@ namespace VulkanEngine {
 
   public:
 
-    /// \return The current total transformation matrix
+    /// Constructor.
+    SceneState();
+
+    /// \return The current total transformation matrix.
     const Eigen::Matrix4f& getTransform();
 
-    /// Set the current total transformation matrix
+    /// Set the current total transformation matrix.
     /// \param transform The transform to set
     void setTransform( const Eigen::Matrix4f& transform );
 

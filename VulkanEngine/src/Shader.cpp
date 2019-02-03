@@ -89,9 +89,11 @@ void VulkanEngine::Shader::setDescriptors( const std::vector< std::vector< std::
 
 void VulkanEngine::Shader::bindDescriptorSet( const vk::CommandBuffer& command_buffer, uint32_t descriptor_set_index ) {
 
-  command_buffer.bindDescriptorSets( 
-    vk::PipelineBindPoint::eGraphics,
-    getVkPipelineLayout(), 0, vk_descriptor_sets[descriptor_set_index], nullptr );
+	if( descriptor_set_index < vk_descriptor_sets.size() ) {
+    command_buffer.bindDescriptorSets(
+      vk::PipelineBindPoint::eGraphics,
+      getVkPipelineLayout(), 0, vk_descriptor_sets[descriptor_set_index], nullptr);
+	}
 
 }
 

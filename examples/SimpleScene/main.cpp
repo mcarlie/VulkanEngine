@@ -18,14 +18,13 @@ int main() {
   vulkan_manager->initialize( window );
   
   std::shared_ptr< VulkanEngine::Scene > scene( new VulkanEngine::Scene() );
-  
-  std::shared_ptr< VulkanEngine::OBJMesh > obj_mesh( new VulkanEngine::OBJMesh( "C:/Users/Michael/Desktop/VK/models/spider_pumpkin_obj.obj", "C:/Users/Michael/Desktop/VK/models/" ) );
+  std::vector< std::shared_ptr< VulkanEngine::SceneObject > > scene_children;
 
   std::shared_ptr< VulkanEngine::MouseInput > mouse_input = window->getMouseInput();
 
   std::shared_ptr< VulkanEngine::Camera> camera;
   camera.reset( new VulkanEngine::Camera(
-    { 0.0f, 5.0f, -5.0f  },
+    { 0.0f, 0.0f, -5.0f  },
     { 0.0f, 0.0f, 0.0f },
     { 0.0f, 1.0f, 0.0f },
     0.1f,
@@ -33,6 +32,15 @@ int main() {
     45.0f,
     window->getWidth(),
     window->getHeight() ) );
+
+  scene_children.push_back( camera );
+
+  std::shared_ptr< VulkanEngine::OBJMesh > obj_mesh( new VulkanEngine::OBJMesh( 
+    "C:/Users/Michael/Desktop/VK/models/teapot.obj", "C:/Users/Michael/Desktop/VK/models/" ) );
+
+  scene_children.push_back( obj_mesh );
+
+  scene->addChildren( scene_children );
 
   double camera_yaw = 0.0;
   double camera_pitch = 0.0;
@@ -56,9 +64,11 @@ int main() {
       }
 
       Eigen::Vector3f camera_dir(
-        std::cos( VulkanEngine::Utilities::toRadians< double >( camera_yaw ) ) * std::cos( VulkanEngine::Utilities::toRadians< double >( camera_pitch ) ),
+        std::cos( VulkanEngine::Utilities::toRadians< double >( camera_yaw ) ) 
+        * std::cos( VulkanEngine::Utilities::toRadians< double >( camera_pitch ) ),
         std::sin( VulkanEngine::Utilities::toRadians< double >( camera_pitch ) ),
-        std::sin( VulkanEngine::Utilities::toRadians< double >( camera_yaw ) ) * std::cos( VulkanEngine::Utilities::toRadians< double >( camera_pitch ) )
+        std::sin( VulkanEngine::Utilities::toRadians< double >( camera_yaw ) ) 
+        * std::cos( VulkanEngine::Utilities::toRadians< double >( camera_pitch ) )
       );
       camera_dir.normalized();
 
