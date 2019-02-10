@@ -20,10 +20,16 @@ namespace VulkanEngine {
     /// \param scene_state Contains information about the current state of the scene.
     void update( SceneState& scene_state );
 
+    /// Add child SceneObject instances which will inherit the transformation of this SceneObject.
+    /// \param _children The children to add.
     void addChildren( const std::vector< std::shared_ptr< SceneObject > >& _children );
 
+    /// Get the current local transformation matrix.
+    /// \return The current local transformation matrix
     const Eigen::Matrix4f& getTransform();
     
+    /// Set the current local transformation matrix.
+    /// \param _transform The desired local transformation matrix.
     void setTranform( const Eigen::Matrix4f& _transform );
     
   protected:
