@@ -186,7 +186,7 @@ VulkanEngine::OBJMesh::OBJMesh(
   
   std::vector< std::vector< std::shared_ptr< VulkanEngine::Descriptor > > > descriptors;
   for( size_t i = 0; i < 3; ++i ) {
-    descriptors.push_back( { /*texture,*/ mvp_buffers[i] } );
+    descriptors.push_back( { texture, mvp_buffers[i] } );
   }
 
   shader->setDescriptors( descriptors );

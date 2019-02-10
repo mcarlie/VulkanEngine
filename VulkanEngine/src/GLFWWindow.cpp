@@ -3,7 +3,7 @@
 #include <iostream>
 
 VulkanEngine::GLFWWindow::GLFWWindow( int _width, int _height, const std::string& _title, bool _full_screen ) 
-  : glfw_window( nullptr ), Window( _width, _height, _title, _full_screen ) {
+  : Window( _width, _height, _title, _full_screen ), glfw_window( nullptr ) {
 
   glfwSetErrorCallback( errorCallback );
 
