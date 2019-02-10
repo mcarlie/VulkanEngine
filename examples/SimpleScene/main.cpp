@@ -38,7 +38,8 @@ int main() {
   std::shared_ptr< VulkanEngine::OBJMesh > obj_mesh( new VulkanEngine::OBJMesh( 
     "/Users/michael/Desktop/VK/models/spider_pumpkin_obj.obj", "/Users/michael/Desktop/VK/models/" ) );
   
-  Eigen::Affine3f translation( Eigen::Translation3f( 0.0f, -1.0f, 1.0f ) );
+  Eigen::Affine3f translation( Eigen::Translation3f( 0.0f, 0.0f, 1.2f ) );
+  translation *= Eigen::Scaling( 0.05f );
   obj_mesh->setTranform( translation.matrix() );
   
   scene_children.push_back( obj_mesh );

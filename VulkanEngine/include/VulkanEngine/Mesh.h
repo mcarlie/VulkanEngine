@@ -39,12 +39,12 @@ namespace VulkanEngine {
     /// \param _indices An IndexAttribute giving the indices of the mesh.
     /// \param _attribute A list of additional VertexAttribute instances which will be used when rendering the mesh.
     /// \param _shader The shader to use when rendering the mesh.
-    //Mesh( 
-    //  const std::shared_ptr< VertexAttribute< PositionType > >& _positions,
-    //  const std::shared_ptr< IndexAttribute< IndexType > >& _indices,
-    //  const std::tuple< AttributeContainer< AdditionalAttributeTypes > ... >& _attributes,
-    //  const std::shared_ptr< Shader >& _shader
-    //  );
+    Mesh( 
+      const std::shared_ptr< VertexAttribute< PositionType > >& _positions,
+      const std::shared_ptr< IndexAttribute< IndexType > >& _indices,
+      const std::tuple< AttributeContainer< AdditionalAttributeTypes > ... >& _attributes,
+      const std::shared_ptr< Shader >& _shader
+      );
     
     /// Destructor.
     ~Mesh();
@@ -59,7 +59,7 @@ namespace VulkanEngine {
     
     /// Sets the additional attributes of the Mesh.
     /// \param _additional_attributes A list of additional VertexAttribute instances which will be used when rendering the Mesh.
-    //void setAttributes( const std::tuple< AttributeContainer< AdditionalAttributeTypes > ... >& _attributes );
+    void setAttributes( const std::tuple< AttributeContainer< AdditionalAttributeTypes > ... >& _attributes );
 
     /// \return The vk::PipelineVertexInputStateCreateInfo instance describing the attributes that constitute the Mesh.
     virtual const vk::PipelineVertexInputStateCreateInfo& getVkPipelineVertexInputStateCreateInfo();
