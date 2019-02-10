@@ -36,8 +36,11 @@ int main() {
   scene_children.push_back( camera );
 
   std::shared_ptr< VulkanEngine::OBJMesh > obj_mesh( new VulkanEngine::OBJMesh( 
-    "C:/Users/Michael/Desktop/VK/models/teapot.obj", "C:/Users/Michael/Desktop/VK/models/" ) );
-
+    "/Users/michael/Desktop/VK/models/teapot.obj", "/Users/michael/Desktop/VK/models/" ) );
+  
+  Eigen::Affine3f translation( Eigen::Translation3f( 0.0f, -1.0f, 1.0f ) );
+  obj_mesh->setTranform( translation.matrix() );
+  
   scene_children.push_back( obj_mesh );
 
   scene->addChildren( scene_children );

@@ -22,6 +22,10 @@ namespace VulkanEngine {
 
     void addChildren( const std::vector< std::shared_ptr< SceneObject > >& _children );
 
+    const Eigen::Matrix4f& getTransform();
+    
+    void setTranform( const Eigen::Matrix4f& _transform );
+    
   protected:
 
     /// The transformation matrix of this SceneObject.

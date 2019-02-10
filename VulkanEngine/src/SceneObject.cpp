@@ -24,3 +24,11 @@ void VulkanEngine::SceneObject::addChildren( const std::vector< std::shared_ptr<
 
 void VulkanEngine::SceneObject::updateCallback( SceneState& scene_state ) {
 }
+
+const Eigen::Matrix4f& VulkanEngine::SceneObject::getTransform() {
+  return transform;
+}
+
+void VulkanEngine::SceneObject::setTranform( const Eigen::Matrix4f& _transform ) {
+  transform = _transform;
+}
