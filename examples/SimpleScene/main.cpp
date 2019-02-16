@@ -24,7 +24,6 @@ int main() {
 
   std::shared_ptr< VulkanEngine::Camera> camera;
   camera.reset( new VulkanEngine::Camera(
-    { 0.0f, 0.0f, -5.0f  },
     { 0.0f, 0.0f, 0.0f },
     { 0.0f, 1.0f, 0.0f },
     0.1f,
@@ -32,54 +31,58 @@ int main() {
     45.0f,
     window->getWidth(),
     window->getHeight() ) );
+  
+  camera->setTranform( Eigen::Affine3f( Eigen::Translation3f( 0.0f, 0.0f, -5.0f ) ).matrix() );
 
   scene_children.push_back( camera );
 
   std::shared_ptr< VulkanEngine::OBJMesh > obj_mesh( new VulkanEngine::OBJMesh( 
     "/Users/michael/Desktop/VK/models/spider_pumpkin_obj.obj", "/Users/michael/Desktop/VK/models/" ) );
   
-  Eigen::Affine3f translation( Eigen::Translation3f( 0.0f, 0.0f, 1.2f ) );
-  translation *= Eigen::Scaling( 0.05f );
-  obj_mesh->setTranform( translation.matrix() );
+  Eigen::Affine3f transform( Eigen::Translation3f( 0.0f, 0.0f, 5.0f ) );
+  transform *= Eigen::Scaling( 0.05f );
+  obj_mesh->setTranform( transform.matrix() );
   
   scene_children.push_back( obj_mesh );
 
   scene->addChildren( scene_children );
 
-  double camera_yaw = 0.0;
-  double camera_pitch = 0.0;
-
+  const auto& keyboard_input = window->getKeyboardInput();
+  
+  const float camera_move_speed = 0.1;
+  
   while( !window->shouldClose() ) {
 
-    if( mouse_input->leftButtonPressed() ){
-
-      double x, y, px, py;
-      mouse_input->getPosition( x, y );
-      mouse_input->getPreviousPosition( px, py );
-
-      camera_yaw += ( x - px ) * 0.05f;
-      camera_pitch += ( py - y ) * 0.05f;
-
-      if( camera_pitch > 89.0f ) {
-        camera_pitch = 89.0f;
+    if( keyboard_input.get() ) {
+      
+      Eigen::Affine3f camera_transform = Eigen::Affine3f( camera->getTransform() );
+      
+      const auto key_left = keyboard_input->getLastKeyStatus( GLFW_KEY_LEFT );
+      const auto key_right = keyboard_input->getLastKeyStatus( GLFW_KEY_RIGHT );
+      
+      const auto key_up = keyboard_input->getLastKeyStatus( GLFW_KEY_UP );
+      const auto key_down = keyboard_input->getLastKeyStatus( GLFW_KEY_DOWN );
+      
+      if( key_left == VulkanEngine::KeyboardInput::PRESSED || key_left == VulkanEngine::KeyboardInput::REPEAT ) {
+        camera_transform.translation()[0] -= camera_move_speed;
       }
-      if( camera_pitch < -89.0f ) {
-        camera_pitch = -89.0f;
+      
+      if( key_right == VulkanEngine::KeyboardInput::PRESSED || key_right == VulkanEngine::KeyboardInput::REPEAT ) {
+        camera_transform.translation()[0] += camera_move_speed;
       }
-
-      Eigen::Vector3f camera_dir(
-        std::cos( VulkanEngine::Utilities::toRadians< double >( camera_yaw ) ) 
-        * std::cos( VulkanEngine::Utilities::toRadians< double >( camera_pitch ) ),
-        std::sin( VulkanEngine::Utilities::toRadians< double >( camera_pitch ) ),
-        std::sin( VulkanEngine::Utilities::toRadians< double >( camera_yaw ) ) 
-        * std::cos( VulkanEngine::Utilities::toRadians< double >( camera_pitch ) )
-      );
-      camera_dir.normalized();
-
-      camera->setLookAt( camera->getPosition() + camera_dir );
-
+      
+      if( key_up == VulkanEngine::KeyboardInput::PRESSED || key_up == VulkanEngine::KeyboardInput::REPEAT ) {
+        camera_transform.translation()[1] += camera_move_speed;
+      }
+      
+      if( key_down == VulkanEngine::KeyboardInput::PRESSED || key_down == VulkanEngine::KeyboardInput::REPEAT ) {
+        camera_transform.translation()[1] -= camera_move_speed;
+      }
+      
+      camera->setTranform( camera_transform.matrix() );
+      
     }
-
+    
     VulkanEngine::SceneState scene_state;
     scene->update( scene_state );
     

@@ -20,8 +20,7 @@ namespace VulkanEngine {
     /// \param _z_near The distance from the Camera's position to the near plane.
     /// \param _z_far The distance from the Camera's position to the far plane.
     /// \param _fov The field of view of the Camera.
-    Camera( 
-      Eigen::Vector3f _position = { 0.0f, 0.0f, -200.0f },
+    Camera(
       Eigen::Vector3f _look_at = { 0.0f, 0.0f, 0.0f },
       Eigen::Vector3f _up_vector = { 0.0f, 1.0f, 0.0f },
       float _z_near = 0.1f,
@@ -34,9 +33,6 @@ namespace VulkanEngine {
     ~Camera();
 
     void setLookAt( const Eigen::Vector3f& _look_at );
-
-    /// \return The position of the camera.
-    const Eigen::Vector3f getPosition();
 
     /// \return The projection matrix of the Camera.
     const Eigen::Matrix4f getPerspectiveProjectionMatrix();
@@ -51,9 +47,6 @@ namespace VulkanEngine {
     virtual void updateCallback( SceneState& scene_state );
 
   private:
-
-    /// The position of the camera.
-    Eigen::Vector3f position;
 
     /// What position the Camera is oriented towards.
     Eigen::Vector3f look_at;

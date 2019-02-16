@@ -54,6 +54,7 @@ bool VulkanEngine::GLFWWindow::initialize() {
   glfwSetKeyCallback( glfw_window, &keyCallback );
 
   mouse_input.reset( new MouseInput );
+  keyboard_input.reset( new KeyboardInput );
 
   return true;
 
@@ -175,4 +176,20 @@ void VulkanEngine::GLFWWindow::mouseButtonCallback( GLFWwindow* _glfw_window, in
 }
 
 void VulkanEngine::GLFWWindow::keyCallback( GLFWwindow* _glfw_window, int key, int scancode, int action, int mods ) {
+  GLFWWindow* window = static_cast< GLFWWindow* >( glfwGetWindowUserPointer( _glfw_window ) );
+  
+  KeyboardInput::KeyStatus key_status( KeyboardInput::KeyStatus::NO_STATUS );
+  if( action == GLFW_PRESS ) {
+    key_status = KeyboardInput::KeyStatus::PRESSED;
+  } else if( action == GLFW_RELEASE ) {
+    key_status = KeyboardInput::KeyStatus::RELEASED;
+  } else if( action == GLFW_REPEAT ) {
+    key_status = KeyboardInput::KeyStatus::REPEAT;
+  }
+  
+  KeyboardInput::KeyInfo key_info;
+  key_info.key_id = key;
+  key_info.status = key_status;
+  
+  window->keyboardButtonPressedCallback( scancode, key_info );
 }

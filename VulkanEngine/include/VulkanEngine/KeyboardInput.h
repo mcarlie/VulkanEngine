@@ -1,7 +1,7 @@
 #ifndef KEYBOARDINPUT_H
 #define KEYBOARDINPUT_H
 
-//#include <unordered_map>
+#include <map>
 
 namespace VulkanEngine {
 
@@ -14,18 +14,20 @@ namespace VulkanEngine {
     enum KeyStatus {
       PRESSED,
       RELEASED,
-      REPEAT
+      REPEAT,
+      NO_STATUS
     };
-
-    KeyboardInput();
     
-    ~KeyboardInput();
+    struct KeyInfo {
+      KeyStatus status;
+      int key_id;
+    };
+    
+    const KeyStatus getLastKeyStatus( int key_id );
 
   private:
 
-    void setKeyStatus( int scan_code );
-
-//    std::unordered_map< std::string, KeyStatus > key_status;
+    std::map< int, KeyInfo > key_status_map;
 
   };
 

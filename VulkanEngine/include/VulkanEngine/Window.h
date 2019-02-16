@@ -2,6 +2,7 @@
 #define WINDOW_H
 
 #include <VulkanEngine/MouseInput.h>
+#include <VulkanEngine/KeyboardInput.h>
 
 #include <vulkan/vulkan.hpp>
 
@@ -38,6 +39,8 @@ namespace VulkanEngine {
 
     /// Get a MouseInfo instance which retrieves values from this Window instance
     virtual std::shared_ptr< MouseInput> getMouseInput();
+    
+    virtual std::shared_ptr< KeyboardInput > getKeyboardInput();
 
     /// Do anything needed to update the window.
     virtual void update() = 0;
@@ -84,7 +87,7 @@ namespace VulkanEngine {
     /// Callback which gets the current status of mouse buttons
     void mouseButtonPressedCallback( bool left_pressed, bool right_pressed, bool middle_pressed );
 
-    void keyboardButtonPressedCallback( const char* key, int scancode );
+    void keyboardButtonPressedCallback( int scancode, const KeyboardInput::KeyInfo& key_info );
 
     /// The current width of the window.
     uint32_t width;
@@ -108,8 +111,11 @@ namespace VulkanEngine {
     /// Reset when calling sizeHasChanged().
     bool size_changed;
 
-    /// The MouseInput instances connected to this Window
-    std::shared_ptr< MouseInput > mouse_input; 
+    /// The MouseInput instance connected to this Window.
+    std::shared_ptr< MouseInput > mouse_input;
+    
+    /// The KeyboardInput instance connect to this Window.
+    std::shared_ptr< KeyboardInput > keyboard_input;
 
   };
 

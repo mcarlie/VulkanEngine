@@ -5,7 +5,6 @@
 #include <VulkanEngine/Constants.h>
 
 VulkanEngine::Camera::Camera( 
-  Eigen::Vector3f _position,
   Eigen::Vector3f _look_at,
   Eigen::Vector3f _up_vector,
   float _z_near,
@@ -13,7 +12,6 @@ VulkanEngine::Camera::Camera(
   float _fov,
   uint32_t _width,
   uint32_t _height ) :
-  position( _position ),
   look_at( _look_at ),
   up_vector( _up_vector ),
   z_near( _z_near ),
@@ -37,10 +35,6 @@ void VulkanEngine::Camera::updateCallback( SceneState& scene_state ) {
 
 void VulkanEngine::Camera::setLookAt( const Eigen::Vector3f& _look_at ) {
   look_at = _look_at;
-}
-
-const Eigen::Vector3f VulkanEngine::Camera::getPosition() {
-  return position;
 }
 
 const Eigen::Matrix4f VulkanEngine::Camera::getPerspectiveProjectionMatrix() {
@@ -70,6 +64,8 @@ const Eigen::Matrix4f VulkanEngine::Camera::getPerspectiveProjectionMatrix() {
 
 const Eigen::Matrix4f VulkanEngine::Camera::getViewMatrix() {
 
+  Eigen::Vector3f position = Eigen::Affine3f( getTransform() ).translation();
+  
 	const auto& z_axis = ( look_at - position ).normalized();
 	const auto& x_axis = z_axis.cross( up_vector ).normalized();
 	const auto& y_axis = x_axis.cross( z_axis );

@@ -1,4 +1,6 @@
 #include <VulkanEngine/Window.h>
+#include <iostream>
+#include <set>
 
 VulkanEngine::Window::Window( uint32_t _width, uint32_t _height, const std::string& _title, bool _full_screen ) 
   : width( _width ), height( _height ), title( _title ), full_screen( _full_screen ), size_changed( false ) {
@@ -9,6 +11,10 @@ VulkanEngine::Window::~Window() {
 
 std::shared_ptr< VulkanEngine::MouseInput > VulkanEngine::Window::getMouseInput() {
   return mouse_input;
+}
+
+std::shared_ptr< VulkanEngine::KeyboardInput > VulkanEngine::Window::getKeyboardInput() {
+  return keyboard_input;
 }
 
 void VulkanEngine::Window::setWidth( uint32_t _width ) {
@@ -65,6 +71,10 @@ void VulkanEngine::Window::mouseButtonPressedCallback( bool left_pressed, bool r
 
 }
 
-void keyboardButtonPressedCallback( const char* key, int scancode ) {
-
+void VulkanEngine::Window::keyboardButtonPressedCallback( int scancode, const KeyboardInput::KeyInfo& key_info ) {
+  
+  if( keyboard_input.get() ) {
+    keyboard_input->key_status_map[ scancode ] = key_info;
+  }
+  
 }
