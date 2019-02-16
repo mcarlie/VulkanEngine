@@ -15,7 +15,7 @@ namespace VulkanEngine {
     Scene();
 
     /// Destructor.
-    ~Scene();
+    virtual ~Scene();
 
   };
 

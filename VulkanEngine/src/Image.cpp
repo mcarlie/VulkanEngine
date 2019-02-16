@@ -17,9 +17,9 @@ VulkanEngine::Image< format, image_type, tiling, sample_count_flags >::Image(
   width( _width ),
   height( _height ), 
   depth( _depth ),
+  data_size( pixel_size * width * height * depth ),
   mipmap_levels( 1 ),
-  vk_image_layout( initial_layout ),
-  data_size( pixel_size * width * height * depth ) {
+  vk_image_layout( initial_layout ) {
   if( generate_mip_maps ) {
     mipmap_levels = static_cast< uint32_t >( std::floor( std::log2( std::max( width, height ) ) ) );
   }

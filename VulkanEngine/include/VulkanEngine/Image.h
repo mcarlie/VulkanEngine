@@ -36,7 +36,7 @@ namespace VulkanEngine {
       bool generate_mip_maps = true );
 
     /// Destructor.
-    ~Image();
+    virtual ~Image();
 
     /// Sets the image data from the given pointer.
     /// \param data Pointer to the image data.

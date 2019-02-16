@@ -197,6 +197,10 @@ VulkanEngine::OBJMesh::OBJMesh(
   
 }
 
+VulkanEngine::OBJMesh::~OBJMesh() {
+  
+}
+
 void VulkanEngine::OBJMesh::updateCallback( SceneState& scene_state ) {
 
   MvpUbo ubo_data;

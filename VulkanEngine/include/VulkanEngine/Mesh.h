@@ -47,7 +47,7 @@ namespace VulkanEngine {
       );
     
     /// Destructor.
-    ~Mesh();
+    virtual ~Mesh();
 
     /// Sets the positions of the Mesh.
     /// \param _positions A VertexAttribute giving the positions of the vertices of the Mesh.

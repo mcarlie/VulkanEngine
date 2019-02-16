@@ -22,7 +22,7 @@ namespace VulkanEngine {
     VertexAttribute( const T* data, size_t _num_elements, uint32_t _location, vk::Format _format );
 
     /// Destructor.
-    ~VertexAttribute();
+    virtual ~VertexAttribute();
 
     /// \return The Vulkan VertexInputBindingDescription for this VertexAttribute instance.
     const vk::VertexInputBindingDescription getVkVertexInputBindingDescription( uint32_t binding_index );

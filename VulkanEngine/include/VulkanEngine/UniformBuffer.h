@@ -25,7 +25,7 @@ namespace VulkanEngine {
       vk::ShaderStageFlags _vk_shader_stage_flags = vk::ShaderStageFlagBits::eAllGraphics );
     
     /// Destructor.
-    ~UniformBuffer();
+    virtual ~UniformBuffer();
 
     virtual void appendVkDescriptorSets( 
       std::vector< vk::WriteDescriptorSet >& write_descriptor_sets,

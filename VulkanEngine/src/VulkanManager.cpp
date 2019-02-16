@@ -132,9 +132,9 @@ void VulkanEngine::VulkanManager::initialize( const std::shared_ptr< Window >& _
   vk_command_pool = vk_device.createCommandPool( command_pool_info );
 
   // TODO Use these
-  auto surface_formats = vk_physical_device.getSurfaceFormatsKHR( vk_surface );
-  auto present_modes = vk_physical_device.getSurfacePresentModesKHR( vk_surface );
-  auto surface_support = vk_physical_device.getSurfaceSupportKHR( graphics_queue_family_index, vk_surface );
+  //  auto surface_formats = vk_physical_device.getSurfaceFormatsKHR( vk_surface );
+  //  auto present_modes = vk_physical_device.getSurfacePresentModesKHR( vk_surface );
+  //  auto surface_support = vk_physical_device.getSurfaceSupportKHR( graphics_queue_family_index, vk_surface );
 
   createSwapchain();
   createImageViews();

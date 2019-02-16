@@ -30,7 +30,7 @@ namespace VulkanEngine {
       uint32_t _height = 600 );
 
     /// Destructor.
-    ~Camera();
+    virtual ~Camera();
 
     void setLookAt( const Eigen::Vector3f& _look_at );
 

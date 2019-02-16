@@ -18,6 +18,9 @@ namespace VulkanEngine {
     /// \param obj_file Path to obj file.
     /// \param mtl_file Path to mtl file location.
     OBJMesh( const std::string& obj_file, const std::string& mtl_path = "", const std::shared_ptr< Shader > _shader = std::shared_ptr< Shader >() );
+    
+    /// Destructor.
+    virtual ~OBJMesh();
 
   private:
 

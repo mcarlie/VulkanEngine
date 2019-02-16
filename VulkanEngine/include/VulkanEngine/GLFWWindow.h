@@ -20,7 +20,7 @@ namespace VulkanEngine {
     GLFWWindow( int _width, int _height, const std::string& _title, bool _full_screen );
     
     /// Desctructor.
-    ~GLFWWindow();
+    virtual ~GLFWWindow();
 
     /// Initialize the window.
     /// \return True if initialization succeded without error.

@@ -20,7 +20,7 @@ namespace VulkanEngine {
     IndexAttribute( const T* data, size_t num_elements );
 
     /// Destructor.
-    ~IndexAttribute();
+    virtual ~IndexAttribute();
 
   };
 

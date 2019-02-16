@@ -5,11 +5,12 @@
 
 template< class DestinationClass >
 template< class ... DestinationClassArgs >
-VulkanEngine::StagedBuffer< DestinationClass >::StagedBuffer( DestinationClassArgs ... args ) 
-  : source_buffer( this->getStagingBufferSize(),
-    vk::BufferUsageFlagBits::eTransferSrc,
-    vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent,
-    VMA_MEMORY_USAGE_CPU_ONLY ), DestinationClass( args ... ) {
+VulkanEngine::StagedBuffer< DestinationClass >::StagedBuffer( DestinationClassArgs ... args )
+: DestinationClass( args ... ),
+source_buffer( this->getStagingBufferSize(),
+              vk::BufferUsageFlagBits::eTransferSrc,
+              vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent,
+              VMA_MEMORY_USAGE_CPU_ONLY ) {
 }
 
 template< class DestinationClass >
