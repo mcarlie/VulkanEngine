@@ -136,60 +136,6 @@ VulkanEngine::OBJMesh::OBJMesh(
   for( const auto& m : meshes ) {
     m->transferBuffers();
   }
-
-  // Create a shader if one isn't provided
-  if( !shader.get() ) {
-    std::shared_ptr< ShaderModule > fragment_shader( 
-      new ShaderModule( "/Users/michael/Desktop/VK/shaders/frag.spv", vk::ShaderStageFlagBits::eFragment ) );
-    std::shared_ptr< ShaderModule > vertex_shader( 
-      new ShaderModule( "/Users/michael/Desktop/VK/shaders/vert.spv", vk::ShaderStageFlagBits::eVertex ) );
-    shader.reset( new Shader( { fragment_shader, vertex_shader } ) );
-  }
-  
-  int texture_width;
-  int texture_height;
-  int channels_in_file;
-  unsigned char* image_data = stbi_load( "/Users/michael/Desktop/VK/models/spider_pumpkin_obj_0.jpg",
-                                        &texture_width, &texture_height,
-                                        &channels_in_file, 4 );
-  
-  using RGBATexture2D1S
-  = VulkanEngine::StagedBuffer<
-  VulkanEngine::ShaderImage<
-  vk::Format::eR8G8B8A8Unorm,
-  vk::ImageType::e2D,
-  vk::ImageTiling::eOptimal,
-  vk::SampleCountFlagBits::e1 > >;
-  
-  std::shared_ptr< RGBATexture2D1S > texture;
-  texture.reset( new RGBATexture2D1S( vk::ImageLayout::eUndefined,
-                                      vk::ImageUsageFlagBits::eTransferDst
-                                      | vk::ImageUsageFlagBits::eTransferSrc
-                                      | vk::ImageUsageFlagBits::eSampled, /// TODO These could be template parameters instead
-                                      VMA_MEMORY_USAGE_GPU_ONLY,
-                                      static_cast< uint32_t >( texture_width ),
-                                      static_cast< uint32_t >( texture_height ),
-                                      1, sizeof( unsigned char ) * 4, 1,
-                                      1, // TODO
-                                      vk::DescriptorType::eCombinedImageSampler,
-                                      vk::ShaderStageFlagBits::eFragment ) );
-  
-  texture->setImageData( image_data );
-  texture->createImageView( vk::ImageViewType::e2D, vk::ImageAspectFlagBits::eColor );
-  texture->createSampler();
-  texture->transferBuffer();
-  
-  mvp_buffers.resize( 3 );
-  for( auto& ub : mvp_buffers ) {
-    ub.reset( new VulkanEngine::UniformBuffer< MvpUbo >( 0 ) );
-  }
-  
-  std::vector< std::vector< std::shared_ptr< VulkanEngine::Descriptor > > > descriptors;
-  for( size_t i = 0; i < 3; ++i ) {
-    descriptors.push_back( { texture, mvp_buffers[i] } );
-  }
-
-  shader->setDescriptors( descriptors );
   
   // TODO baseclass which handles pipeline
   VulkanEngine::VulkanManager::getInstance()->createGraphicsPipeline( meshes[0], shader );
@@ -239,14 +185,6 @@ void VulkanEngine::OBJMesh::loadOBJ( const char* obj_path, const char* mtl_path 
 
   }
 
-  using RGBATexture2D1S 
-    = VulkanEngine::StagedBuffer< 
-    VulkanEngine::ShaderImage< 
-    vk::Format::eR8G8B8A8Unorm,
-    vk::ImageType::e2D,
-    vk::ImageTiling::eOptimal,
-    vk::SampleCountFlagBits::e1 > >;
-
   for( const auto& material : materials ) {
 
     if( material.diffuse_texname != "" ) {
@@ -255,38 +193,75 @@ void VulkanEngine::OBJMesh::loadOBJ( const char* obj_path, const char* mtl_path 
       int texture_height;
       int channels_in_file;
       unsigned char* image_data = stbi_load( 
-        material.diffuse_texname.c_str(),
+        ( std::string( mtl_path ) + material.diffuse_texname ).c_str(),
         &texture_width, &texture_height,
         &channels_in_file, 4 );
 
       if( image_data ) {
 
-        std::shared_ptr< RGBATexture2D1S > diffuse_texture( 
-          new RGBATexture2D1S( 
-            vk::ImageLayout::eUndefined,
-            vk::ImageUsageFlagBits::eTransferDst | vk::ImageUsageFlagBits::eTransferSrc | vk::ImageUsageFlagBits::eSampled, /// TODO These could be template parameters instead
-            VMA_MEMORY_USAGE_GPU_ONLY,
-            static_cast< uint32_t >( texture_width ),
-            static_cast< uint32_t >( texture_height ),
-            1, sizeof( unsigned char ) * 4, 1,
-            1, // TODO
-            vk::DescriptorType::eCombinedImageSampler,
-            vk::ShaderStageFlagBits::eFragment ) );
-
-        diffuse_texture->setImageData( image_data );
-        diffuse_texture->createImageView( vk::ImageViewType::e2D, vk::ImageAspectFlagBits::eColor );
-        diffuse_texture->createSampler();
-        textures[material.diffuse_texname] = diffuse_texture;
+        using RGBATexture2D1S
+        = VulkanEngine::StagedBuffer<
+        VulkanEngine::ShaderImage<
+        vk::Format::eR8G8B8A8Unorm,
+        vk::ImageType::e2D,
+        vk::ImageTiling::eOptimal,
+        vk::SampleCountFlagBits::e1 > >;
+        
+        std::shared_ptr< RGBATexture2D1S > texture;
+        texture.reset( new RGBATexture2D1S( vk::ImageLayout::eUndefined,
+                                           vk::ImageUsageFlagBits::eTransferDst
+                                           | vk::ImageUsageFlagBits::eTransferSrc
+                                           | vk::ImageUsageFlagBits::eSampled, /// TODO These could be template parameters instead
+                                           VMA_MEMORY_USAGE_GPU_ONLY,
+                                           static_cast< uint32_t >( texture_width ),
+                                           static_cast< uint32_t >( texture_height ),
+                                           1, sizeof( unsigned char ) * 4, 1,
+                                           1, // TODO
+                                           vk::DescriptorType::eCombinedImageSampler,
+                                           vk::ShaderStageFlagBits::eFragment ) );
+        
+        texture->setImageData( image_data );
+        texture->createImageView( vk::ImageViewType::e2D, vk::ImageAspectFlagBits::eColor );
+        texture->createSampler();
+        texture->transferBuffer();
+        textures[ material.diffuse_texname ] = texture;
 
       } else {
         std::cerr << "OBJMesh texture: " << material.diffuse_texname << " could not be loaded" << std::endl;
       }
 
     }
+    
+    // Create a shader if one isn't provided
+    const char* shader_path = std::getenv( "VULKAN_ENGINE_SHADERS_DIR" );
+    if( !shader.get() && shader_path ) {
+      std::shared_ptr< ShaderModule > fragment_shader(
+        new ShaderModule( std::string( shader_path ) + std::string( "/frag.spv" ), vk::ShaderStageFlagBits::eFragment ) );
+      std::shared_ptr< ShaderModule > vertex_shader(
+        new ShaderModule( std::string( shader_path ) + std::string( "/vert.spv" ), vk::ShaderStageFlagBits::eVertex ) );
+      shader.reset( new Shader( { fragment_shader, vertex_shader } ) );
+    }
+    
+    mvp_buffers.resize( 3 ); /// TODO should be dependent on number of frames in flight
+    for( auto& ub : mvp_buffers ) {
+      ub.reset( new VulkanEngine::UniformBuffer< MvpUbo >( 0 ) );
+    }
+    
+    std::vector< std::vector< std::shared_ptr< Descriptor > > > descriptors;
+    for( size_t i = 0; i < 3; ++i ) { /// TODO should be dependent on number of frames in flight
+      std::vector< std::shared_ptr< Descriptor > > frame_descriptors;
+      for( const auto& t : textures ) {
+        frame_descriptors.push_back( t.second );
+      }
+      frame_descriptors.push_back( mvp_buffers[i] );
+      descriptors.push_back( frame_descriptors );
+    }
+    
+    shader->setDescriptors( descriptors );
 
   }
 
-  auto time = std::chrono::duration_cast< std::chrono::nanoseconds >( std::chrono::system_clock::now() - begin ).count();
-  std::cout << "Mesh loading time: " << time << "(ns)" << std::endl;
+  auto time = std::chrono::duration_cast< std::chrono::milliseconds >( std::chrono::system_clock::now() - begin ).count();
+  std::cout << "Mesh loading time: " << time << "(ms)" << std::endl;
 
 }

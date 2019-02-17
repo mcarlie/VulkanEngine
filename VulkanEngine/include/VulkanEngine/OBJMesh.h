@@ -44,7 +44,7 @@ namespace VulkanEngine {
 
     std::vector< std::shared_ptr< UniformBuffer< MvpUbo > > > mvp_buffers;
     
-    /// Textures belonging to this mesh
+    /// Textures belonging to this mesh.
     std::unordered_map< std::string, std::shared_ptr< Descriptor > > textures;
 
   };

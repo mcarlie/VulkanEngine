@@ -36,8 +36,9 @@ int main() {
 
   scene_children.push_back( camera );
 
-  std::shared_ptr< VulkanEngine::OBJMesh > obj_mesh( new VulkanEngine::OBJMesh( 
-    "/Users/michael/Desktop/VK/models/spider_pumpkin_obj.obj", "/Users/michael/Desktop/VK/models/" ) );
+  const char* models_path = std::getenv( "VULKAN_ENGINE_MODELS_DIR" );
+  std::shared_ptr< VulkanEngine::OBJMesh > obj_mesh( new VulkanEngine::OBJMesh(
+    std::string( models_path ) + "/spider_pumpkin_obj.obj", std::string( models_path ) + "/" ) );
   
   Eigen::Affine3f transform( Eigen::Translation3f( 0.0f, 0.0f, 5.0f ) );
   transform *= Eigen::Scaling( 0.05f );

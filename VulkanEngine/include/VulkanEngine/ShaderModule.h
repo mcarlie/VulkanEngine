@@ -37,7 +37,7 @@ namespace VulkanEngine {
     /// The internal vk::ShaderModule instance.
     vk::ShaderModule vk_shader_module;
 
-    /// THe vk::ShaderStageFlagBits provided in the constructor.
+    /// The vk::ShaderStageFlagBits provided in the constructor.
     vk::ShaderStageFlagBits vk_shader_stage_flag;
 
   };

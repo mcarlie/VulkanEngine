@@ -66,3 +66,10 @@ include_directories("${LIBS_DIR}/stb")
 file( GLOB SOURCES "examples/SimpleScene/*.cpp" "examples/SimpleScene/*.h")
 add_executable(SimpleScene ${SOURCES})
 target_link_libraries(SimpleScene VulkanEngine)
+
+# Set environment variables for paths containing assets
+set(VULKAN_ENGINE_SHADERS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/shaders" CACHE PATH "Path to shaders directory")
+set(ENV{VULKAN_ENGINE_SHADERS_DIR} ${VULKAN_ENGINE_SHADERS_DIR})
+
+set(VULKAN_ENGINE_MODELS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/models" CACHE PATH "Path to models directory")
+set(ENV{VULKAN_ENGINE_MODELS_DIR} ${VULKAN_ENGINE_MODELS_DIR})
