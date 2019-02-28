@@ -9,17 +9,20 @@
 namespace VulkanEngine {
 
   /// Represents a camera in the scene.
+  /// The camera provides view and projection matrices for rendering
+  /// based on the current state of the camera object.
   class Camera : public SceneObject {
 
   public:
 
     /// Constructor.
-    /// \param _position The position of the Camera.
     /// \param _look_at What position the Camera should be oriented towards initially.
     /// \param _up_vector The up direction of the Camera.
     /// \param _z_near The distance from the Camera's position to the near plane.
     /// \param _z_far The distance from the Camera's position to the far plane.
     /// \param _fov The field of view of the Camera.
+    /// \param _width The width of the camera.
+    /// \param _height The height of the camera.
     Camera(
       Eigen::Vector3f _look_at = { 0.0f, 0.0f, 0.0f },
       Eigen::Vector3f _up_vector = { 0.0f, 1.0f, 0.0f },
@@ -32,11 +35,20 @@ namespace VulkanEngine {
     /// Destructor.
     virtual ~Camera();
 
+    /// Set the look at vector of the camera.
+    /// \param _look_at The look at vector to use.
     void setLookAt( const Eigen::Vector3f& _look_at );
+    
+    /// \return The current look at vector
+    const Eigen::Vector3f& getLookAt();
 
+    /// \return The current up vector.
+    const Eigen::Vector3f& getUpVector();
+    
     /// \return The projection matrix of the Camera.
     const Eigen::Matrix4f getPerspectiveProjectionMatrix();
 
+    /// \param _transform The transformation matrix to use when calculating the view matrix
     /// \return The view matrix of the Camera.
     const Eigen::Matrix4f getViewMatrix();
 

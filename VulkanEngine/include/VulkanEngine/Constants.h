@@ -1,9 +1,6 @@
 #ifndef UTILS_H
 #define UTILS_H
 
-#define _USE_MATH_DEFINES 
-#include <math.h>
-
 #include <Eigen/Eigen>
 
 namespace VulkanEngine {
@@ -13,11 +10,11 @@ namespace VulkanEngine {
   
     /// Definition of pi to use in application.
     template< typename T >
-    constexpr T pi() { return static_cast< T >( M_PI ); };
+    constexpr T pi() { return static_cast< T >( 3.14159265358979323846264338327950288419716939937510L ); };
 
     /// Definition of e to use in application.
     template< typename T >
-    constexpr T e() { return static_cast< T >( M_E ); };
+    constexpr T e() { return static_cast< T >( 2.71828182845904523536028747135266249775724709369995L ); };
 
   }
 

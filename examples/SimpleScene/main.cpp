@@ -24,7 +24,7 @@ int main() {
 
   std::shared_ptr< VulkanEngine::Camera> camera;
   camera.reset( new VulkanEngine::Camera(
-    { 0.0f, 0.0f, 0.0f },
+    { 0.0f, 0.0f, 0.1f },
     { 0.0f, 1.0f, 0.0f },
     0.1f,
     1000.0f,
@@ -34,7 +34,10 @@ int main() {
   
   camera->setTranform( Eigen::Affine3f( Eigen::Translation3f( 0.0f, 0.0f, -5.0f ) ).matrix() );
 
-  scene_children.push_back( camera );
+  std::shared_ptr< VulkanEngine::SceneObject > camera_container( new VulkanEngine::SceneObject() );
+  camera_container->addChildren( { camera } );
+  
+  scene_children.push_back( { camera_container } );
 
   const char* models_path = std::getenv( "VULKAN_ENGINE_MODELS_DIR" );
   std::shared_ptr< VulkanEngine::OBJMesh > obj_mesh( new VulkanEngine::OBJMesh(
@@ -50,7 +53,7 @@ int main() {
 
   const auto& keyboard_input = window->getKeyboardInput();
   
-  const float camera_move_speed = 0.1;
+  const float camera_move_speed = 0.03;
   
   while( !window->shouldClose() ) {
 
@@ -64,23 +67,81 @@ int main() {
       const auto key_up = keyboard_input->getLastKeyStatus( GLFW_KEY_UP );
       const auto key_down = keyboard_input->getLastKeyStatus( GLFW_KEY_DOWN );
       
+      float camera_rotation_x = 0.0f;
+      float camera_rotation_y = 0.0f;
+      
       if( key_left == VulkanEngine::KeyboardInput::PRESSED || key_left == VulkanEngine::KeyboardInput::REPEAT ) {
-        camera_transform.translation()[0] -= camera_move_speed;
+        camera_rotation_x += camera_move_speed;
       }
       
       if( key_right == VulkanEngine::KeyboardInput::PRESSED || key_right == VulkanEngine::KeyboardInput::REPEAT ) {
-        camera_transform.translation()[0] += camera_move_speed;
+        camera_rotation_x -= camera_move_speed;
       }
       
       if( key_up == VulkanEngine::KeyboardInput::PRESSED || key_up == VulkanEngine::KeyboardInput::REPEAT ) {
-        camera_transform.translation()[1] += camera_move_speed;
+        camera_rotation_y -= camera_move_speed;
       }
       
       if( key_down == VulkanEngine::KeyboardInput::PRESSED || key_down == VulkanEngine::KeyboardInput::REPEAT ) {
-        camera_transform.translation()[1] -= camera_move_speed;
+        camera_rotation_y += camera_move_speed;
       }
       
-      camera->setTranform( camera_transform.matrix() );
+      if( camera_rotation_x != 0.0f || camera_rotation_y != 0.0f ) {
+        Eigen::AngleAxisf camera_rot_x( camera_rotation_x, camera->getUpVector().normalized() );
+        
+        Eigen::Vector3f camera_position = camera_transform.translation();
+        Eigen::Vector3f look_at = camera->getLookAt();
+        
+        Eigen::Vector3f look_at_to_pos = camera_position - look_at;
+        
+        look_at_to_pos = camera_rot_x * look_at_to_pos;
+        
+        Eigen::AngleAxisf camera_rot_y(
+          camera_rotation_y, ( look_at_to_pos.cross( camera->getUpVector() ) ).normalized() );
+        
+        look_at_to_pos = camera_rot_y * look_at_to_pos;
+        
+        camera->setTranform( Eigen::Affine3f( Eigen::Translation3f( look_at_to_pos + look_at ) ).matrix() );
+      }
+      
+      const auto key_w = keyboard_input->getLastKeyStatus( GLFW_KEY_W );
+      const auto key_a = keyboard_input->getLastKeyStatus( GLFW_KEY_A );
+      
+      const auto key_s = keyboard_input->getLastKeyStatus( GLFW_KEY_S );
+      const auto key_d = keyboard_input->getLastKeyStatus( GLFW_KEY_D );
+      
+      const auto key_z = keyboard_input->getLastKeyStatus( GLFW_KEY_Z );
+      const auto key_x = keyboard_input->getLastKeyStatus( GLFW_KEY_X );
+      
+      Eigen::Vector3f camera_movement = { 0.0f, 0.0f, 0.0f };
+      
+      if( key_a == VulkanEngine::KeyboardInput::PRESSED || key_a == VulkanEngine::KeyboardInput::REPEAT ) {
+        camera_movement( 0 ) += camera_move_speed;
+      }
+      
+      if( key_d == VulkanEngine::KeyboardInput::PRESSED || key_d == VulkanEngine::KeyboardInput::REPEAT ) {
+        camera_movement( 0 ) -= camera_move_speed;
+      }
+      
+      if( key_z == VulkanEngine::KeyboardInput::PRESSED || key_z == VulkanEngine::KeyboardInput::REPEAT ) {
+        camera_movement( 1 ) += camera_move_speed;
+      }
+      
+      if( key_x == VulkanEngine::KeyboardInput::PRESSED || key_x == VulkanEngine::KeyboardInput::REPEAT ) {
+        camera_movement( 1 ) -= camera_move_speed;
+      }
+      
+      if( key_w == VulkanEngine::KeyboardInput::PRESSED || key_w == VulkanEngine::KeyboardInput::REPEAT ) {
+        camera_movement( 2 ) += camera_move_speed;
+      }
+      
+      if( key_s == VulkanEngine::KeyboardInput::PRESSED || key_s == VulkanEngine::KeyboardInput::REPEAT ) {
+        camera_movement( 2 ) -= camera_move_speed;
+      }
+      
+      camera->setLookAt( camera->getLookAt() + camera_movement );
+      camera->setTranform( Eigen::Affine3f( Eigen::Translation3f( camera_movement )
+                                           * Eigen::Affine3f( camera->getTransform() ) ).matrix() );
       
     }
     

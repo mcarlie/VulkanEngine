@@ -28,13 +28,21 @@ VulkanEngine::Camera::~Camera() {
 
 void VulkanEngine::Camera::updateCallback( SceneState& scene_state ) {
 
-  scene_state.setViewMatrix( getViewMatrix() );
+  scene_state.setViewMatrix( scene_state.getTotalTransform() * getTransform().inverse() * getViewMatrix() );
   scene_state.setProjectionMatrix( getPerspectiveProjectionMatrix() );
 
 }
 
 void VulkanEngine::Camera::setLookAt( const Eigen::Vector3f& _look_at ) {
   look_at = _look_at;
+}
+
+const Eigen::Vector3f& VulkanEngine::Camera::getLookAt() {
+  return look_at;
+}
+
+const Eigen::Vector3f& VulkanEngine::Camera::getUpVector() {
+  return up_vector;
 }
 
 const Eigen::Matrix4f VulkanEngine::Camera::getPerspectiveProjectionMatrix() {

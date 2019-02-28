@@ -26,7 +26,7 @@ namespace VulkanEngine {
       /// The current status of the key.
       KeyStatus status;
       
-      /// The windoing system specific key id.
+      /// The windowing system specific key id.
       int key_id;
       
     };
