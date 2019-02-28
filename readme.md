@@ -5,6 +5,8 @@ https://www.lunarg.com/vulkan-sdk/
 
 For MacOS (MoltenVK). Download the SDK and specify it's location using the VULKAN_SDK environment variable (can be set in CMake)
 
+This has not yet been tested on linux (though it's planned to support it in the future)
+
 Run CMake and build the project.
 
 There is an example SimpleScene which can be run and is used to test the engine.
