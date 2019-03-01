@@ -1,4 +1,8 @@
-This is an in-development engine using Vulkan and GLFW
+This is an in-development engine using Vulkan and GLFW.
+
+Right now there's support for loading an OBJ file with custom shaders and textures.
+
+Currently working on some basic scene-graph functionality.
 
 On Windows make sure you have Vulkan SDK installed.
 https://www.lunarg.com/vulkan-sdk/
