@@ -3,6 +3,7 @@
 
 #include <VulkanEngine/Camera.h>
 #include <VulkanEngine/Constants.h>
+#include <VulkanEngine/Scene.h>
 
 VulkanEngine::Camera::Camera( 
   Eigen::Vector3f _look_at,
@@ -27,6 +28,10 @@ VulkanEngine::Camera::~Camera() {
 }
 
 void VulkanEngine::Camera::update( SceneState& scene_state ) {
+  
+  auto active_window = scene_state.getScene().getActiveWindow();
+  setWidth( active_window->getWidth() );
+  setHeight( active_window->getHeight() );
 
   scene_state.setViewMatrix( scene_state.getTotalTransform() * getTransform().inverse() * getViewMatrix() );
   scene_state.setProjectionMatrix( getPerspectiveProjectionMatrix() );
@@ -96,6 +101,14 @@ const Eigen::Matrix4f VulkanEngine::Camera::getViewMatrix() {
 
   return result;
 
+}
+
+void VulkanEngine::Camera::setWidth( uint32_t _width ) {
+  width = _width;
+}
+
+void VulkanEngine::Camera::setHeight( uint32_t _height ) {
+  height = _height;
 }
 
 #endif /* CAMERA_CPP */

@@ -1,8 +1,13 @@
 #include <VulkanEngine/SceneState.h>
 #include <VulkanEngine/Camera.h>
+#include <VulkanEngine/Scene.h>
 
-VulkanEngine::SceneState::SceneState() 
-  : total_transform( Eigen::Matrix4f::Identity() ), view_matrix(), projection_matrix() {
+VulkanEngine::SceneState::SceneState( const Scene& _scene )
+  : scene( _scene ), total_transform( Eigen::Matrix4f::Identity() ), view_matrix(), projection_matrix() {
+}
+
+const VulkanEngine::Scene& VulkanEngine::SceneState::getScene() {
+  return scene;
 }
 
 const Eigen::Matrix4f& VulkanEngine::SceneState::getTransform() {

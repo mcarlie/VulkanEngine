@@ -17,7 +17,12 @@ int main( int argc, char** argv ) {
   auto vulkan_manager = VulkanEngine::VulkanManager::getInstance();
   vulkan_manager->initialize( window );
   
-  std::shared_ptr< VulkanEngine::Scene > scene( new VulkanEngine::Scene() );
+  std::vector< std::shared_ptr< VulkanEngine::Window > > window_list;
+  window_list.push_back( window );
+  
+  std::shared_ptr< VulkanEngine::Scene > scene(
+    new VulkanEngine::Scene( window_list ) );
+  
   std::vector< std::shared_ptr< VulkanEngine::SceneObject > > scene_children;
 
   std::shared_ptr< VulkanEngine::MouseInput > mouse_input = window->getMouseInput();
@@ -29,8 +34,8 @@ int main( int argc, char** argv ) {
     0.1f,
     1000.0f,
     45.0f,
-    window->getWidth(),
-    window->getHeight() ) );
+    window->getFramebufferWidth(),
+    window->getFramebufferHeight() ) );
   
   camera->setTranform( Eigen::Affine3f( Eigen::Translation3f( 0.0f, 0.0f, 5.0f ) ).matrix() );
 
@@ -152,9 +157,7 @@ int main( int argc, char** argv ) {
     }
     
     scene->update();
-    
     vulkan_manager->drawImage();
-    window->update();
 
   }
 

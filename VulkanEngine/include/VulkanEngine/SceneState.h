@@ -6,13 +6,17 @@
 
 namespace VulkanEngine {
 
+  class Scene;
+
   /// Contains information about the current state of the scene.
   class SceneState {
 
   public:
 
     /// Constructor.
-    SceneState();
+    SceneState( const Scene& _scene );
+    
+    const Scene& getScene();
 
     /// \return The current total transformation matrix.
     const Eigen::Matrix4f& getTransform();
@@ -37,6 +41,8 @@ namespace VulkanEngine {
     void setProjectionMatrix( const Eigen::Matrix4f& _projection_matrix );
 
   private:
+    
+    const Scene& scene;
 
     /// The current total transformation matrix.
     Eigen::Matrix4f total_transform;

@@ -51,6 +51,10 @@ namespace VulkanEngine {
     /// \param _transform The transformation matrix to use when calculating the view matrix
     /// \return The view matrix of the Camera.
     const Eigen::Matrix4f getViewMatrix();
+    
+    void setWidth( uint32_t _width );
+    
+    void setHeight( uint32_t _height );
 
   private:
     
