@@ -116,7 +116,7 @@ namespace OBJMeshInternal {
     MeshType* mesh = new MeshType();
     mesh->setPositions( position_attribute );
     mesh->setIndices( index_attribute );
-    //mesh->setAttributes( additional_attributes );
+    mesh->setAttributes( additional_attributes );
 
     return std::shared_ptr< VulkanEngine::MeshBase >( mesh );
 

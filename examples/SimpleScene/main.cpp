@@ -40,10 +40,16 @@ int main( int argc, char** argv ) {
   scene_children.push_back( { camera_container } );
   
   if(argc > 1) {
-    std::shared_ptr< VulkanEngine::OBJMesh > obj_mesh( new VulkanEngine::OBJMesh( argv[1] ) );
+    std::string obj_path( argv[1] );
+    std::string mtl_path;
+    if( argc > 2 ) {
+      mtl_path = argv[2];
+    }
+    std::shared_ptr< VulkanEngine::OBJMesh > obj_mesh(
+      new VulkanEngine::OBJMesh( argv[1], argc > 2 ? argv[2] : "" ) );
     
-    Eigen::Affine3f transform( Eigen::Translation3f( 0.0f, 0.0f, -5.0f ) );
-    transform *= Eigen::Scaling( 0.05f );
+    Eigen::Affine3f transform( Eigen::Translation3f( 0.0f, 0.0f, 0.0f ) );
+    transform *= Eigen::Scaling( 0.025f );
     obj_mesh->setTranform( transform.matrix() );
     
     scene_children.push_back( obj_mesh );

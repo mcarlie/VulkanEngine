@@ -42,7 +42,7 @@ namespace VulkanEngine {
     Mesh( 
       const std::shared_ptr< VertexAttribute< PositionType > >& _positions,
       const std::shared_ptr< IndexAttribute< IndexType > >& _indices,
-      //const std::tuple< AttributeContainer< AdditionalAttributeTypes > ... >& _attributes,
+      const std::tuple< AttributeContainer< AdditionalAttributeTypes > ... >& _attributes,
       const std::shared_ptr< Shader >& _shader
       );
     
@@ -59,8 +59,8 @@ namespace VulkanEngine {
     
     /// Sets the additional attributes of the Mesh.
     /// \param _additional_attributes A list of additional VertexAttribute instances which will be used when rendering the Mesh.
-	/// TODO Some bug not allowing this to build with visual studio 2017
-    //void setAttributes( const std::tuple< AttributeContainer< AdditionalAttributeTypes > ... >& _attributes );
+	  /// TODO Some bug not allowing this to build with visual studio 2017
+    void setAttributes( const std::tuple< AttributeContainer< AdditionalAttributeTypes > ... >& _attributes );
 
     /// \return The vk::PipelineVertexInputStateCreateInfo instance describing the attributes that constitute the Mesh.
     virtual const vk::PipelineVertexInputStateCreateInfo& getVkPipelineVertexInputStateCreateInfo();
