@@ -30,8 +30,8 @@ VulkanEngine::Camera::~Camera() {
 void VulkanEngine::Camera::update( SceneState& scene_state ) {
   
   auto active_window = scene_state.getScene().getActiveWindow();
-  setWidth( active_window->getWidth() );
-  setHeight( active_window->getHeight() );
+  setWidth( active_window->getFramebufferWidth() );
+  setHeight( active_window->getFramebufferHeight() );
 
   scene_state.setViewMatrix( scene_state.getTotalTransform() * getTransform().inverse() * getViewMatrix() );
   scene_state.setProjectionMatrix( getPerspectiveProjectionMatrix() );
