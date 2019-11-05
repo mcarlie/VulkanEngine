@@ -1,16 +1,16 @@
-cmake_minimum_required(VERSION 3.7 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.7)
 
 set(SUPPORT_XCODE_SCHEME_ENVIRONMENT_PROPERTY FALSE)
 if((CMAKE_GENERATOR STREQUAL Xcode) AND NOT (${CMAKE_VERSION} VERSION_LESS "3.13.5"))
-set(SUPPORT_XCODE_SCHEME_ENVIRONMENT_PROPERTY TRUE)
+  set(SUPPORT_XCODE_SCHEME_ENVIRONMENT_PROPERTY TRUE)
 endif()
 
 if((SUPPORT_XCODE_SCHEME_ENVIRONMENT_PROPERTY))
-set(ADD_VULKAN_ENVIRONMENT_VARIABLES_TO_XCODE_SCHEME OFF CACHE BOOL "Add VK_ICD_FILENAMES and VK_LAYER_PATH to Xcode scheme")
+  set(ADD_VULKAN_ENVIRONMENT_VARIABLES_TO_XCODE_SCHEME OFF CACHE BOOL "Add VK_ICD_FILENAMES and VK_LAYER_PATH to Xcode scheme")
 endif()
 
 if(NOT ADD_VULKAN_ENVIRONMENT_VARIABLES_TO_XCODE_SCHEME)
-set(SUPPORT_XCODE_SCHEME_ENVIRONMENT_PROPERTY FALSE)
+  set(SUPPORT_XCODE_SCHEME_ENVIRONMENT_PROPERTY FALSE)
 endif()
 
 if(SUPPORT_XCODE_SCHEME_ENVIRONMENT_PROPERTY)
@@ -47,8 +47,12 @@ set(ENV{VULKAN_SDK} ${VULKAN_SDK})
 ## Vulkan
 find_package(Vulkan REQUIRED)
 include_directories(${Vulkan_INCLUDE_DIRS})
-target_link_libraries(VulkanEngine ${Vulkan_LIBRARIES})
 link_directories(AFTER "${VULKAN_SDK}/lib")
+target_link_libraries(VulkanEngine ${Vulkan_LIBRARIES})
+
+add_subdirectory(${LIBS_DIR}/glslang)
+include_directories(${LIBS_DIR}/glslang)
+target_link_libraries(VulkanEngine glslang SPIRV )
 
 # Makes VK_ICD_FILENAMES env variable settable by user and add to Xcode scheme
 if(SUPPORT_XCODE_SCHEME_ENVIRONMENT_PROPERTY)
@@ -86,10 +90,9 @@ target_link_libraries(VulkanEngine glfw)
 include_directories("${LIBS_DIR}/eigen-3.3.5")
 include_directories("${LIBS_DIR}/tinyobjloader-1.0.6")
 include_directories("${LIBS_DIR}/VulkanMemoryAllocator-2.1.0/src")
-
-# Add examples
 include_directories("${LIBS_DIR}/stb")
 
+# Add examples
 file(GLOB SOURCES "examples/SimpleScene/*.cpp" "examples/SimpleScene/*.h")
 add_executable(SimpleScene ${SOURCES})
 target_link_libraries(SimpleScene VulkanEngine)

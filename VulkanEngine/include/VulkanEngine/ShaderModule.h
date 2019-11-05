@@ -33,12 +33,19 @@ namespace VulkanEngine {
     /// \param file_path The path to the file containing the source.
     /// \param [out] Contains the bytes read from the file.
     void readSource( const std::string& file_path, std::vector< char >& bytecode );
+    
+    /// Convert a GLSL shader string to SPIRV bytecode
+    /// \param shader_string The GLSL shader string
+    /// \param [out] spirv The resulting SPIRV bytecode
+    void glslToSPIRV( const std::string& file_path, const std::string& shader_string, std::vector< unsigned int >& spirv );
 
     /// The internal vk::ShaderModule instance.
     vk::ShaderModule vk_shader_module;
 
     /// The vk::ShaderStageFlagBits provided in the constructor.
     vk::ShaderStageFlagBits vk_shader_stage_flag;
+    
+    static bool glslang_initialized;
 
   };
 

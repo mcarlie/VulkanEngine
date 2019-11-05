@@ -185,19 +185,19 @@ void VulkanEngine::OBJMesh::loadOBJ( const char* obj_path, const char* mtl_path 
 
   }
 
-  mvp_buffers.resize(3); /// TODO should be dependent on number of frames in flight
-  for (auto& ub : mvp_buffers) {
-	  ub.reset(new VulkanEngine::UniformBuffer< MvpUbo >(0));
+  mvp_buffers.resize( 3 ); /// TODO should be dependent on number of frames in flight
+  for( auto& ub : mvp_buffers ) {
+	  ub.reset( new VulkanEngine::UniformBuffer< MvpUbo >( 0 ) );
   }
 
   // Create a shader if one isn't provided
   const char* shader_path = "/Users/michael/Desktop/VK/shaders";
-  if (!shader.get() && shader_path) {
+  if( !shader.get() && shader_path ) {
 	  std::shared_ptr< ShaderModule > fragment_shader(
-		  new ShaderModule(std::string(shader_path) + std::string("/frag.spv"), vk::ShaderStageFlagBits::eFragment));
+		  new ShaderModule( std::string( shader_path ) + std::string( "/triangle.frag" ), vk::ShaderStageFlagBits::eFragment ) );
 	  std::shared_ptr< ShaderModule > vertex_shader(
-		  new ShaderModule(std::string(shader_path) + std::string("/vert.spv"), vk::ShaderStageFlagBits::eVertex));
-	  shader.reset(new Shader({ fragment_shader, vertex_shader }));
+		  new ShaderModule( std::string( shader_path ) + std::string( "/triangle.vert" ), vk::ShaderStageFlagBits::eVertex ) );
+	  shader.reset( new Shader( { fragment_shader, vertex_shader } ) );
   }
 
   for( const auto& material : materials ) {

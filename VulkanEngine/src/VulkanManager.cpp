@@ -13,7 +13,8 @@ VulkanEngine::VulkanManager::~VulkanManager() {
 }
 
 std::shared_ptr< VulkanEngine::VulkanManager >& VulkanEngine::VulkanManager::getInstance() {
-  static std::shared_ptr< VulkanEngine::VulkanManager > singleton_vulkan_manager_instance( new VulkanManager() );
+  static std::shared_ptr< VulkanEngine::VulkanManager >
+    singleton_vulkan_manager_instance( new VulkanManager() );
   return singleton_vulkan_manager_instance;
 }
 
@@ -26,7 +27,7 @@ void VulkanEngine::VulkanManager::initialize( const std::shared_ptr< Window >& _
   // Use validation layers if this is a debug build
   std::vector< const char* > layers;
   
-  layers.push_back("VK_LAYER_LUNARG_standard_validation");
+  layers.push_back( "VK_LAYER_LUNARG_standard_validation" );
   instance_extensions.push_back( VK_EXT_DEBUG_UTILS_EXTENSION_NAME );
   instance_extensions.push_back( VK_EXT_DEBUG_REPORT_EXTENSION_NAME );
   instance_extensions.push_back( "VK_KHR_get_physical_device_properties2" );
@@ -62,8 +63,8 @@ void VulkanEngine::VulkanManager::initialize( const std::shared_ptr< Window >& _
   debug_message_create_info.pUserData = nullptr;
 
   vk_dispatch_loader_dynamic.init( vk_instance );
-  vk_debug_utils_messenger
-    = vk_instance.createDebugUtilsMessengerEXT( debug_message_create_info, nullptr, vk_dispatch_loader_dynamic );
+  vk_debug_utils_messenger = vk_instance.createDebugUtilsMessengerEXT(
+    debug_message_create_info, nullptr, vk_dispatch_loader_dynamic );
 
   if( !vk_debug_utils_messenger ) {
     throw std::runtime_error( "Could not initialize debug reporting for vulkan!" );
@@ -83,7 +84,8 @@ void VulkanEngine::VulkanManager::initialize( const std::shared_ptr< Window >& _
   }
 
   // Find queue family with graphics support
-  std::vector< vk::QueueFamilyProperties > queue_family_properties = vk_physical_device.getQueueFamilyProperties();
+  std::vector< vk::QueueFamilyProperties > queue_family_properties
+    = vk_physical_device.getQueueFamilyProperties();
   graphics_queue_family_index = 0;
   for( auto& q : queue_family_properties ) {
     if( q.queueFlags & vk::QueueFlagBits::eGraphics ) {
@@ -132,7 +134,8 @@ void VulkanEngine::VulkanManager::initialize( const std::shared_ptr< Window >& _
   // TODO Use these
   auto surface_formats = vk_physical_device.getSurfaceFormatsKHR( vk_surface );
   auto present_modes = vk_physical_device.getSurfacePresentModesKHR( vk_surface );
-  auto surface_support = vk_physical_device.getSurfaceSupportKHR( graphics_queue_family_index, vk_surface );
+  auto surface_support = vk_physical_device.getSurfaceSupportKHR(
+    graphics_queue_family_index, vk_surface );
 
   createSwapchain();
   createImageViews();
@@ -147,7 +150,8 @@ void VulkanEngine::VulkanManager::drawImage() {
   // Submit commands to the queue
   if( !vk_command_buffers.empty() ) {
    
-    auto fence_result = vk_device.waitForFences( vk_in_flight_fences[current_frame], VK_TRUE, std::numeric_limits< uint32_t >::max() );
+    auto fence_result = vk_device.waitForFences( vk_in_flight_fences[current_frame],
+      VK_TRUE, std::numeric_limits< uint32_t >::max() );
 
     uint32_t image_index;
     while( true ) {

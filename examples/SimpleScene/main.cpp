@@ -46,7 +46,7 @@ int main( int argc, char** argv ) {
       mtl_path = argv[2];
     }
     std::shared_ptr< VulkanEngine::OBJMesh > obj_mesh(
-      new VulkanEngine::OBJMesh( argv[1], argc > 2 ? argv[2] : "" ) );
+      new VulkanEngine::OBJMesh( obj_path, mtl_path ) );
     
     Eigen::Affine3f transform( Eigen::Translation3f( 0.0f, 0.0f, 0.0f ) );
     transform *= Eigen::Scaling( 0.025f );
