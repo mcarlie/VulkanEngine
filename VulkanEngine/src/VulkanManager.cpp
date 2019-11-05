@@ -143,44 +143,45 @@ void VulkanEngine::VulkanManager::initialize( const std::shared_ptr< Window >& _
 }
 
 void VulkanEngine::VulkanManager::drawImage() {
-
-  auto fence_result = vk_device.waitForFences( vk_in_flight_fences[current_frame], VK_TRUE, std::numeric_limits< uint32_t >::max() );
-
-  uint32_t image_index;
-  while( true ) {
-    
-    // Acquire the next available swapchain image that we can write to
-    vk::Result result = vk_device.acquireNextImageKHR( 
-      vk_swapchain,
-      std::numeric_limits< uint32_t >::max(),
-      vk_image_available_semaphores[current_frame],
-      nullptr,
-      &image_index );
-
-    // If the window size has changed or the image view is out of date according to Vulkan
-    // then recreate the pipeline from the swapchain stage
-    // TODO These errors are generated when submitting the graphics queue
-    if( result == vk::Result::eErrorOutOfDateKHR || window->sizeHasChanged() ) {
-      cleanupSwapchain();
-      createSwapchain();
-      createImageViews();
-      createRenderPass();
-      createSwapchainFramebuffers();
-      createSyncObjects();
-      continue;
-    } else if ( result != vk::Result::eSuccess &&
-                result != vk::Result::eSuboptimalKHR ) {
-      throw std::runtime_error( "Failed to acquire image!" );
-    } else {
-      break;
-    }
-
-  }
-
-  vk::Semaphore signal_semaphores[] = { vk_rendering_finished_semaphores[current_frame] };
   
   // Submit commands to the queue
   if( !vk_command_buffers.empty() ) {
+   
+    auto fence_result = vk_device.waitForFences( vk_in_flight_fences[current_frame], VK_TRUE, std::numeric_limits< uint32_t >::max() );
+
+    uint32_t image_index;
+    while( true ) {
+      
+      // Acquire the next available swapchain image that we can write to
+      vk::Result result = vk_device.acquireNextImageKHR(
+        vk_swapchain,
+        std::numeric_limits< uint32_t >::max(),
+        vk_image_available_semaphores[current_frame],
+        nullptr,
+        &image_index );
+
+      // If the window size has changed or the image view is out of date according to Vulkan
+      // then recreate the pipeline from the swapchain stage
+      // TODO These errors are generated when submitting the graphics queue
+      if( result == vk::Result::eErrorOutOfDateKHR || window->sizeHasChanged() ) {
+        cleanupSwapchain();
+        createSwapchain();
+        createImageViews();
+        createRenderPass();
+        createSwapchainFramebuffers();
+        createSyncObjects();
+        continue;
+      } else if ( result != vk::Result::eSuccess &&
+                  result != vk::Result::eSuboptimalKHR ) {
+        throw std::runtime_error( "Failed to acquire image!" );
+      } else {
+        break;
+      }
+
+    }
+    
+    vk::Semaphore signal_semaphores[] = { vk_rendering_finished_semaphores[current_frame] };
+    uint32_t signal_semaphores_count = 1;
     
     vk::Semaphore wait_semaphores[] = { vk_image_available_semaphores[current_frame] };
     vk::PipelineStageFlags wait_stages[] = { vk::PipelineStageFlagBits::eColorAttachmentOutput };
@@ -190,26 +191,26 @@ void VulkanEngine::VulkanManager::drawImage() {
       .setPWaitDstStageMask( wait_stages )
       .setCommandBufferCount( 1 )
       .setPCommandBuffers( &vk_command_buffers[image_index] )
-      .setSignalSemaphoreCount( 1 )
+      .setSignalSemaphoreCount( signal_semaphores_count )
       .setPSignalSemaphores( signal_semaphores );
 
     vk_device.resetFences( vk_in_flight_fences[current_frame] );
 
     vk_graphics_queue.submit( submit_info, vk_in_flight_fences[current_frame] );
     
-  }
+    vk::SwapchainKHR swapchains[] = { vk_swapchain };
+    auto present_info = vk::PresentInfoKHR()
+      .setWaitSemaphoreCount( signal_semaphores_count )
+      .setPWaitSemaphores( signal_semaphores )
+      .setSwapchainCount( 1 )
+      .setPSwapchains( swapchains )
+      .setPImageIndices( &image_index );
 
-  vk::SwapchainKHR swapchains[] = { vk_swapchain };
-  auto present_info = vk::PresentInfoKHR()
-    .setWaitSemaphoreCount( 1 )
-    .setPWaitSemaphores( signal_semaphores )
-    .setSwapchainCount( 1 )
-    .setPSwapchains( swapchains )
-    .setPImageIndices( &image_index );
-
-  auto present_result = vk_graphics_queue.presentKHR( present_info );
-  if( present_result != vk::Result::eSuccess ){
-    throw std::runtime_error( "Error presenting image to screen" );
+    auto present_result = vk_graphics_queue.presentKHR( present_info );
+    if( present_result != vk::Result::eSuccess ){
+      throw std::runtime_error( "Error presenting image to screen" );
+    }
+    
   }
 
   current_frame = ( current_frame + 1 ) % frames_in_flight;

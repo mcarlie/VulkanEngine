@@ -39,13 +39,15 @@ int main( int argc, char** argv ) {
   
   scene_children.push_back( { camera_container } );
   
-  std::shared_ptr< VulkanEngine::OBJMesh > obj_mesh( new VulkanEngine::OBJMesh( "/Users/michael/Desktop/VK/models/spider_pumpkin_obj.obj" ) );
-  
-  Eigen::Affine3f transform( Eigen::Translation3f( 0.0f, 0.0f, -5.0f ) );
-  transform *= Eigen::Scaling( 0.05f );
-  obj_mesh->setTranform( transform.matrix() );
-  
-  scene_children.push_back( obj_mesh );
+  if(argc > 1) {
+    std::shared_ptr< VulkanEngine::OBJMesh > obj_mesh( new VulkanEngine::OBJMesh( argv[1] ) );
+    
+    Eigen::Affine3f transform( Eigen::Translation3f( 0.0f, 0.0f, -5.0f ) );
+    transform *= Eigen::Scaling( 0.05f );
+    obj_mesh->setTranform( transform.matrix() );
+    
+    scene_children.push_back( obj_mesh );
+  }
 
   scene->addChildren( scene_children );
 
