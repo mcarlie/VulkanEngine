@@ -30,9 +30,8 @@ namespace VulkanEngine {
       Eigen::Matrix4f projection;
     };
     
-    /// Called from update before updating children.
     /// \param scene_state Contains information about the current state of the scene.
-    virtual void updateCallback( SceneState& scene_state );
+    virtual void update( SceneState& scene_state ) override;
 
     void loadOBJ( const char* obj_path, const char* mtl_path );
 

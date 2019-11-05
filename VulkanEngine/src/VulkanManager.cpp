@@ -142,7 +142,48 @@ void VulkanEngine::VulkanManager::initialize( const std::shared_ptr< Window >& _
   createRenderPass();
   createSwapchainFramebuffers();
   createSyncObjects();
+  createCommandBuffers();
 
+}
+
+void VulkanEngine::VulkanManager::beginRenderPass() {
+ 
+  /// TODO command buffer shouldn't be ended here
+  const std::array< float, 4 > clear_color_array = { 0.0f, 0.0f, 0.0f, 1.0f };
+  auto clear_color = vk::ClearValue()
+    .setColor( vk::ClearColorValue( clear_color_array ) );
+  auto clear_depth_stencil = vk::ClearValue()
+    .setDepthStencil( vk::ClearDepthStencilValue( 1.0f, 0 ) );
+
+  std::array< vk::ClearValue, 3 > clear_values = { clear_color, clear_depth_stencil, clear_color };
+  
+  auto begin_info = vk::CommandBufferBeginInfo()
+    .setFlags( vk::CommandBufferUsageFlagBits::eSimultaneousUse )
+    .setPInheritanceInfo( nullptr );
+
+  vk_command_buffers[current_frame].begin( begin_info );
+
+  auto render_pass_info = vk::RenderPassBeginInfo()
+    .setRenderPass( vk_render_pass )
+    .setFramebuffer( vk_swapchain_framebuffers[current_frame] )
+    .setRenderArea( vk::Rect2D( { 0, 0 }, { window->getFramebufferWidth(), window->getFramebufferHeight() } ) )
+    .setClearValueCount( static_cast< uint32_t >( clear_values.size() ) )
+    .setPClearValues( clear_values.data() );
+
+  vk_command_buffers[current_frame].beginRenderPass( render_pass_info, vk::SubpassContents::eInline );
+  
+}
+
+void VulkanEngine::VulkanManager::endRenderPass() {
+ 
+  /// TODO command buffer shouldn't be ended here
+  vk_command_buffers[current_frame].endRenderPass();
+  vk_command_buffers[current_frame].end();
+  
+}
+
+vk::CommandBuffer VulkanEngine::VulkanManager::getCurrentCommandBuffer() {
+  return vk_command_buffers[current_frame];
 }
 
 void VulkanEngine::VulkanManager::drawImage() {
@@ -167,14 +208,17 @@ void VulkanEngine::VulkanManager::drawImage() {
       // If the window size has changed or the image view is out of date according to Vulkan
       // then recreate the pipeline from the swapchain stage
       // TODO These errors are generated when submitting the graphics queue
-      if( result == vk::Result::eErrorOutOfDateKHR || window->sizeHasChanged() ) {
+      if( result == vk::Result::eErrorOutOfDateKHR ) {
+        vk_device.waitIdle();
         cleanupSwapchain();
         createSwapchain();
         createImageViews();
         createRenderPass();
         createSwapchainFramebuffers();
         createSyncObjects();
-        continue;
+        createCommandBuffers();
+        current_frame = 0;
+        return;
       } else if ( result != vk::Result::eSuccess &&
                   result != vk::Result::eSuboptimalKHR ) {
         throw std::runtime_error( "Failed to acquire image!" );
@@ -481,7 +525,7 @@ void VulkanEngine::VulkanManager::createSwapchainFramebuffers() {
 
 }
 
-void VulkanEngine::VulkanManager::createCommandBuffers( const std::shared_ptr< MeshBase >& mesh, const std::shared_ptr< Shader > shader ) {
+void VulkanEngine::VulkanManager::createCommandBuffers() {
 
   auto command_buffer_allocate_info = vk::CommandBufferAllocateInfo()
     .setCommandBufferCount( static_cast< uint32_t >( vk_swapchain_framebuffers.size() ) )
@@ -489,45 +533,6 @@ void VulkanEngine::VulkanManager::createCommandBuffers( const std::shared_ptr< M
     .setLevel( vk::CommandBufferLevel::ePrimary );
 
   vk_command_buffers = vk_device.allocateCommandBuffers( command_buffer_allocate_info );
-
-  const std::array< float, 4 > clear_color_array = { 0.0f, 0.0f, 0.0f, 1.0f };
-  auto clear_color = vk::ClearValue()
-    .setColor( vk::ClearColorValue( clear_color_array ) );
-  auto clear_depth_stencil = vk::ClearValue()
-    .setDepthStencil( vk::ClearDepthStencilValue( 1.0f, 0 ) );
-
-  std::array< vk::ClearValue, 3 > clear_values = { clear_color, clear_depth_stencil, clear_color };
-
-  for( size_t i = 0; i < vk_command_buffers.size(); ++i ) {
-
-    auto begin_info = vk::CommandBufferBeginInfo()
-      .setFlags( vk::CommandBufferUsageFlagBits::eSimultaneousUse )
-      .setPInheritanceInfo( nullptr );
-
-    vk_command_buffers[i].begin( begin_info );
-
-    auto render_pass_info = vk::RenderPassBeginInfo()
-      .setRenderPass( vk_render_pass )
-      .setFramebuffer( vk_swapchain_framebuffers[i] )
-      .setRenderArea( vk::Rect2D( { 0, 0 }, { window->getFramebufferWidth(), window->getFramebufferHeight() } ) )
-      .setClearValueCount( static_cast< uint32_t >( clear_values.size() ) )
-      .setPClearValues( clear_values.data() );
-
-    vk_command_buffers[i].beginRenderPass( render_pass_info, vk::SubpassContents::eInline );
-    vk_command_buffers[i].bindPipeline( vk::PipelineBindPoint::eGraphics, vk_graphics_pipeline );
-
-    mesh->bindVertexBuffers( vk_command_buffers[i] );
-    mesh->bindIndexBuffer( vk_command_buffers[i] );
-    if( shader.get() ) {
-      shader->bindDescriptorSet( vk_command_buffers[i], static_cast< uint32_t >( i ) );
-    }
-
-    mesh->draw( vk_command_buffers[i] );
-
-    vk_command_buffers[i].endRenderPass();
-    vk_command_buffers[i].end();
-
-  }
 
 }
 
@@ -574,13 +579,24 @@ void VulkanEngine::VulkanManager::cleanupSwapchain() {
   for( size_t i = 0; i < vk_swapchain_framebuffers.size(); ++i ) {
     vk_device.destroyFramebuffer( vk_swapchain_framebuffers[i] );
   }
+  vk_swapchain_framebuffers.clear();
+  
   vk_device.freeCommandBuffers( vk_command_pool, vk_command_buffers );
+  vk_command_buffers.clear();
+  
   vk_device.destroyPipeline( vk_graphics_pipeline );
+  vk_graphics_pipeline = nullptr;
+  
   vk_device.destroyRenderPass( vk_render_pass );
+  vk_render_pass = nullptr;
+  
   for( size_t i = 0; i < vk_image_views.size(); ++i ) {
     vk_device.destroyImageView( vk_image_views[i] );
   }
+  vk_image_views.clear();
+  
   vk_device.destroySwapchainKHR( vk_swapchain );
+  vk_swapchain = nullptr;
 
 }
 

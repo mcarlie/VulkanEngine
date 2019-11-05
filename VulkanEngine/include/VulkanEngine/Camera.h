@@ -52,13 +52,11 @@ namespace VulkanEngine {
     /// \return The view matrix of the Camera.
     const Eigen::Matrix4f getViewMatrix();
 
-  protected:
-
+  private:
+    
     /// Update the camera. Updates the projection and view matrix in \c scene_state with the camera's values.
     /// \param scene_state Represents the current state of the scene.
-    virtual void updateCallback( SceneState& scene_state );
-
-  private:
+    virtual void update( SceneState& scene_state ) override;
 
     /// What position the Camera is oriented towards.
     Eigen::Vector3f look_at;

@@ -26,10 +26,12 @@ VulkanEngine::Camera::~Camera() {
 
 }
 
-void VulkanEngine::Camera::updateCallback( SceneState& scene_state ) {
+void VulkanEngine::Camera::update( SceneState& scene_state ) {
 
   scene_state.setViewMatrix( scene_state.getTotalTransform() * getTransform().inverse() * getViewMatrix() );
   scene_state.setProjectionMatrix( getPerspectiveProjectionMatrix() );
+  
+  SceneObject::update( scene_state );
 
 }
 

@@ -51,7 +51,13 @@ namespace VulkanEngine {
 
     void createGraphicsPipeline( const std::shared_ptr< MeshBase >& mesh, const std::shared_ptr< Shader >& shader );
 
-    void createCommandBuffers( const std::shared_ptr< MeshBase >& mesh, const std::shared_ptr< Shader > shader );
+    void createCommandBuffers();
+    
+    void beginRenderPass();
+    
+    void endRenderPass();
+    
+    vk::CommandBuffer getCurrentCommandBuffer();
 
     /// Executes all command buffers and swaps buffers.
     void drawImage();
@@ -70,6 +76,8 @@ namespace VulkanEngine {
 
     /// \return The VmaAllocator instance for performing allocations with Vulkan memory allocator.
     const VmaAllocator& getVmaAllocator();
+    
+    vk::Pipeline vk_graphics_pipeline;
 
   private:
 
@@ -115,8 +123,6 @@ namespace VulkanEngine {
     vk::CommandPool vk_command_pool;
 
     std::vector< vk::CommandBuffer > vk_command_buffers;
-
-    vk::Pipeline vk_graphics_pipeline;
 
     std::vector< vk::Framebuffer > vk_swapchain_framebuffers;
 

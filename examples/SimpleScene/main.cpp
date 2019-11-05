@@ -151,8 +151,7 @@ int main( int argc, char** argv ) {
       
     }
     
-    VulkanEngine::SceneState scene_state;
-    scene->update( scene_state );
+    scene->update();
     
     vulkan_manager->drawImage();
     window->update();

@@ -3,26 +3,35 @@
 VulkanEngine::SceneObject::SceneObject() : transform( Eigen::Matrix4f::Identity() ) {
 }
 
-void VulkanEngine::SceneObject::update( SceneState& scene_state ) {
-
+/// Update this scene object.
+/// \param scene_state Contains information about the current state of the scene.
+void VulkanEngine::SceneObject::preUpdate( SceneState& scene_state ) {
+  
   scene_state.setTransform( scene_state.getTotalTransform() * transform );
+  
+}
 
-  updateCallback( scene_state );
+void VulkanEngine::SceneObject::update( SceneState& scene_state ) {
 
   /// Update all children
   for( const auto& c : children ) {
+    c->preUpdate( scene_state );
     c->update( scene_state );
+    c->postUpdate( scene_state );
   }
 
-  scene_state.setTransform( scene_state.getTotalTransform() * transform.inverse() );
+}
 
+/// Update this scene object.
+/// \param scene_state Contains information about the current state of the scene.
+void VulkanEngine::SceneObject::postUpdate( SceneState& scene_state ) {
+  
+  scene_state.setTransform( scene_state.getTotalTransform() * transform.inverse() );
+  
 }
 
 void VulkanEngine::SceneObject::addChildren( const std::vector< std::shared_ptr< SceneObject > >& _children ) {
   children.insert( children.end(), _children.cbegin(), _children.cend() );
-}
-
-void VulkanEngine::SceneObject::updateCallback( SceneState& scene_state ) {
 }
 
 const Eigen::Matrix4f& VulkanEngine::SceneObject::getTransform() {

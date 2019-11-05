@@ -137,17 +137,13 @@ VulkanEngine::OBJMesh::OBJMesh(
     m->transferBuffers();
   }
   
-  // TODO baseclass which handles pipeline
-  VulkanEngine::VulkanManager::getInstance()->createGraphicsPipeline( meshes[0], shader );
-  VulkanEngine::VulkanManager::getInstance()->createCommandBuffers( meshes[0], shader );
-  
 }
 
 VulkanEngine::OBJMesh::~OBJMesh() {
   
 }
 
-void VulkanEngine::OBJMesh::updateCallback( SceneState& scene_state ) {
+void VulkanEngine::OBJMesh::update( SceneState& scene_state ) {
 
   MvpUbo ubo_data;
   ubo_data.projection = scene_state.getProjectionMatrix();
@@ -157,6 +153,29 @@ void VulkanEngine::OBJMesh::updateCallback( SceneState& scene_state ) {
   for( auto& ub : mvp_buffers ) {
     ub->updateBuffer( &ubo_data, sizeof( ubo_data ) );
   }
+  
+  auto vulkan_manager = VulkanManager::getInstance();
+  
+  if( !vulkan_manager->vk_graphics_pipeline ) {
+    /// TODO baseclass which handles pipeline
+    /// TODO These need to be recreated when window resized. Also need shared command buffers for objects.
+    /// Create command buffer class use default one
+    VulkanEngine::VulkanManager::getInstance()->createGraphicsPipeline( meshes[0], shader );
+  }
+  
+  vk::CommandBuffer current_command_buffer = vulkan_manager->getCurrentCommandBuffer();
+  current_command_buffer.bindPipeline( vk::PipelineBindPoint::eGraphics,
+                                      vulkan_manager->vk_graphics_pipeline );
+
+  meshes[0]->bindVertexBuffers( current_command_buffer );
+  meshes[0]->bindIndexBuffer( current_command_buffer );
+  if( shader.get() ) {
+    shader->bindDescriptorSet( current_command_buffer, static_cast< uint32_t >( 0 ) ); /// TODO 0 was i
+  }
+
+  meshes[0]->draw( current_command_buffer );
+  
+  SceneObject::update( scene_state );
   
 }
 
@@ -251,12 +270,12 @@ void VulkanEngine::OBJMesh::loadOBJ( const char* obj_path, const char* mtl_path 
 
   std::vector< std::vector< std::shared_ptr< Descriptor > > > descriptors;
   for( size_t i = 0; i < 3; ++i ) { /// TODO should be dependent on number of frames in flight
-	std::vector< std::shared_ptr< Descriptor > > frame_descriptors;
-	for( const auto& t : textures ) {
-	  frame_descriptors.push_back( t.second );
-	}
-	frame_descriptors.push_back( mvp_buffers[i] );
-	descriptors.push_back( frame_descriptors );
+    std::vector< std::shared_ptr< Descriptor > > frame_descriptors;
+    for( const auto& t : textures ) {
+      frame_descriptors.push_back( t.second );
+    }
+    frame_descriptors.push_back( mvp_buffers[i] );
+    descriptors.push_back( frame_descriptors );
   }
 
   shader->setDescriptors( descriptors );
