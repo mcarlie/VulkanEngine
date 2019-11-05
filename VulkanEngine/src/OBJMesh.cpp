@@ -161,7 +161,7 @@ void VulkanEngine::OBJMesh::updateCallback( SceneState& scene_state ) {
 }
 
 void VulkanEngine::OBJMesh::loadOBJ( const char* obj_path, const char* mtl_path ) {
-
+  
   auto begin = std::chrono::system_clock::now();
 
   tinyobj::attrib_t attrib;
@@ -191,7 +191,7 @@ void VulkanEngine::OBJMesh::loadOBJ( const char* obj_path, const char* mtl_path 
   }
 
   // Create a shader if one isn't provided
-  const char* shader_path = std::getenv("VULKAN_ENGINE_SHADERS_DIR");
+  const char* shader_path = "/Users/michael/Desktop/VK/shaders";
   if (!shader.get() && shader_path) {
 	  std::shared_ptr< ShaderModule > fragment_shader(
 		  new ShaderModule(std::string(shader_path) + std::string("/frag.spv"), vk::ShaderStageFlagBits::eFragment));

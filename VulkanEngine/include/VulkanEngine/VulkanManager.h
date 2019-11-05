@@ -139,7 +139,6 @@ namespace VulkanEngine {
     /// Class which allows for dynamic loading of certain functions within Vulkan classes.
     vk::DispatchLoaderDynamic vk_dispatch_loader_dynamic;
 
-#if defined( _DEBUG )
     vk::DebugUtilsMessengerEXT vk_debug_utils_messenger;
 
     static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
@@ -147,7 +146,6 @@ namespace VulkanEngine {
       VkDebugUtilsMessageTypeFlagsEXT message_type,
       const VkDebugUtilsMessengerCallbackDataEXT* callback_data,
       void* user_data );
-#endif
 
   };
 

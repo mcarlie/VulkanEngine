@@ -55,6 +55,11 @@ bool VulkanEngine::GLFWWindow::initialize() {
 
   mouse_input.reset( new MouseInput );
   keyboard_input.reset( new KeyboardInput );
+  
+  int fb_width, fb_height;
+  glfwGetFramebufferSize(glfw_window, &fb_width, &fb_height);
+  framebuffer_width = fb_width;
+  framebuffer_height = fb_height;
 
   return true;
 

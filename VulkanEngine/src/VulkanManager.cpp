@@ -18,17 +18,19 @@ std::shared_ptr< VulkanEngine::VulkanManager >& VulkanEngine::VulkanManager::get
 }
 
 void VulkanEngine::VulkanManager::initialize( const std::shared_ptr< Window >& _window ) {
-
+  
   window = _window;
 
   std::vector< const char* > instance_extensions( window->getRequiredVulkanInstanceExtensions() );
 
   // Use validation layers if this is a debug build
   std::vector< const char* > layers;
-#if defined( _DEBUG )
+  
   layers.push_back("VK_LAYER_LUNARG_standard_validation");
   instance_extensions.push_back( VK_EXT_DEBUG_UTILS_EXTENSION_NAME );
-#endif
+  instance_extensions.push_back( VK_EXT_DEBUG_REPORT_EXTENSION_NAME );
+  instance_extensions.push_back( "VK_KHR_get_physical_device_properties2" );
+  instance_extensions.push_back( "VK_KHR_device_group_creation" );
 
   auto app_info = vk::ApplicationInfo()
     .setPApplicationName( "VulkanEngine" )
@@ -48,7 +50,6 @@ void VulkanEngine::VulkanManager::initialize( const std::shared_ptr< Window >& _
   vk_instance = vk::createInstance( inst_info );
 
   // Setup debug reporting if this is a debug build
-#if defined( _DEBUG )
   vk::DebugUtilsMessengerCreateInfoEXT debug_message_create_info;
   debug_message_create_info.messageSeverity = 
       vk::DebugUtilsMessageSeverityFlagBitsEXT::eError 
@@ -67,7 +68,6 @@ void VulkanEngine::VulkanManager::initialize( const std::shared_ptr< Window >& _
   if( !vk_debug_utils_messenger ) {
     throw std::runtime_error( "Could not initialize debug reporting for vulkan!" );
   }
-#endif
 
   vk_surface = window->createVkSurface( vk_instance );
 
@@ -104,10 +104,8 @@ void VulkanEngine::VulkanManager::initialize( const std::shared_ptr< Window >& _
     .setSampleRateShading( VK_TRUE );
 
   auto device_info = vk::DeviceCreateInfo()
-#if defined( _DEBUG )
     .setEnabledLayerCount( static_cast< uint32_t >( layers.size() ) )
     .setPpEnabledLayerNames( layers.data() )
-#endif
     .setPQueueCreateInfos( &queue_info )
     .setQueueCreateInfoCount( 1 )
     .setPEnabledFeatures( &physical_device_features )
@@ -132,9 +130,9 @@ void VulkanEngine::VulkanManager::initialize( const std::shared_ptr< Window >& _
   vk_command_pool = vk_device.createCommandPool( command_pool_info );
 
   // TODO Use these
-  //  auto surface_formats = vk_physical_device.getSurfaceFormatsKHR( vk_surface );
-  //  auto present_modes = vk_physical_device.getSurfacePresentModesKHR( vk_surface );
-  //  auto surface_support = vk_physical_device.getSurfaceSupportKHR( graphics_queue_family_index, vk_surface );
+  auto surface_formats = vk_physical_device.getSurfaceFormatsKHR( vk_surface );
+  auto present_modes = vk_physical_device.getSurfacePresentModesKHR( vk_surface );
+  auto surface_support = vk_physical_device.getSurfaceSupportKHR( graphics_queue_family_index, vk_surface );
 
   createSwapchain();
   createImageViews();
@@ -150,7 +148,7 @@ void VulkanEngine::VulkanManager::drawImage() {
 
   uint32_t image_index;
   while( true ) {
-
+    
     // Acquire the next available swapchain image that we can write to
     vk::Result result = vk_device.acquireNextImageKHR( 
       vk_swapchain,
@@ -179,22 +177,27 @@ void VulkanEngine::VulkanManager::drawImage() {
 
   }
 
-  // Submit commands to the queue
-  vk::Semaphore wait_semaphores[] = { vk_image_available_semaphores[current_frame] };
   vk::Semaphore signal_semaphores[] = { vk_rendering_finished_semaphores[current_frame] };
-  vk::PipelineStageFlags wait_stages[] = { vk::PipelineStageFlagBits::eColorAttachmentOutput };
-  auto submit_info = vk::SubmitInfo()
-    .setWaitSemaphoreCount( 1 )
-    .setPWaitSemaphores( wait_semaphores )
-    .setPWaitDstStageMask( wait_stages )
-    .setCommandBufferCount( 1 )
-    .setPCommandBuffers( &vk_command_buffers[image_index] )
-    .setSignalSemaphoreCount( 1 )
-    .setPSignalSemaphores( signal_semaphores );
+  
+  // Submit commands to the queue
+  if( !vk_command_buffers.empty() ) {
+    
+    vk::Semaphore wait_semaphores[] = { vk_image_available_semaphores[current_frame] };
+    vk::PipelineStageFlags wait_stages[] = { vk::PipelineStageFlagBits::eColorAttachmentOutput };
+    auto submit_info = vk::SubmitInfo()
+      .setWaitSemaphoreCount( 1 )
+      .setPWaitSemaphores( wait_semaphores )
+      .setPWaitDstStageMask( wait_stages )
+      .setCommandBufferCount( 1 )
+      .setPCommandBuffers( &vk_command_buffers[image_index] )
+      .setSignalSemaphoreCount( 1 )
+      .setPSignalSemaphores( signal_semaphores );
 
-  vk_device.resetFences( vk_in_flight_fences[current_frame] );
+    vk_device.resetFences( vk_in_flight_fences[current_frame] );
 
-  vk_graphics_queue.submit( submit_info, vk_in_flight_fences[current_frame] );
+    vk_graphics_queue.submit( submit_info, vk_in_flight_fences[current_frame] );
+    
+  }
 
   vk::SwapchainKHR swapchains[] = { vk_swapchain };
   auto present_info = vk::PresentInfoKHR()
@@ -240,7 +243,7 @@ void VulkanEngine::VulkanManager::createSwapchain() {
     .setMinImageCount( 3 )
     .setImageFormat( vk::Format::eB8G8R8A8Unorm )
     .setImageColorSpace( vk::ColorSpaceKHR::eSrgbNonlinear )
-    .setImageExtent( { window->getWidth(), window->getHeight() } )
+    .setImageExtent( { window->getFramebufferWidth(), window->getFramebufferHeight() } )
     .setImageArrayLayers( 1 )
     .setImageUsage( vk::ImageUsageFlagBits::eColorAttachment )
     .setImageSharingMode( vk::SharingMode::eExclusive )
@@ -287,7 +290,7 @@ void VulkanEngine::VulkanManager::createRenderPass() {
       vk::ImageLayout::eUndefined,
       vk::ImageUsageFlagBits::eDepthStencilAttachment,
       VmaMemoryUsage::VMA_MEMORY_USAGE_GPU_ONLY,
-      window->getWidth(), window->getHeight(), 1, 4, false ) );
+      window->getFramebufferWidth(), window->getFramebufferHeight(), 1, 4, false ) );
 
   depth_stencil_attachment->createImageView( vk::ImageViewType::e2D, vk::ImageAspectFlagBits::eDepth );
   depth_stencil_attachment->transitionImageLayout( vk::ImageLayout::eDepthStencilAttachmentOptimal );
@@ -311,7 +314,7 @@ void VulkanEngine::VulkanManager::createRenderPass() {
       vk::ImageLayout::eUndefined,
       vk::ImageUsageFlagBits::eColorAttachment,
       VmaMemoryUsage::VMA_MEMORY_USAGE_GPU_ONLY,
-      window->getWidth(), window->getHeight(), 1, 4, false ) );
+      window->getFramebufferWidth(), window->getFramebufferHeight(), 1, 4, false ) );
 
   color_attachment->createImageView( vk::ImageViewType::e2D, vk::ImageAspectFlagBits::eColor );
   color_attachment->transitionImageLayout( vk::ImageLayout::eColorAttachmentOptimal );
@@ -381,14 +384,14 @@ void VulkanEngine::VulkanManager::createGraphicsPipeline( const std::shared_ptr<
   auto viewport = vk::Viewport()
     .setX( 0 )
     .setY( 0 )
-    .setWidth( static_cast< float >( window->getWidth() ) )
-    .setHeight( static_cast< float >( window->getHeight() ) )
+    .setWidth( static_cast< float >( window->getFramebufferWidth() ) )
+    .setHeight( static_cast< float >( window->getFramebufferHeight() ) )
     .setMinDepth( 0.0f )
     .setMaxDepth( 1.0f );
 
   auto scissor = vk::Rect2D()
     .setOffset( vk::Offset2D( 0, 0 ) )
-    .setExtent( vk::Extent2D( window->getWidth(), window->getHeight() ) );
+    .setExtent( vk::Extent2D( window->getFramebufferWidth(), window->getFramebufferHeight() ) );
 
   auto viewport_info = vk::PipelineViewportStateCreateInfo()
     .setPScissors( &scissor )
@@ -464,8 +467,8 @@ void VulkanEngine::VulkanManager::createSwapchainFramebuffers() {
       .setRenderPass( vk_render_pass )
       .setAttachmentCount( static_cast< uint32_t >( attachments.size() ) )
       .setPAttachments( attachments.data() )
-      .setWidth( window->getWidth() )
-      .setHeight( window->getHeight() )
+      .setWidth( window->getFramebufferWidth() )
+      .setHeight( window->getFramebufferHeight() )
       .setLayers( 1 );
 
     vk_swapchain_framebuffers[i] = vk_device.createFramebuffer( framebuffer_info );
@@ -501,7 +504,7 @@ void VulkanEngine::VulkanManager::createCommandBuffers( const std::shared_ptr< M
     auto render_pass_info = vk::RenderPassBeginInfo()
       .setRenderPass( vk_render_pass )
       .setFramebuffer( vk_swapchain_framebuffers[i] )
-      .setRenderArea( vk::Rect2D( { 0, 0 }, { window->getWidth(), window->getHeight() } ) )
+      .setRenderArea( vk::Rect2D( { 0, 0 }, { window->getFramebufferWidth(), window->getFramebufferHeight() } ) )
       .setClearValueCount( static_cast< uint32_t >( clear_values.size() ) )
       .setPClearValues( clear_values.data() );
 
@@ -510,7 +513,9 @@ void VulkanEngine::VulkanManager::createCommandBuffers( const std::shared_ptr< M
 
     mesh->bindVertexBuffers( vk_command_buffers[i] );
     mesh->bindIndexBuffer( vk_command_buffers[i] );
-    shader->bindDescriptorSet( vk_command_buffers[i], static_cast< uint32_t >( i ) );
+    if( shader.get() ) {
+      shader->bindDescriptorSet( vk_command_buffers[i], static_cast< uint32_t >( i ) );
+    }
 
     mesh->draw( vk_command_buffers[i] );
 
@@ -553,9 +558,7 @@ void VulkanEngine::VulkanManager::cleanup() {
   vmaDestroyAllocator( vma_allocator );
 
   vk_device.destroy();
-#if defined( _DEBUG )
   vk_instance.destroyDebugUtilsMessengerEXT( vk_debug_utils_messenger, nullptr, vk_dispatch_loader_dynamic );
-#endif
   vk_instance.destroySurfaceKHR( vk_surface );
   vk_instance.destroy();
 
@@ -576,7 +579,6 @@ void VulkanEngine::VulkanManager::cleanupSwapchain() {
 
 }
 
-#if defined( _DEBUG )
 VKAPI_ATTR VkBool32 VKAPI_CALL VulkanEngine::VulkanManager::debugCallback(
   VkDebugUtilsMessageSeverityFlagBitsEXT message_severity,
   VkDebugUtilsMessageTypeFlagsEXT message_type,
@@ -585,4 +587,3 @@ VKAPI_ATTR VkBool32 VKAPI_CALL VulkanEngine::VulkanManager::debugCallback(
   std::cerr << "validation layer: " << callback_data->pMessage << std::endl;
   return VK_FALSE;
 }
-#endif

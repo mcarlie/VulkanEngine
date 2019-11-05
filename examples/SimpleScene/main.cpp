@@ -9,8 +9,8 @@
 #include <iostream>
 #include <vector>
 
-int main() {
-
+int main( int argc, char** argv ) {
+  
   std::shared_ptr< VulkanEngine::Window > window( new VulkanEngine::GLFWWindow( 1280, 800, "VulkanEngine", false ) );
   window->initialize();
   
@@ -32,18 +32,16 @@ int main() {
     window->getWidth(),
     window->getHeight() ) );
   
-  camera->setTranform( Eigen::Affine3f( Eigen::Translation3f( 0.0f, 0.0f, -5.0f ) ).matrix() );
+  camera->setTranform( Eigen::Affine3f( Eigen::Translation3f( 0.0f, 0.0f, 5.0f ) ).matrix() );
 
   std::shared_ptr< VulkanEngine::SceneObject > camera_container( new VulkanEngine::SceneObject() );
   camera_container->addChildren( { camera } );
   
   scene_children.push_back( { camera_container } );
-
-  const char* models_path = std::getenv( "VULKAN_ENGINE_MODELS_DIR" );
-  std::shared_ptr< VulkanEngine::OBJMesh > obj_mesh( new VulkanEngine::OBJMesh(
-    std::string( models_path ) + "/spider_pumpkin_obj.obj", std::string( models_path ) + "/" ) );
   
-  Eigen::Affine3f transform( Eigen::Translation3f( 0.0f, 0.0f, 5.0f ) );
+  std::shared_ptr< VulkanEngine::OBJMesh > obj_mesh( new VulkanEngine::OBJMesh( "/Users/michael/Desktop/VK/models/spider_pumpkin_obj.obj" ) );
+  
+  Eigen::Affine3f transform( Eigen::Translation3f( 0.0f, 0.0f, -5.0f ) );
   transform *= Eigen::Scaling( 0.05f );
   obj_mesh->setTranform( transform.matrix() );
   
