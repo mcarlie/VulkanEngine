@@ -86,7 +86,7 @@ void VulkanEngine::Mesh< PositionType, IndexType, AdditionalAttributeTypes ... >
   const vk::CommandBuffer& command_buffer ) {
 
   if( !positions.get() ) {
-    throw std::runtime_error( "No position vertex buffer to transfer for mesh!" );
+    throw std::runtime_error( "No position vertex buffer to transfer for mesh." );
   }
   
   positions->transferBuffer();
@@ -111,7 +111,7 @@ template< typename PositionType, typename IndexType, class ... AdditionalAttribu
 void VulkanEngine::Mesh< PositionType, IndexType, AdditionalAttributeTypes ... >::bindVertexBuffers( const vk::CommandBuffer& command_buffer ) {
 
   if( !positions.get() ) {
-    throw std::runtime_error( "No position vertex buffer to bind for mesh!" );
+    throw std::runtime_error( "No position vertex buffer to bind for mesh." );
   }
 
   std::vector< vk::Buffer > buffers;
