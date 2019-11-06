@@ -18,12 +18,6 @@ std::shared_ptr< VulkanEngine::VulkanManager >& VulkanEngine::VulkanManager::get
   return singleton_vulkan_manager_instance;
 }
 
-void VulkanEngine::VulkanManager::destroyInstance() {
-  static std::shared_ptr< VulkanEngine::VulkanManager >
-    singleton_vulkan_manager_instance;
-  singleton_vulkan_manager_instance.reset();
-}
-
 void VulkanEngine::VulkanManager::initialize( const std::shared_ptr< Window >& _window ) {
   
   window = _window;
@@ -120,7 +114,6 @@ void VulkanEngine::VulkanManager::initialize( const std::shared_ptr< Window >& _
     .setPpEnabledExtensionNames( physical_device_extension_names.data() )
     .setEnabledExtensionCount( static_cast< uint32_t >( physical_device_extension_names.size() ) );
 
-  /// TODO Device class which holds queue, allocator and device info
   vk_device = vk_physical_device.createDevice( device_info );
   
   VmaAllocatorCreateInfo vma_allocator_create_info = {};
@@ -200,9 +193,6 @@ void VulkanEngine::VulkanManager::drawImage() {
    
     auto fence_result = vk_device.waitForFences( vk_in_flight_fences[current_frame],
       VK_TRUE, std::numeric_limits< uint32_t >::max() );
-    if( fence_result != vk::Result::eSuccess ) {
-      throw std::runtime_error( "Error waiting for fences" );
-    }
 
     uint32_t image_index;
     while( true ) {
@@ -229,7 +219,7 @@ void VulkanEngine::VulkanManager::drawImage() {
         createCommandBuffers();
         current_frame = 0;
         return;
-      } else if( result != vk::Result::eSuccess &&
+      } else if ( result != vk::Result::eSuccess &&
                   result != vk::Result::eSuboptimalKHR ) {
         throw std::runtime_error( "Failed to acquire image!" );
       } else {
@@ -265,7 +255,7 @@ void VulkanEngine::VulkanManager::drawImage() {
       .setPImageIndices( &image_index );
 
     auto present_result = vk_graphics_queue.presentKHR( present_info );
-    if( present_result != vk::Result::eSuccess ) {
+    if( present_result != vk::Result::eSuccess ){
       throw std::runtime_error( "Error presenting image to screen" );
     }
     
@@ -293,10 +283,6 @@ const vk::Queue& VulkanEngine::VulkanManager::getVkGraphicsQueue() {
 
 const VmaAllocator& VulkanEngine::VulkanManager::getVmaAllocator() {
   return vma_allocator;
-}
-
-const vk::RenderPass& VulkanEngine::VulkanManager::getVkRenderPass() {
-  return vk_render_pass;
 }
 
 void VulkanEngine::VulkanManager::createSwapchain() {
@@ -348,7 +334,6 @@ void VulkanEngine::VulkanManager::createImageViews() {
 
 void VulkanEngine::VulkanManager::createRenderPass() {
 
-  /// TODO Dedicated RenderPass class or part of graphics pipeline?
   depth_stencil_attachment.reset( 
     new DepthStencilImageAttachment(
       vk::ImageLayout::eUndefined,
@@ -443,9 +428,86 @@ void VulkanEngine::VulkanManager::createRenderPass() {
 
 }
 
+void VulkanEngine::VulkanManager::createGraphicsPipeline( const std::shared_ptr< MeshBase >& mesh, const std::shared_ptr< Shader >& shader ) {
+
+  auto viewport = vk::Viewport()
+    .setX( 0 )
+    .setY( 0 )
+    .setWidth( static_cast< float >( window->getFramebufferWidth() ) )
+    .setHeight( static_cast< float >( window->getFramebufferHeight() ) )
+    .setMinDepth( 0.0f )
+    .setMaxDepth( 1.0f );
+
+  auto scissor = vk::Rect2D()
+    .setOffset( vk::Offset2D( 0, 0 ) )
+    .setExtent( vk::Extent2D( window->getFramebufferWidth(), window->getFramebufferHeight() ) );
+
+  auto viewport_info = vk::PipelineViewportStateCreateInfo()
+    .setPScissors( &scissor )
+    .setScissorCount( 1 )
+    .setPViewports( &viewport )
+    .setViewportCount( 1 );
+
+  auto rasterization_info = vk::PipelineRasterizationStateCreateInfo()
+    .setRasterizerDiscardEnable( VK_FALSE )
+    .setLineWidth( 1.0f )
+    .setPolygonMode( vk::PolygonMode::eFill )
+    .setCullMode( vk::CullModeFlagBits::eBack )
+    .setFrontFace( vk::FrontFace::eCounterClockwise )
+    .setDepthBiasEnable( VK_FALSE );
+
+  auto multisampling_info = vk::PipelineMultisampleStateCreateInfo()
+    .setSampleShadingEnable( VK_TRUE )
+    .setRasterizationSamples( vk::SampleCountFlagBits::e8 );
+
+  auto colorblend_attachment_info = vk::PipelineColorBlendAttachmentState()
+    .setColorWriteMask( 
+        vk::ColorComponentFlagBits::eR 
+      | vk::ColorComponentFlagBits::eG
+      | vk::ColorComponentFlagBits::eB
+      | vk::ColorComponentFlagBits::eA )
+    .setBlendEnable( VK_FALSE )
+    .setSrcColorBlendFactor( vk::BlendFactor::eOne )
+    .setDstColorBlendFactor( vk::BlendFactor::eZero )
+    .setColorBlendOp( vk::BlendOp::eAdd )
+    .setSrcAlphaBlendFactor( vk::BlendFactor::eOne )
+    .setDstAlphaBlendFactor( vk::BlendFactor::eZero )
+    .setAlphaBlendOp( vk::BlendOp::eAdd );
+
+  auto colorblend_info = vk::PipelineColorBlendStateCreateInfo()
+    .setLogicOpEnable( VK_FALSE )
+    .setAttachmentCount( 1 )
+    .setPAttachments( &colorblend_attachment_info );
+
+  auto depth_stencil_state_create_info = vk::PipelineDepthStencilStateCreateInfo()
+    .setDepthTestEnable( VK_TRUE )
+    .setDepthWriteEnable( VK_TRUE )
+    .setDepthCompareOp( vk::CompareOp::eLess )
+    .setDepthBoundsTestEnable( VK_FALSE )
+    .setMinDepthBounds( 0.0f )
+    .setMaxDepthBounds( 1.0f );
+
+  auto graphics_pipeline_info = vk::GraphicsPipelineCreateInfo()
+    .setStageCount( static_cast< uint32_t >( shader->getVkShaderStages().size() ) )
+    .setPStages( shader->getVkShaderStages().data() )
+    .setPVertexInputState( &mesh->getVkPipelineVertexInputStateCreateInfo() )
+    .setPInputAssemblyState( &mesh->getVkPipelineInputAssemblyStateCreateInfo() )
+    .setPViewportState( &viewport_info )
+    .setPRasterizationState( &rasterization_info )
+    .setPMultisampleState( &multisampling_info )
+    .setPDepthStencilState( &depth_stencil_state_create_info )
+    .setPColorBlendState( &colorblend_info )
+    .setPDynamicState( nullptr )
+    .setLayout( shader->getVkPipelineLayout() )
+    .setRenderPass( vk_render_pass )
+    .setSubpass( 0 );
+
+  vk_graphics_pipeline = vk_device.createGraphicsPipeline( nullptr, graphics_pipeline_info );
+
+}
+
 void VulkanEngine::VulkanManager::createSwapchainFramebuffers() {
 
-  /// Need a framebuffer wrapper class 
   vk_swapchain_framebuffers.resize( vk_image_views.size() );
   for( size_t i = 0; i < vk_image_views.size(); ++i ) {
     std::array< vk::ImageView, 3 > attachments = { color_attachment->getVkImageView(), depth_stencil_attachment->getVkImageView(), vk_image_views[i] };
@@ -493,7 +555,7 @@ void VulkanEngine::VulkanManager::createSyncObjects() {
 }
 
 void VulkanEngine::VulkanManager::cleanup() {
-  
+
   cleanupSwapchain();
 
   for( size_t i = 0; i < frames_in_flight; ++i ) {
@@ -521,6 +583,9 @@ void VulkanEngine::VulkanManager::cleanupSwapchain() {
   
   vk_device.freeCommandBuffers( vk_command_pool, vk_command_buffers );
   vk_command_buffers.clear();
+  
+  vk_device.destroyPipeline( vk_graphics_pipeline );
+  vk_graphics_pipeline = nullptr;
   
   vk_device.destroyRenderPass( vk_render_pass );
   vk_render_pass = nullptr;

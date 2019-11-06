@@ -44,7 +44,7 @@ int main( int argc, char** argv ) {
   
   scene_children.push_back( { camera_container } );
   
-  if( argc > 1 ) {
+  if(argc > 1) {
     std::string obj_path( argv[1] );
     std::string mtl_path;
     if( argc > 2 ) {
@@ -160,7 +160,7 @@ int main( int argc, char** argv ) {
     vulkan_manager->drawImage();
 
   }
-  
+
   return 0;
 
 }

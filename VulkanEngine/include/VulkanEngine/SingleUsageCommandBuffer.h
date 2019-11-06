@@ -6,7 +6,6 @@
 namespace VulkanEngine {
 
   /// Class which provides the ability to generate vulkan command buffer for one time recording and submission.
-  /// TODO Make this a specialization of a generic command buffer class
   class SingleUsageCommandBuffer {
 
   protected:

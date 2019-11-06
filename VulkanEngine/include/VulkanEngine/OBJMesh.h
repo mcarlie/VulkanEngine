@@ -4,24 +4,20 @@
 #include <VulkanEngine/SceneObject.h>
 #include <VulkanEngine/MeshBase.h>
 #include <VulkanEngine/UniformBuffer.h>
-#include <VulkanEngine/GraphicsPipeline.h>
 
 #include <unordered_map>
 
 namespace VulkanEngine {
 
   /// A SceneObject which represents an OBJMesh.
-  class OBJMesh : public SceneObject, public GraphicsPipeline {
+  class OBJMesh : public SceneObject {
 
   public:
 
     /// Constructor.
     /// \param obj_file Path to obj file.
     /// \param mtl_file Path to mtl file location.
-    OBJMesh(
-      const std::string& obj_file,
-      const std::string& mtl_path = "",
-      const std::shared_ptr< Shader > _shader = std::shared_ptr< Shader >() );
+    OBJMesh( const std::string& obj_file, const std::string& mtl_path = "", const std::shared_ptr< Shader > _shader = std::shared_ptr< Shader >() );
     
     /// Destructor.
     virtual ~OBJMesh();
@@ -49,8 +45,6 @@ namespace VulkanEngine {
     
     /// Textures belonging to this mesh.
     std::unordered_map< std::string, std::shared_ptr< Descriptor > > textures;
-    
-    bool graphics_pipeline_updated;
 
   };
 
