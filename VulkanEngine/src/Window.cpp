@@ -50,9 +50,7 @@ bool VulkanEngine::Window::isFullScreen() {
 }
 
 bool VulkanEngine::Window::sizeHasChanged() {
-  bool tmp_size_changed = size_changed;
-  size_changed = false;
-  return tmp_size_changed;
+  return size_changed;
 }
 
 void VulkanEngine::Window::mousePositionCallback( double xpos, double ypos ) {

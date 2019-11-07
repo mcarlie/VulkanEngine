@@ -17,6 +17,7 @@ VulkanEngine::GLFWWindow::~GLFWWindow() {
 }
 
 void VulkanEngine::GLFWWindow::update() {
+  size_changed = false;
   glfwPollEvents();
 }
 

@@ -44,12 +44,15 @@ namespace VulkanEngine {
     /// Creates the instance when first called.
     /// \return The singleton VulkanManager instance.
     static std::shared_ptr< VulkanManager >& getInstance();
+    
+    /// Get the singleton instance of the VulkanManager.
+    /// Creates the instance when first called.
+    /// \return The singleton VulkanManager instance.
+    static void destroyInstance();
 
     /// Initialize the VulkanManager.
     /// \param _window The Window instance to use with the manager.
     void initialize( const std::shared_ptr< Window >& _window );
-
-    void createGraphicsPipeline( const std::shared_ptr< MeshBase >& mesh, const std::shared_ptr< Shader >& shader );
 
     void createCommandBuffers();
     
@@ -77,7 +80,7 @@ namespace VulkanEngine {
     /// \return The VmaAllocator instance for performing allocations with Vulkan memory allocator.
     const VmaAllocator& getVmaAllocator();
     
-    vk::Pipeline vk_graphics_pipeline;
+    const vk::RenderPass& getVkRenderPass();
 
   private:
 
