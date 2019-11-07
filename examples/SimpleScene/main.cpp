@@ -6,11 +6,21 @@
 #include <VulkanEngine/Scene.h>
 #include <VulkanEngine/Utilities.h>
 
+#include <cxxopts.hpp>
+
 #include <iostream>
 #include <vector>
 #include <filesystem>
 
 int main( int argc, char** argv ) {
+  
+  cxxopts::Options options("SimpleTest", "Load an OBJ file and render using VulkanEngine");
+  options.add_options()
+    ( "o,obj", "Path to OBJ file", cxxopts::value< std::string >() )
+    ( "m,mtl", "Path where associated mtl file is", cxxopts::value< std::string >() )
+    ;
+  
+  auto option_result = options.parse( argc, argv );
   
   std::shared_ptr< VulkanEngine::Window > window(
     new VulkanEngine::GLFWWindow( 1280, 800, "SimpleScene", false ) );
@@ -46,11 +56,11 @@ int main( int argc, char** argv ) {
   
   scene_children.push_back( { camera_container } );
   
-  if( argc > 1 ) {
-    std::string obj_path( argv[1] );
+  if( option_result["obj"].count() ) {
+    std::string obj_path = option_result["obj"].as< std::string >();
     std::string mtl_path = "";
-    if( argc > 2 ) {
-      mtl_path = argv[2];
+    if( option_result["mtl"].count() ) {
+      mtl_path = option_result["mtl"].as< std::string >();
     }
     
     std::shared_ptr< VulkanEngine::OBJMesh > obj_mesh(
