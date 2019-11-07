@@ -148,6 +148,9 @@ VulkanEngine::OBJMesh::OBJMesh(
         << mtl_path_error.value() << " " << mtl_path_error.message() << std::endl;
     }
     mtl_path /= ""; // Appends a / on POSIX systems. tinyobj doesn't recognize the path otherwise
+  } else {
+    auto obj_file_copy = obj_file;
+    mtl_path = obj_file_copy.remove_filename();
   }
 
   // Load mesh

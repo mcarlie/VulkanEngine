@@ -58,7 +58,7 @@ int main( int argc, char** argv ) {
   
   if( option_result["obj"].count() ) {
     std::string obj_path = option_result["obj"].as< std::string >();
-    std::string mtl_path = "";
+    std::string mtl_path;
     if( option_result["mtl"].count() ) {
       mtl_path = option_result["mtl"].as< std::string >();
     }
@@ -72,6 +72,8 @@ int main( int argc, char** argv ) {
     obj_mesh->setTranform( transform.matrix() );
     
     scene_children.push_back( obj_mesh );
+  } else {
+    std::cout << "Warning: No OBJ file specified. Running empty scene." << std::endl;
   }
 
   scene->addChildren( scene_children );

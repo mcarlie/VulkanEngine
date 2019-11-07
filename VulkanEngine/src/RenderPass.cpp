@@ -10,7 +10,6 @@ VulkanEngine::RenderPass::~RenderPass() {
 
 void VulkanEngine::RenderPass::createRenderPass( const std::shared_ptr< Window >& window ) {
   
-  /// TODO Dedicated RenderPass class or part of graphics pipeline?
   depth_stencil_attachment.reset(
     new DepthStencilImageAttachment(
       vk::ImageLayout::eUndefined,
@@ -103,4 +102,8 @@ void VulkanEngine::RenderPass::createRenderPass( const std::shared_ptr< Window >
 
   vk_render_pass = VulkanManager::getInstance()->getVkDevice().createRenderPass( render_pass_info );
   
+}
+
+const vk::RenderPass& VulkanEngine::RenderPass::getVkRenderPass() {
+  return vk_render_pass;
 }

@@ -16,6 +16,8 @@ namespace VulkanEngine {
     
     void createRenderPass( const std::shared_ptr< Window >& window );
     
+    const vk::RenderPass& getVkRenderPass();
+    
   private:
     
     using DepthStencilImageAttachment

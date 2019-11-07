@@ -2,6 +2,7 @@
 #define IMAGE_H
 
 #include <VulkanEngine/StagedBufferDestination.h>
+#include <VulkanEngine/ImageBase.h>
 
 #include <vk_mem_alloc.h>
 
@@ -13,7 +14,7 @@ namespace VulkanEngine {
   /// \tparam tiling The vk::ImageTiling option to use.
   /// \tparam sample_count_flags vk::SampleCountFlagBits option to use for the image.
   template< vk::Format format, vk::ImageType image_type, vk::ImageTiling tiling, vk::SampleCountFlagBits sample_count_flags >
-  class Image : public StagedBufferDestination {
+  class Image : public StagedBufferDestination, public ImageBase {
   
   public:
 
@@ -95,9 +96,6 @@ namespace VulkanEngine {
 
     /// The current vk::ImageLayout. \see transitionImageLayout().
     vk::ImageLayout vk_image_layout;
-
-    /// The vk::Image instance.
-    vk::Image vk_image;
   
     /// The vk::ImageView created in createImageView().
     vk::ImageView vk_image_view;
