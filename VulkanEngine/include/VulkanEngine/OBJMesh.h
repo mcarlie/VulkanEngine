@@ -7,6 +7,7 @@
 #include <VulkanEngine/GraphicsPipeline.h>
 
 #include <unordered_map>
+#include <filesystem>
 
 namespace VulkanEngine {
 
@@ -19,8 +20,8 @@ namespace VulkanEngine {
     /// \param obj_file Path to obj file.
     /// \param mtl_file Path to mtl file location.
     OBJMesh(
-      const std::string& obj_file,
-      const std::string& mtl_path = "",
+      std::filesystem::path obj_file,
+      std::filesystem::path mtl_path = "",
       const std::shared_ptr< Shader > _shader = std::shared_ptr< Shader >() );
     
     /// Destructor.

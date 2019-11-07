@@ -8,10 +8,12 @@
 
 #include <iostream>
 #include <vector>
+#include <filesystem>
 
 int main( int argc, char** argv ) {
   
-  std::shared_ptr< VulkanEngine::Window > window( new VulkanEngine::GLFWWindow( 1280, 800, "VulkanEngine", false ) );
+  std::shared_ptr< VulkanEngine::Window > window(
+    new VulkanEngine::GLFWWindow( 1280, 800, "SimpleScene", false ) );
   window->initialize();
   
   auto vulkan_manager = VulkanEngine::VulkanManager::getInstance();
@@ -46,12 +48,14 @@ int main( int argc, char** argv ) {
   
   if( argc > 1 ) {
     std::string obj_path( argv[1] );
-    std::string mtl_path;
+    std::string mtl_path = "";
     if( argc > 2 ) {
       mtl_path = argv[2];
     }
+    
     std::shared_ptr< VulkanEngine::OBJMesh > obj_mesh(
-      new VulkanEngine::OBJMesh( obj_path, mtl_path ) );
+      new VulkanEngine::OBJMesh(
+        std::filesystem::path( obj_path ), std::filesystem::path( mtl_path ) ) );
     
     Eigen::Affine3f transform( Eigen::Translation3f( 0.0f, 0.0f, 0.0f ) );
     transform *= Eigen::Scaling( 0.025f );

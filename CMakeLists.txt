@@ -23,7 +23,7 @@ project(VulkanEngine)
 set(VulkanEngine_VERSION_MAJOR 0)
 set(VulkanEngine_VERSION_MINOR 1)
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 
 # Include directories to add
 include_directories("VulkanEngine/include" "VulkanEngine/src")

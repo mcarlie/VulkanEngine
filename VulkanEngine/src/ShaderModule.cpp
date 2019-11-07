@@ -10,14 +10,19 @@
 
 bool VulkanEngine::ShaderModule::glslang_initialized = false;
 
-VulkanEngine::ShaderModule::ShaderModule( const std::string& file_path, vk::ShaderStageFlagBits shader_stage_flag ) 
+VulkanEngine::ShaderModule::ShaderModule( const std::string& shader_string, vk::ShaderStageFlagBits shader_stage_flag )
   : vk_shader_stage_flag( shader_stage_flag ) {
 
-  std::vector< char > bytecode;
-  readSource( file_path, bytecode );
+  std::vector< uint32_t > bytecode;
+    
+  // Determine if this is a file path and attempt to open it if it is.
+  std::filesystem::path shader_path( shader_string );
+  if( std::filesystem::exists( shader_path ) ) {
+    readSource( shader_path, bytecode );
+  }
 
   auto shader_module_info = vk::ShaderModuleCreateInfo()
-    .setPCode( reinterpret_cast< const uint32_t* >( bytecode.data() ) )
+    .setPCode( bytecode.data() )
     .setCodeSize( bytecode.size() );
 
   vk_shader_module = VulkanManager::getInstance()->getVkDevice().createShaderModule( shader_module_info );
@@ -39,17 +44,10 @@ const vk::ShaderModule& VulkanEngine::ShaderModule::getVkShaderModule() {
   return vk_shader_module;
 }
 
-void VulkanEngine::ShaderModule::readSource( const std::string& file_path, std::vector< char >& bytecode ) {
-  
-  std::string segment;
-  std::stringstream path_string_stream( file_path );
-  std::vector< std::string > split_string;
-  while( std::getline( path_string_stream, segment, '.' ) ) {
-    split_string.push_back( segment );
-  }
+void VulkanEngine::ShaderModule::readSource( std::filesystem::path file_path, std::vector< uint32_t >& bytecode ) {
   
   // Already compiled just read data
-  if( split_string.back() == "spv" ) {
+  if( file_path.extension() == "spv" ) {
     
     std::ifstream file( file_path, std::ios::ate | std::ios::binary );
     if( !file.is_open() ) {
@@ -60,7 +58,7 @@ void VulkanEngine::ShaderModule::readSource( const std::string& file_path, std::
     const size_t file_size = static_cast< size_t >( file.tellg() );
     bytecode.resize( file_size );
     file.seekg( 0 );
-    file.read( bytecode.data(), file_size );
+    file.read( reinterpret_cast< char* >( bytecode.data() ), file_size );
     file.close();
     
     return;
@@ -69,7 +67,7 @@ void VulkanEngine::ShaderModule::readSource( const std::string& file_path, std::
   
   std::ifstream file( file_path );
   if( !file.is_open() ) {
-    throw std::runtime_error( "Could not open shader file " + file_path );
+    throw std::runtime_error( "Could not open shader file " + file_path.string() );
   }
   
   std::string glsl_string( ( std::istreambuf_iterator< char >( file ) ),
@@ -84,9 +82,9 @@ void VulkanEngine::ShaderModule::readSource( const std::string& file_path, std::
 }
 
 void VulkanEngine::ShaderModule::glslToSPIRV(
-  const std::string& file_path,
+  const std::string& name,
   const std::string& shader_string,
-  std::vector< unsigned int >& spirv ) {
+  std::vector< uint32_t >& bytecode ) {
  
   if( !glslang_initialized ) {
     glslang::InitializeProcess();
@@ -158,7 +156,7 @@ void VulkanEngine::ShaderModule::glslToSPIRV(
   std::string preprocessed_glsl;
   /// TODO 100 is default glsl version
   if( !tshader.preprocess( &resources, 100, ENoProfile, false, false, messages, &preprocessed_glsl, includer ) ) {
-    std::cout << "Preprocessing failed for shader " + file_path << std::endl;
+    std::cout << "Preprocessing failed for shader " + name << std::endl;
     std::cout << tshader.getInfoLog() << std::endl;
     std::cout << tshader.getInfoDebugLog() << std::endl;
   }
@@ -168,7 +166,7 @@ void VulkanEngine::ShaderModule::glslToSPIRV(
   
   /// TODO 100 is default glsl version
   if( !tshader.parse( &resources, 100, false, messages ) ) {
-    std::cout << "Parsing failed for shader " + file_path << std::endl;
+    std::cout << "Parsing failed for shader " + name << std::endl;
     std::cout << tshader.getInfoLog() << std::endl;
     std::cout << tshader.getInfoDebugLog() << std::endl;
   }
@@ -177,13 +175,13 @@ void VulkanEngine::ShaderModule::glslToSPIRV(
   tprogram.addShader( &tshader );
   
   if( !tprogram.link( messages ) ) {
-    std::cout << "Linking failed for shader " + file_path << std::endl;
+    std::cout << "Linking failed for shader " + name << std::endl;
     std::cout << tprogram.getInfoLog() << std::endl;
     std::cout << tprogram.getInfoDebugLog() << std::endl;
   }
   
   spv::SpvBuildLogger spv_logger;
   glslang::SpvOptions spv_options;
-  glslang::GlslangToSpv( *tprogram.getIntermediate( shader_type ), spirv, &spv_logger, &spv_options );
+  glslang::GlslangToSpv( *tprogram.getIntermediate( shader_type ), bytecode, &spv_logger, &spv_options );
   
 }

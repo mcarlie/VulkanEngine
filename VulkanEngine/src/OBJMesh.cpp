@@ -126,16 +126,32 @@ namespace OBJMeshInternal {
 }
 
 VulkanEngine::OBJMesh::OBJMesh( 
-  const std::string& obj_file,
-  const std::string& mtl_path,
+  std::filesystem::path obj_file,
+  std::filesystem::path mtl_path,
   const std::shared_ptr< Shader > _shader ) :
   SceneObject(),
   GraphicsPipeline(),
   shader( _shader ),
   graphics_pipeline_updated( false ) {
+    
+  std::error_code obj_file_error;
+  if( !std::filesystem::exists( obj_file, obj_file_error ) ) {
+    std::cout << "Provided obj path " + ( obj_file.string() ) + " is invalid. Error code: "
+      << obj_file_error.value() << " " << obj_file_error.message() << std::endl;
+    return;
+  }
+  
+  std::error_code mtl_path_error;
+  if( !mtl_path.empty() ) {
+    if( !std::filesystem::exists( mtl_path, mtl_path_error ) ) {
+      std::cout << "Provided mtl path " + mtl_path.string() + " is invalid. Error code: "
+        << mtl_path_error.value() << " " << mtl_path_error.message() << std::endl;
+    }
+    mtl_path /= ""; // Appends a / on POSIX systems. tinyobj doesn't recognize the path otherwise
+  }
 
   // Load mesh
-  loadOBJ( obj_file.c_str(), mtl_path.c_str() );
+  loadOBJ( obj_file.native().c_str(), mtl_path.native().c_str() );
 
   // Transfer mesh vertex data to GPU
   for( const auto& m : meshes ) {

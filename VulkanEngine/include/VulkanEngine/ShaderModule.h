@@ -5,6 +5,7 @@
 
 #include <string>
 #include <vector>
+#include <filesystem>
 
 namespace VulkanEngine {
 
@@ -14,9 +15,9 @@ namespace VulkanEngine {
   public:
 
     /// Constructor.
-    /// \param file_path The full path to the file containing the source code of the shader.
+    /// \param shader_string Either the source path or raw shader string
     /// \param shader_stage_flag The vk::ShaderStageFlagBits which indicates the type of shader stage.
-    ShaderModule( const std::string& file_path, vk::ShaderStageFlagBits shader_stage_flag );
+    ShaderModule( const std::string& shader_string, vk::ShaderStageFlagBits shader_stage_flag );
 
     /// Destructor.
     ~ShaderModule();
@@ -32,12 +33,12 @@ namespace VulkanEngine {
     /// Read the source code file.
     /// \param file_path The path to the file containing the source.
     /// \param [out] Contains the bytes read from the file.
-    void readSource( const std::string& file_path, std::vector< char >& bytecode );
+    void readSource( std::filesystem::path file_path, std::vector< uint32_t >& bytecode );
     
     /// Convert a GLSL shader string to SPIRV bytecode
     /// \param shader_string The GLSL shader string
     /// \param [out] spirv The resulting SPIRV bytecode
-    void glslToSPIRV( const std::string& file_path, const std::string& shader_string, std::vector< unsigned int >& spirv );
+    void glslToSPIRV( const std::string& name, const std::string& shader_string, std::vector< uint32_t >& bytecode );
 
     /// The internal vk::ShaderModule instance.
     vk::ShaderModule vk_shader_module;
