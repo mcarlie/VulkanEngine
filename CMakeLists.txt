@@ -50,6 +50,15 @@ include_directories(${Vulkan_INCLUDE_DIRS})
 link_directories(AFTER "${VULKAN_SDK}/lib")
 target_link_libraries(VulkanEngine ${Vulkan_LIBRARIES})
 
+if( WIN32 )
+  add_definitions(-DVK_USE_PLATFORM_WIN32_KHR -DNOMINMAX)
+endif()
+
+set(ENABLE_VULKAN_VALIDATION OFF CACHE BOOL "Enable Vulkan validation layers")
+if(ENABLE_VULKAN_VALIDATION)
+  add_definitions(-DENABLE_VULKAN_VALIDATION)
+endif()
+
 add_subdirectory(${LIBS_DIR}/glslang)
 include_directories(${LIBS_DIR}/glslang)
 target_link_libraries(VulkanEngine glslang SPIRV )

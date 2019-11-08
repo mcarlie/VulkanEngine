@@ -30,7 +30,7 @@ namespace VulkanEngine {
 
     std::vector< vk::PipelineShaderStageCreateInfo > shader_stages;
 
-	  std::vector< std::shared_ptr< ShaderModule > > shader_modules;
+	std::vector< std::shared_ptr< ShaderModule > > shader_modules;
 
     /// All Descriptor objects used in this shader.
     std::vector< std::vector< std::shared_ptr< Descriptor > > > descriptors;

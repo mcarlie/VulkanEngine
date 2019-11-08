@@ -74,7 +74,7 @@ void VulkanEngine::ShaderModule::readSource( std::filesystem::path file_path, st
                           std::istreambuf_iterator< char >( ) );
   
   std::vector< unsigned int > spirv_data;
-  glslToSPIRV( file_path, glsl_string, spirv_data );
+  glslToSPIRV( file_path.string(), glsl_string, spirv_data );
   
   bytecode.resize( spirv_data.size() * ( sizeof( unsigned int ) / sizeof( char ) ) );
   std::memcpy( bytecode.data(), spirv_data.data(), bytecode.size() );

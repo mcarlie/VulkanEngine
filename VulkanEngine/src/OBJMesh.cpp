@@ -154,7 +154,7 @@ VulkanEngine::OBJMesh::OBJMesh(
   }
 
   // Load mesh
-  loadOBJ( obj_file.native().c_str(), mtl_path.native().c_str() );
+  loadOBJ( obj_file.string().c_str(), mtl_path.string().c_str() );
 
   // Transfer mesh vertex data to GPU
   for( const auto& m : meshes ) {
@@ -244,7 +244,7 @@ void VulkanEngine::OBJMesh::loadOBJ( const char* obj_path, const char* mtl_path 
   }
 
   // Create a shader if one isn't provided
-  const char* shader_path = "/Users/michael/Desktop/VK/shaders";
+  const char* shader_path = "C:/Users/Michael/Desktop/vk/shaders";
   if( !shader.get() && shader_path ) {
 	  std::shared_ptr< ShaderModule > fragment_shader(
 		  new ShaderModule( std::string( shader_path ) + std::string( "/triangle.frag" ), vk::ShaderStageFlagBits::eFragment ) );

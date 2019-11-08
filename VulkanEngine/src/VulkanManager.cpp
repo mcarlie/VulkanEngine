@@ -33,11 +33,13 @@ void VulkanEngine::VulkanManager::initialize( const std::shared_ptr< Window >& _
   // Use validation layers if this is a debug build
   std::vector< const char* > layers;
   
+#ifdef ENABLE_VULKAN_VALIDATION
   layers.push_back( "VK_LAYER_LUNARG_standard_validation" );
   instance_extensions.push_back( VK_EXT_DEBUG_UTILS_EXTENSION_NAME );
   instance_extensions.push_back( VK_EXT_DEBUG_REPORT_EXTENSION_NAME );
   instance_extensions.push_back( "VK_KHR_get_physical_device_properties2" );
   instance_extensions.push_back( "VK_KHR_device_group_creation" );
+#endif
 
   auto app_info = vk::ApplicationInfo()
     .setPApplicationName( "VulkanEngine" )
@@ -56,7 +58,7 @@ void VulkanEngine::VulkanManager::initialize( const std::shared_ptr< Window >& _
 
   vk_instance = vk::createInstance( inst_info );
 
-  // Setup debug reporting if this is a debug build
+#ifdef ENABLE_VULKAN_VALIDATION
   vk::DebugUtilsMessengerCreateInfoEXT debug_message_create_info;
   debug_message_create_info.messageSeverity = 
       vk::DebugUtilsMessageSeverityFlagBitsEXT::eError 
@@ -75,6 +77,7 @@ void VulkanEngine::VulkanManager::initialize( const std::shared_ptr< Window >& _
   if( !vk_debug_utils_messenger ) {
     throw std::runtime_error( "Could not initialize debug reporting for vulkan!" );
   }
+#endif
 
   vk_surface = window->createVkSurface( vk_instance );
 
@@ -506,7 +509,9 @@ void VulkanEngine::VulkanManager::cleanup() {
   vmaDestroyAllocator( vma_allocator );
 
   vk_device.destroy();
+#ifdef ENABLE_VULKAN_VALIDATION
   vk_instance.destroyDebugUtilsMessengerEXT( vk_debug_utils_messenger, nullptr, vk_dispatch_loader_dynamic );
+#endif
   vk_instance.destroySurfaceKHR( vk_surface );
   vk_instance.destroy();
 
@@ -535,6 +540,7 @@ void VulkanEngine::VulkanManager::cleanupSwapchain() {
 
 }
 
+#ifdef ENABLE_VULKAN_VALIDATION
 VKAPI_ATTR VkBool32 VKAPI_CALL VulkanEngine::VulkanManager::debugCallback(
   VkDebugUtilsMessageSeverityFlagBitsEXT message_severity,
   VkDebugUtilsMessageTypeFlagsEXT message_type,
@@ -543,3 +549,4 @@ VKAPI_ATTR VkBool32 VKAPI_CALL VulkanEngine::VulkanManager::debugCallback(
   std::cerr << "validation layer: " << callback_data->pMessage << std::endl;
   return VK_FALSE;
 }
+#endif
