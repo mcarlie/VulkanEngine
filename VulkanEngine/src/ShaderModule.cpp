@@ -20,6 +20,10 @@ VulkanEngine::ShaderModule::ShaderModule( const std::string& shader_string, vk::
   if( std::filesystem::exists( shader_path ) ) {
     readSource( shader_path, bytecode );
   }
+    
+  if( bytecode.empty() ) {
+    throw std::runtime_error( "Unable to read shader source." );
+  }
 
   auto shader_module_info = vk::ShaderModuleCreateInfo()
     .setPCode( bytecode.data() )
@@ -51,8 +55,7 @@ void VulkanEngine::ShaderModule::readSource( std::filesystem::path file_path, st
     
     std::ifstream file( file_path, std::ios::ate | std::ios::binary );
     if( !file.is_open() ) {
-      std::cerr << "Could not open shader file " << file_path << std::endl;
-      return;
+      throw std::runtime_error( "Could not open shader file " + file_path.string() );
     }
   
     const size_t file_size = static_cast< size_t >( file.tellg() );
