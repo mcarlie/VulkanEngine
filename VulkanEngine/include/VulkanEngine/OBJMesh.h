@@ -39,6 +39,12 @@ namespace VulkanEngine {
     virtual void update( SceneState& scene_state ) override;
 
     void loadOBJ( const char* obj_path, const char* mtl_path );
+    
+    /// \return Auto generated vertex shader for this OBJMesh.
+    const std::string getVertexShaderString();
+    
+    /// \return Auto generated fragment shader for this OBJMesh.
+    const std::string getFragmentShaderString();
 
     /// Meshes composing this OBJMesh.
     std::vector< std::shared_ptr< MeshBase > > meshes;

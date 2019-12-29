@@ -17,7 +17,7 @@ namespace VulkanEngine {
     /// Constructor.
     /// \param shader_string Either the source path or raw shader string
     /// \param shader_stage_flag The vk::ShaderStageFlagBits which indicates the type of shader stage.
-    ShaderModule( const std::string& shader_string, vk::ShaderStageFlagBits shader_stage_flag );
+    ShaderModule( const std::string& shader_string, bool is_filepath, vk::ShaderStageFlagBits shader_stage_flag );
 
     /// Destructor.
     ~ShaderModule();
