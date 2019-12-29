@@ -91,6 +91,31 @@ void VulkanEngine::VulkanManager::initialize( const std::shared_ptr< Window >& _
   for( const auto& ext : physical_device_extensions ) {
     physical_device_extension_names.push_back( ext.extensionName );
   }
+  
+  // These two extensions appear in the list of supported extensions with Intel drivers for some reason.
+  bool found_VK_KHR_maintenance1 = false;
+  bool found_VK_AMD_negative_viewport_height = false;
+  for( auto it = physical_device_extension_names.begin();
+      it != physical_device_extension_names.end();
+      ++it ) {
+    
+    if( !( found_VK_KHR_maintenance1 && found_VK_AMD_negative_viewport_height ) ) {
+      if( std::string( *it ) == "VK_KHR_maintenance1" ) {
+        found_VK_KHR_maintenance1 = true;
+      } else if ( std::string( *it ) == "VK_AMD_negative_viewport_height" ) {
+        found_VK_AMD_negative_viewport_height = true;
+      }
+    }
+    
+    if( found_VK_KHR_maintenance1 && found_VK_AMD_negative_viewport_height ) {
+      std::cout << "Both VK_KHR_maintenance1 and VK_AMD_negative_viewport_height were found in the "
+      << "list of physical device extensions. Removed VK_AMD_negative_viewport_height since enabling "
+      << "both is not allowed by the Vulkan specification." << std::endl;
+      physical_device_extension_names.erase( it );
+      break;
+    }
+    
+  }
 
   // Find queue family with graphics support
   std::vector< vk::QueueFamilyProperties > queue_family_properties
