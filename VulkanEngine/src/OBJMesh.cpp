@@ -244,12 +244,11 @@ void VulkanEngine::OBJMesh::loadOBJ( const char* obj_path, const char* mtl_path 
   }
 
   // Create a shader if one isn't provided
-  const char* shader_path = "C:/Users/Michael/Desktop/vk/shaders";
-  if( !shader.get() && shader_path ) {
+  if( !shader.get() ) {
+    std::shared_ptr< ShaderModule > vertex_shader(
+      new ShaderModule( getVertexShaderString(), false, vk::ShaderStageFlagBits::eVertex ) );
 	  std::shared_ptr< ShaderModule > fragment_shader(
-		  new ShaderModule( std::string( shader_path ) + std::string( "/triangle.frag" ), vk::ShaderStageFlagBits::eFragment ) );
-	  std::shared_ptr< ShaderModule > vertex_shader(
-		  new ShaderModule( std::string( shader_path ) + std::string( "/triangle.vert" ), vk::ShaderStageFlagBits::eVertex ) );
+		  new ShaderModule( getFragmentShaderString(), false, vk::ShaderStageFlagBits::eFragment ) );
 	  shader.reset( new Shader( { fragment_shader, vertex_shader } ) );
   }
 
@@ -317,4 +316,55 @@ void VulkanEngine::OBJMesh::loadOBJ( const char* obj_path, const char* mtl_path 
   auto time = std::chrono::duration_cast< std::chrono::milliseconds >( std::chrono::system_clock::now() - begin ).count();
   std::cout << "Mesh loading time: " << time << "(ms)" << std::endl;
 
+}
+
+const std::string VulkanEngine::OBJMesh::getVertexShaderString() {
+  std::stringstream ret_val;
+  
+  ret_val
+  << "#version 450" << std::endl
+  << "#extension GL_ARB_separate_shader_objects : enable" << std::endl
+  
+  << "layout(binding = 0) uniform UniformBufferObject {" << std::endl
+  << "  mat4 model;" << std::endl
+  << "  mat4 view;" << std::endl
+  << "  mat4 proj;" << std::endl
+  << "} ubo;" << std::endl
+
+  << "layout(location = 0) in vec3 inPosition;" << std::endl
+  
+  << "layout(location = 2) in vec2 inTexcoords;" << std::endl
+  << "layout(location = 2) out vec2 outTexcoords;" << std::endl
+
+  << "out gl_PerVertex {" << std::endl
+  << "  vec4 gl_Position;" << std::endl
+  << "};" << std::endl
+
+  << "void main() {" << std::endl
+  << "  gl_Position = ubo.proj * ubo.view * ubo.model * vec4(inPosition, 1.0);" << std::endl
+  << "  outTexcoords = inTexcoords;" << std::endl
+  << "}" << std::endl;
+  
+  return ret_val.str();
+}
+
+const std::string VulkanEngine::OBJMesh::getFragmentShaderString() {
+  std::stringstream ret_val;
+  
+  ret_val
+  << "#version 450" << std::endl
+  << "#extension GL_ARB_separate_shader_objects : enable" << std::endl
+
+  << "layout(location = 2) in vec2 inTexcoords;" << std::endl
+
+  << "layout(location = 0) out vec4 outColor;" << std::endl
+
+  << "layout(binding = 1) uniform sampler2D texSampler;" << std::endl
+
+  << "void main() {" << std::endl
+  << "  outColor = texture( texSampler, inTexcoords );" << std::endl
+  << "  //outColor = vec4( inTexcoords, vec2( 1.0 ) );" << std::endl
+  << "}" << std::endl;
+
+  return ret_val.str();
 }

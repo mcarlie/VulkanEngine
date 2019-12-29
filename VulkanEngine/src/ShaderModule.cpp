@@ -10,15 +10,19 @@
 
 bool VulkanEngine::ShaderModule::glslang_initialized = false;
 
-VulkanEngine::ShaderModule::ShaderModule( const std::string& shader_string, vk::ShaderStageFlagBits shader_stage_flag )
+VulkanEngine::ShaderModule::ShaderModule( const std::string& shader_string, bool is_filepath, vk::ShaderStageFlagBits shader_stage_flag )
   : vk_shader_stage_flag( shader_stage_flag ) {
 
   std::vector< uint32_t > bytecode;
     
-  // Determine if this is a file path and attempt to open it if it is.
-  std::filesystem::path shader_path( shader_string );
-  if( std::filesystem::exists( shader_path ) ) {
-    readSource( shader_path, bytecode );
+  if( !is_filepath ) {
+    glslToSPIRV( "unknown", shader_string, bytecode );
+  } else {
+    // Determine if this is a file path and attempt to open it if it is.
+    std::filesystem::path shader_path( shader_string );
+    if( std::filesystem::exists( shader_path ) ) {
+      readSource( shader_path, bytecode );
+    }
   }
     
   if( bytecode.empty() ) {
@@ -76,11 +80,7 @@ void VulkanEngine::ShaderModule::readSource( std::filesystem::path file_path, st
   std::string glsl_string( ( std::istreambuf_iterator< char >( file ) ),
                           std::istreambuf_iterator< char >( ) );
   
-  std::vector< unsigned int > spirv_data;
-  glslToSPIRV( file_path.string(), glsl_string, spirv_data );
-  
-  bytecode.resize( spirv_data.size() * ( sizeof( unsigned int ) / sizeof( char ) ) );
-  std::memcpy( bytecode.data(), spirv_data.data(), bytecode.size() );
+  glslToSPIRV( file_path.string(), glsl_string, bytecode );
 
 }
 
@@ -139,7 +139,7 @@ void VulkanEngine::ShaderModule::glslToSPIRV(
       shader_type = EShLangMeshNV;
       break;
     default:
-      throw std::runtime_error( "Invalid shader stage flag" );
+      throw std::runtime_error( "Invalid shader stage flag!" );
   }
   
   glslang::TShader tshader( shader_type );
@@ -183,8 +183,12 @@ void VulkanEngine::ShaderModule::glslToSPIRV(
     std::cout << tprogram.getInfoDebugLog() << std::endl;
   }
   
+  std::vector< uint32_t > spirv_data;
   spv::SpvBuildLogger spv_logger;
   glslang::SpvOptions spv_options;
-  glslang::GlslangToSpv( *tprogram.getIntermediate( shader_type ), bytecode, &spv_logger, &spv_options );
+  glslang::GlslangToSpv( *tprogram.getIntermediate( shader_type ), spirv_data, &spv_logger, &spv_options );
+  
+  bytecode.resize( spirv_data.size() * ( sizeof( unsigned int ) / sizeof( char ) ) );
+  std::memcpy( bytecode.data(), spirv_data.data(), bytecode.size() );
   
 }
