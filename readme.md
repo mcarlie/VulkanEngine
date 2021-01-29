@@ -16,6 +16,4 @@ Otherwise you have to specify the necessary environment variables yourself.
 
 There is an example SimpleScene which can be run and is used to test the engine.
 
-It's hardcoded to load some obj file. You can download your own obj file and place
-it in the models folder to test the engine. Also change the code to load your file.
-It may be needed to change and recompile the shaders depending on if your file has textures or not.
+Use the -o option to specify the obj file and -m to specify the mtl file if it is in a different location.
