@@ -117,6 +117,7 @@ void VulkanEngine::GraphicsPipeline::createGraphicsPipeline(
     .setRenderPass( VulkanManager::getInstance()->getVkRenderPass() )
     .setSubpass( 0 );
 
-  vk_graphics_pipeline = VulkanManager::getInstance()->getVkDevice().createGraphicsPipeline( nullptr, graphics_pipeline_info );
-  
+    auto& tmp_graphics_pipeline 
+        = VulkanManager::getInstance()->getVkDevice().createGraphicsPipeline( nullptr, graphics_pipeline_info );
+    vk_graphics_pipeline = tmp_graphics_pipeline;
 }
