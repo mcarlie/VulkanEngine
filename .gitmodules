@@ -4,3 +4,6 @@
 [submodule "Libs/glslang"]
 	path = Libs/glslang
 	url = https://github.com/KhronosGroup/glslang
+[submodule "Libs/VulkanMemoryAllocator"]
+	path = Libs/VulkanMemoryAllocator
+	url = https://github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator.git
