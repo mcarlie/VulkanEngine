@@ -98,7 +98,7 @@ target_link_libraries(VulkanEngine glfw)
 # Add header only libraries
 include_directories("${LIBS_DIR}/eigen-3.3.5")
 include_directories("${LIBS_DIR}/tinyobjloader-1.0.6")
-include_directories("${LIBS_DIR}/VulkanMemoryAllocator-2.1.0/src")
+include_directories("${LIBS_DIR}/VulkanMemoryAllocator/src")
 include_directories("${LIBS_DIR}/stb")
 
 # Add examples
