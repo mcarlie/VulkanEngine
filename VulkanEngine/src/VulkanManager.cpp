@@ -154,6 +154,7 @@ void VulkanEngine::VulkanManager::initialize( const std::shared_ptr< Window >& _
   VmaAllocatorCreateInfo vma_allocator_create_info = {};
   vma_allocator_create_info.device = vk_device;
   vma_allocator_create_info.physicalDevice = vk_physical_device;
+  vma_allocator_create_info.instance = vk_instance;
 
   if( vmaCreateAllocator( &vma_allocator_create_info, &vma_allocator ) != VK_SUCCESS ) {
     throw std::runtime_error( "Failed to create VmaAllocator!" );
