@@ -68,7 +68,7 @@ int main( int argc, char** argv ) {
         std::filesystem::path( obj_path ), std::filesystem::path( mtl_path ) ) );
     
     Eigen::Affine3f transform( Eigen::Translation3f( 0.0f, 0.0f, 0.0f ) );
-    transform *= Eigen::Scaling( 0.01f );
+    transform *= Eigen::Scaling( 1.0f );
     obj_mesh->setTranform( transform.matrix() );
     
     scene_children.push_back( obj_mesh );

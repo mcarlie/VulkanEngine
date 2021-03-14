@@ -41,10 +41,10 @@ namespace VulkanEngine {
     void loadOBJ( const char* obj_path, const char* mtl_path );
     
     /// \return Auto generated vertex shader for this OBJMesh.
-    const std::string getVertexShaderString();
+    const std::string getVertexShaderString(bool has_tex_coords);
     
     /// \return Auto generated fragment shader for this OBJMesh.
-    const std::string getFragmentShaderString();
+    const std::string getFragmentShaderString(bool has_tex_coords);
 
     /// Meshes composing this OBJMesh.
     std::vector< std::shared_ptr< MeshBase > > meshes;
