@@ -34,7 +34,7 @@ void VulkanEngine::VulkanManager::initialize( const std::shared_ptr< Window >& _
   std::vector< const char* > layers;
   
 #ifdef ENABLE_VULKAN_VALIDATION
-  layers.push_back( "VK_LAYER_LUNARG_standard_validation" );
+  layers.push_back( "VK_LAYER_KHRONOS_validation" );
   instance_extensions.push_back( VK_EXT_DEBUG_UTILS_EXTENSION_NAME );
   instance_extensions.push_back( VK_EXT_DEBUG_REPORT_EXTENSION_NAME );
   instance_extensions.push_back( "VK_KHR_get_physical_device_properties2" );
@@ -70,7 +70,7 @@ void VulkanEngine::VulkanManager::initialize( const std::shared_ptr< Window >& _
   debug_message_create_info.pfnUserCallback = debugCallback;
   debug_message_create_info.pUserData = nullptr;
 
-  vk_dispatch_loader_dynamic.init( vk_instance );
+  vk_dispatch_loader_dynamic.init(vk_instance, vkGetInstanceProcAddr, vk_device, vkGetDeviceProcAddr);
   vk_debug_utils_messenger = vk_instance.createDebugUtilsMessengerEXT(
     debug_message_create_info, nullptr, vk_dispatch_loader_dynamic );
 
