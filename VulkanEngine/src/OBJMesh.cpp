@@ -374,9 +374,15 @@ const std::string VulkanEngine::OBJMesh::getFragmentShaderString(bool has_tex_co
   }
 
   return_string
-  << "void main() {" << std::endl
-  << "  //outColor = texture( texSampler, inTexcoords );" << std::endl
-  << "  outColor = vec4(1.0);" << std::endl
+  << "void main() {" << std::endl;
+  if (has_tex_coords) {
+    return_string
+    << "  outColor = texture( texSampler, inTexcoords );" << std::endl;
+  } else {
+    return_string
+    << "  outColor = vec4(1.0);" << std::endl;
+  }
+  return_string
   << "}" << std::endl;
 
   return return_string.str();
