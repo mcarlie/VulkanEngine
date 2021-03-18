@@ -6,6 +6,7 @@ On Windows make sure you have Vulkan SDK installed.
 https://www.lunarg.com/vulkan-sdk/
 
 For MacOS (MoltenVK). Download the SDK and specify it's location using the VULKAN_SDK environment variable (can be set in CMake)
+(Recently you need to install Vulkan using the install_vulkan.py script on macOS)
 
 Run CMake and build the project.
 
