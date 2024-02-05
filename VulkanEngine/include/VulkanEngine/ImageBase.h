@@ -5,26 +5,23 @@
 
 namespace VulkanEngine {
 
-  class ImageBase {
-    
-  public:
-    
-    ImageBase();
-    
-    ~ImageBase();
-    
-    const vk::Image& getVkImage();
-    
-    const vk::ImageView& getVkImageView();
+class ImageBase {
 
-  protected:
+public:
+  ImageBase();
 
-    vk::Image vk_image;
-    
-    vk::ImageView vk_image_view;
+  ~ImageBase();
 
-  };
+  const vk::Image &getVkImage();
 
-}
+  const vk::ImageView &getVkImageView();
+
+protected:
+  vk::Image vk_image;
+
+  vk::ImageView vk_image_view;
+};
+
+} // namespace VulkanEngine
 
 #endif /* IMAGEBASE_H */

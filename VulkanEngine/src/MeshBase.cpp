@@ -3,10 +3,8 @@
 
 #include <VulkanEngine/MeshBase.h>
 
-VulkanEngine::MeshBase::MeshBase() {
-}
+VulkanEngine::MeshBase::MeshBase() {}
 
-VulkanEngine::MeshBase::~MeshBase() {
-}
+VulkanEngine::MeshBase::~MeshBase() {}
 
 #endif /* MESH_CPP */

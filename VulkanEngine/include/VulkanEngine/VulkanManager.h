@@ -1,13 +1,14 @@
 #ifndef VULKANMANAGER_H
 #define VULKANMANAGER_H
 
-#include <VulkanEngine/Window.h>
-#include <VulkanEngine/Shader.h>
-#include <VulkanEngine/VertexAttribute.h>
-#include <VulkanEngine/IndexAttribute.h>
-#include <VulkanEngine/UniformBuffer.h>
 #include <VulkanEngine/Camera.h>
+#include <VulkanEngine/IndexAttribute.h>
 #include <VulkanEngine/MeshBase.h>
+#include <VulkanEngine/Shader.h>
+#include <VulkanEngine/UniformBuffer.h>
+#include <VulkanEngine/VertexAttribute.h>
+#include <VulkanEngine/Window.h>
+
 
 #include <Eigen/Eigen>
 #include <vk_mem_alloc.h>
@@ -17,157 +18,155 @@
 
 namespace VulkanEngine {
 
-  // Forward decleration
-  template< vk::Format format, vk::ImageType image_type, vk::ImageTiling tiling, vk::SampleCountFlagBits sample_count_flags >
-  class Image;
-  
-  class VulkanManager {
-  
-  private:
+// Forward decleration
+template <vk::Format format, vk::ImageType image_type, vk::ImageTiling tiling,
+          vk::SampleCountFlagBits sample_count_flags>
+class Image;
 
-    /// Constructor.
-    /// Private so that an instance may only be created from getInstance().
-    VulkanManager();
+class VulkanManager {
 
-  public:
+private:
+  /// Constructor.
+  /// Private so that an instance may only be created from getInstance().
+  VulkanManager();
 
-    /// Destructor.
-    ~VulkanManager();
+public:
+  /// Destructor.
+  ~VulkanManager();
 
-    /// Delete copy constructor to disallow duplicates.
-    VulkanManager( const VulkanManager& ) = delete;
+  /// Delete copy constructor to disallow duplicates.
+  VulkanManager(const VulkanManager &) = delete;
 
-    /// Delete assignment operator to disallow duplicates.
-    void operator=( const VulkanManager& ) = delete;
+  /// Delete assignment operator to disallow duplicates.
+  void operator=(const VulkanManager &) = delete;
 
-    /// Get the singleton instance of the VulkanManager.
-    /// Creates the instance when first called.
-    /// \return The singleton VulkanManager instance.
-    static std::shared_ptr< VulkanManager >& getInstance();
-    
-    /// Get the singleton instance of the VulkanManager.
-    /// Creates the instance when first called.
-    /// \return The singleton VulkanManager instance.
-    static void destroyInstance();
+  /// Get the singleton instance of the VulkanManager.
+  /// Creates the instance when first called.
+  /// \return The singleton VulkanManager instance.
+  static std::shared_ptr<VulkanManager> &getInstance();
 
-    /// Initialize the VulkanManager.
-    /// \param _window The Window instance to use with the manager.
-    void initialize( const std::shared_ptr< Window >& _window );
+  /// Get the singleton instance of the VulkanManager.
+  /// Creates the instance when first called.
+  /// \return The singleton VulkanManager instance.
+  static void destroyInstance();
 
-    void createCommandBuffers();
-    
-    void beginRenderPass();
-    
-    void endRenderPass();
-    
-    vk::CommandBuffer getCurrentCommandBuffer();
+  /// Initialize the VulkanManager.
+  /// \param _window The Window instance to use with the manager.
+  void initialize(const std::shared_ptr<Window> &_window);
 
-    /// Executes all command buffers and swaps buffers.
-    void drawImage();
+  void createCommandBuffers();
 
-    /// \return The manager's vk::Device instance.
-    const vk::Device& getVkDevice();
+  void beginRenderPass();
 
-    /// \return The manager's vk::PhysicalDevice instance.
-    const vk::PhysicalDevice& getVKPhysicalDevice();
+  void endRenderPass();
 
-    /// \return The manager's vk::CommandPool for allocating command buffers.
-    const vk::CommandPool& getVkCommandPool();
+  vk::CommandBuffer getCurrentCommandBuffer();
 
-    /// \return The manager's vk::Queue for submitting graphics related command buffers.
-    const vk::Queue& getVkGraphicsQueue();
+  /// Executes all command buffers and swaps buffers.
+  void drawImage();
 
-    /// \return The VmaAllocator instance for performing allocations with Vulkan memory allocator.
-    const VmaAllocator& getVmaAllocator();
-    
-    const vk::RenderPass& getVkRenderPass();
+  /// \return The manager's vk::Device instance.
+  const vk::Device &getVkDevice();
 
-    const size_t getCurrentFrame() const {
-      return current_frame;
-    }
+  /// \return The manager's vk::PhysicalDevice instance.
+  const vk::PhysicalDevice &getVKPhysicalDevice();
 
-    const size_t getFramesInFlight() const {
-      return frames_in_flight;
-    }
+  /// \return The manager's vk::CommandPool for allocating command buffers.
+  const vk::CommandPool &getVkCommandPool();
 
-  private:
+  /// \return The manager's vk::Queue for submitting graphics related command
+  /// buffers.
+  const vk::Queue &getVkGraphicsQueue();
 
-    void createSwapchain();
-    void createImageViews();
+  /// \return The VmaAllocator instance for performing allocations with Vulkan
+  /// memory allocator.
+  const VmaAllocator &getVmaAllocator();
 
-    void createRenderPass();
-    void createSwapchainFramebuffers();
-    void createSyncObjects();
+  const vk::RenderPass &getVkRenderPass();
 
-    void cleanup();
-    void cleanupSwapchain();
+  const size_t getCurrentFrame() const { return current_frame; }
 
-    /// The window instance used with the manager.
-    std::shared_ptr< Window > window;
+  const size_t getFramesInFlight() const { return frames_in_flight; }
 
-    /// The main Vulkan instance
-    vk::Instance vk_instance;
+private:
+  void createSwapchain();
+  void createImageViews();
 
-    /// The Vulkan surface object used with the windowing system.
-    vk::SurfaceKHR vk_surface;
+  void createRenderPass();
+  void createSwapchainFramebuffers();
+  void createSyncObjects();
 
-    vk::RenderPass vk_render_pass;
+  void cleanup();
+  void cleanupSwapchain();
 
-    vk::SwapchainKHR vk_swapchain;
+  /// The window instance used with the manager.
+  std::shared_ptr<Window> window;
 
-    /// The physical device used for rendering.
-    vk::PhysicalDevice vk_physical_device;
+  /// The main Vulkan instance
+  vk::Instance vk_instance;
 
-    /// The logical device used to interface with the physice_device.
-    vk::Device vk_device;
+  /// The Vulkan surface object used with the windowing system.
+  vk::SurfaceKHR vk_surface;
 
-    VmaAllocator vma_allocator;
+  vk::RenderPass vk_render_pass;
 
-    vk::Queue vk_graphics_queue;
+  vk::SwapchainKHR vk_swapchain;
 
-    uint32_t graphics_queue_family_index;
+  /// The physical device used for rendering.
+  vk::PhysicalDevice vk_physical_device;
 
-    std::vector< vk::Image > vk_swapchain_images;
+  /// The logical device used to interface with the physice_device.
+  vk::Device vk_device;
 
-    std::vector< vk::ImageView > vk_image_views;
+  VmaAllocator vma_allocator;
 
-    vk::CommandPool vk_command_pool;
+  vk::Queue vk_graphics_queue;
 
-    std::vector< vk::CommandBuffer > vk_command_buffers;
+  uint32_t graphics_queue_family_index;
 
-    std::vector< vk::Framebuffer > vk_swapchain_framebuffers;
+  std::vector<vk::Image> vk_swapchain_images;
 
-    using DepthStencilImageAttachment 
-      = Image< vk::Format::eD32SfloatS8Uint, vk::ImageType::e2D, vk::ImageTiling::eOptimal, vk::SampleCountFlagBits::e4 >;
+  std::vector<vk::ImageView> vk_image_views;
 
-    using ColorAttachment
-      = Image< vk::Format::eB8G8R8A8Unorm, vk::ImageType::e2D, vk::ImageTiling::eOptimal, vk::SampleCountFlagBits::e4 >;
+  vk::CommandPool vk_command_pool;
 
-    std::shared_ptr< DepthStencilImageAttachment > depth_stencil_attachment;
-    std::shared_ptr< ColorAttachment > color_attachment;
+  std::vector<vk::CommandBuffer> vk_command_buffers;
 
-    size_t frames_in_flight;
-    size_t current_frame;
+  std::vector<vk::Framebuffer> vk_swapchain_framebuffers;
 
-    std::vector< vk::Semaphore > vk_image_available_semaphores;
-    std::vector< vk::Semaphore > vk_rendering_finished_semaphores;
-    std::vector< vk::Fence > vk_in_flight_fences;
+  using DepthStencilImageAttachment =
+      Image<vk::Format::eD32SfloatS8Uint, vk::ImageType::e2D,
+            vk::ImageTiling::eOptimal, vk::SampleCountFlagBits::e4>;
 
-    /// Class which allows for dynamic loading of certain functions within Vulkan classes.
-    vk::DispatchLoaderDynamic vk_dispatch_loader_dynamic;
+  using ColorAttachment =
+      Image<vk::Format::eB8G8R8A8Unorm, vk::ImageType::e2D,
+            vk::ImageTiling::eOptimal, vk::SampleCountFlagBits::e4>;
+
+  std::shared_ptr<DepthStencilImageAttachment> depth_stencil_attachment;
+  std::shared_ptr<ColorAttachment> color_attachment;
+
+  size_t frames_in_flight;
+  size_t current_frame;
+
+  std::vector<vk::Semaphore> vk_image_available_semaphores;
+  std::vector<vk::Semaphore> vk_rendering_finished_semaphores;
+  std::vector<vk::Fence> vk_in_flight_fences;
+
+  /// Class which allows for dynamic loading of certain functions within Vulkan
+  /// classes.
+  vk::DispatchLoaderDynamic vk_dispatch_loader_dynamic;
 
 #ifdef ENABLE_VULKAN_VALIDATION
-    vk::DebugUtilsMessengerEXT vk_debug_utils_messenger;
+  vk::DebugUtilsMessengerEXT vk_debug_utils_messenger;
 
-    static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
-      VkDebugUtilsMessageSeverityFlagBitsEXT message_severity,
-      VkDebugUtilsMessageTypeFlagsEXT message_type,
-      const VkDebugUtilsMessengerCallbackDataEXT* callback_data,
-      void* user_data );
+  static VKAPI_ATTR VkBool32 VKAPI_CALL
+  debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT message_severity,
+                VkDebugUtilsMessageTypeFlagsEXT message_type,
+                const VkDebugUtilsMessengerCallbackDataEXT *callback_data,
+                void *user_data);
 #endif
+};
 
-  };
-
-}
+} // namespace VulkanEngine
 
 #endif /* VULKANMANAGER_H */

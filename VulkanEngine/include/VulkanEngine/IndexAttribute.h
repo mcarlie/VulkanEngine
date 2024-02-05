@@ -7,24 +7,21 @@
 
 namespace VulkanEngine {
 
-  /// Represents an index attribute for indexed rendering.
-  /// \tparam T The type to use for index elements.
-  template< typename T >
-  class IndexAttribute : public Attribute {
+/// Represents an index attribute for indexed rendering.
+/// \tparam T The type to use for index elements.
+template <typename T> class IndexAttribute : public Attribute {
 
-  public:
+public:
+  /// Constructor.
+  /// \param data The index data.
+  /// \param num_elements The number of indice.
+  IndexAttribute(const T *data, size_t num_elements);
 
-    /// Constructor.
-    /// \param data The index data.
-    /// \param num_elements The number of indice.
-    IndexAttribute( const T* data, size_t num_elements );
+  /// Destructor.
+  virtual ~IndexAttribute();
+};
 
-    /// Destructor.
-    virtual ~IndexAttribute();
-
-  };
-
-}
+} // namespace VulkanEngine
 
 #include <IndexAttribute.cpp>
 

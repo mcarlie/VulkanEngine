@@ -1,50 +1,52 @@
 #ifndef SHADER_H
 #define SHADER_H
 
-#include <VulkanEngine/ShaderModule.h>
 #include <VulkanEngine/Descriptor.h>
+#include <VulkanEngine/ShaderModule.h>
+
 
 namespace VulkanEngine {
 
-  /// Class which encapsulates a single shader consisting of several ShaderModule instances.
-  class Shader {
+/// Class which encapsulates a single shader consisting of several ShaderModule
+/// instances.
+class Shader {
 
-  public:
-    
-    /// Constructor.
-    /// \param shader_modules ShaderModule instances to use in this shader.
-    Shader( const std::vector< std::shared_ptr< ShaderModule > >& _shader_modules );
-    
-    /// Destructor.
-    ~Shader();
+public:
+  /// Constructor.
+  /// \param shader_modules ShaderModule instances to use in this shader.
+  Shader(const std::vector<std::shared_ptr<ShaderModule>> &_shader_modules);
 
-    void setDescriptors( const std::vector< std::vector< std::shared_ptr< Descriptor > > >& _descriptors );
+  /// Destructor.
+  ~Shader();
 
-    void bindDescriptorSet( const vk::CommandBuffer& command_buffer, uint32_t descriptor_set_index );
+  void
+  setDescriptors(const std::vector<std::vector<std::shared_ptr<Descriptor>>>
+                     &_descriptors);
 
-    const std::vector< vk::PipelineShaderStageCreateInfo >& getVkShaderStages();
+  void bindDescriptorSet(const vk::CommandBuffer &command_buffer,
+                         uint32_t descriptor_set_index);
 
-    const vk::PipelineLayout getVkPipelineLayout();
+  const std::vector<vk::PipelineShaderStageCreateInfo> &getVkShaderStages();
 
-  private:
+  const vk::PipelineLayout getVkPipelineLayout();
 
-    std::vector< vk::PipelineShaderStageCreateInfo > shader_stages;
+private:
+  std::vector<vk::PipelineShaderStageCreateInfo> shader_stages;
 
-	std::vector< std::shared_ptr< ShaderModule > > shader_modules;
+  std::vector<std::shared_ptr<ShaderModule>> shader_modules;
 
-    /// All Descriptor objects used in this shader.
-    std::vector< std::vector< std::shared_ptr< Descriptor > > > descriptors;
+  /// All Descriptor objects used in this shader.
+  std::vector<std::vector<std::shared_ptr<Descriptor>>> descriptors;
 
-    vk::DescriptorPool vk_descriptor_pool;
+  vk::DescriptorPool vk_descriptor_pool;
 
-    std::vector< vk::DescriptorSetLayout > vk_descriptor_set_layouts;
+  std::vector<vk::DescriptorSetLayout> vk_descriptor_set_layouts;
 
-    std::vector< vk::DescriptorSet > vk_descriptor_sets;
+  std::vector<vk::DescriptorSet> vk_descriptor_sets;
 
-    vk::PipelineLayout vk_pipeline_layout;
+  vk::PipelineLayout vk_pipeline_layout;
+};
 
-  };
-
-}
+} // namespace VulkanEngine
 
 #endif /* SHADER_H */
