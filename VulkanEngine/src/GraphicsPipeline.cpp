@@ -73,7 +73,7 @@ void VulkanEngine::GraphicsPipeline::createGraphicsPipeline(
 
   auto multisampling_info = vk::PipelineMultisampleStateCreateInfo()
     .setSampleShadingEnable( VK_TRUE )
-    .setRasterizationSamples( vk::SampleCountFlagBits::e8 );
+    .setRasterizationSamples( vk::SampleCountFlagBits::e4 );
 
   auto colorblend_attachment_info = vk::PipelineColorBlendAttachmentState()
     .setColorWriteMask(

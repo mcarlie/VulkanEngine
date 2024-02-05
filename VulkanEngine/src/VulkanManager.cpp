@@ -1,3 +1,4 @@
+#include "vulkan/vulkan_core.h"
 #include <VulkanEngine/VulkanManager.h>
 #include <VulkanEngine/Image.h>
 
@@ -28,7 +29,7 @@ void VulkanEngine::VulkanManager::initialize( const std::shared_ptr< Window >& _
   
   window = _window;
 
-  std::vector< const char* > instance_extensions( window->getRequiredVulkanInstanceExtensions() );
+  std::vector< const char* > instance_extensions(window->getRequiredVulkanInstanceExtensions());
 
   // Use validation layers if this is a debug build
   std::vector< const char* > layers;
@@ -39,17 +40,23 @@ void VulkanEngine::VulkanManager::initialize( const std::shared_ptr< Window >& _
   instance_extensions.push_back( VK_EXT_DEBUG_REPORT_EXTENSION_NAME );
   instance_extensions.push_back( "VK_KHR_get_physical_device_properties2" );
   instance_extensions.push_back( "VK_KHR_device_group_creation" );
+  instance_extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
 #endif
+
+  instance_extensions.push_back(VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME);
+  instance_extensions.push_back(VK_KHR_EXTERNAL_FENCE_CAPABILITIES_EXTENSION_NAME);
+  instance_extensions.push_back(VK_KHR_EXTERNAL_MEMORY_CAPABILITIES_EXTENSION_NAME);
+  instance_extensions.push_back(VK_KHR_EXTERNAL_SEMAPHORE_CAPABILITIES_EXTENSION_NAME);
 
   auto app_info = vk::ApplicationInfo()
     .setPApplicationName( "VulkanEngine" )
     .setApplicationVersion( 1 )
     .setPEngineName( "No engine" )
     .setEngineVersion( 1 )
-    .setApiVersion( VK_API_VERSION_1_0 );
+    .setApiVersion( VK_API_VERSION_1_1 );
 
   auto inst_info = vk::InstanceCreateInfo()
-    .setFlags( vk::InstanceCreateFlags() )
+    .setFlags( vk::InstanceCreateFlagBits::eEnumeratePortabilityKHR )
     .setPApplicationInfo( &app_info )
     .setEnabledExtensionCount( static_cast< uint32_t >( instance_extensions.size() ) )
     .setPpEnabledExtensionNames( instance_extensions.data() )
@@ -91,8 +98,10 @@ void VulkanEngine::VulkanManager::initialize( const std::shared_ptr< Window >& _
   for( const auto& ext : physical_device_extensions ) {
     physical_device_extension_names.push_back( ext.extensionName );
   }
+
+  physical_device_extension_names.push_back(VK_EXT_SWAPCHAIN_MAINTENANCE_1_EXTENSION_NAME);
+  physical_device_extension_names.push_back(VK_EXT_BUFFER_DEVICE_ADDRESS_EXTENSION_NAME);
   
-  // These two extensions appear in the list of supported extensions with Intel drivers for some reason.
   bool found_VK_KHR_maintenance1 = false;
   bool found_VK_AMD_negative_viewport_height = false;
   for( auto it = physical_device_extension_names.begin();
@@ -162,8 +171,10 @@ void VulkanEngine::VulkanManager::initialize( const std::shared_ptr< Window >& _
   
   vk_graphics_queue = vk_device.getQueue( graphics_queue_family_index, 0 );
 
-  auto command_pool_info = vk::CommandPoolCreateInfo()
-    .setQueueFamilyIndex( graphics_queue_family_index );
+  vk::CommandPoolCreateInfo command_pool_info(
+      vk::CommandPoolCreateFlagBits::eResetCommandBuffer,
+      graphics_queue_family_index
+  );
 
   vk_command_pool = vk_device.createCommandPool( command_pool_info );
 
@@ -197,6 +208,12 @@ void VulkanEngine::VulkanManager::beginRenderPass() {
     .setFlags( vk::CommandBufferUsageFlagBits::eSimultaneousUse )
     .setPInheritanceInfo( nullptr );
 
+  auto fence_result = vk_device.waitForFences( vk_in_flight_fences[current_frame],
+    VK_TRUE, std::numeric_limits< uint32_t >::max() );
+  if( fence_result != vk::Result::eSuccess ) {
+    throw std::runtime_error( "Error waiting for fences" );
+  }
+
   vk_command_buffers[current_frame].begin( begin_info );
 
   auto render_pass_info = vk::RenderPassBeginInfo()
@@ -226,12 +243,6 @@ void VulkanEngine::VulkanManager::drawImage() {
   
   // Submit commands to the queue
   if( !vk_command_buffers.empty() ) {
-   
-    auto fence_result = vk_device.waitForFences( vk_in_flight_fences[current_frame],
-      VK_TRUE, std::numeric_limits< uint32_t >::max() );
-    if( fence_result != vk::Result::eSuccess ) {
-      throw std::runtime_error( "Error waiting for fences" );
-    }
 
     uint32_t image_index;
     while( true ) {

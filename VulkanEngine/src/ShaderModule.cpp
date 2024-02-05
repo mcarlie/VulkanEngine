@@ -2,8 +2,8 @@
 #include <VulkanEngine/VulkanManager.h>
 
 #include <glslang/Public/ShaderLang.h>
-#include <SPIRV/GlslangToSpv.h>
-#include <StandAlone/ResourceLimits.cpp>
+#include <glslang/Public/ResourceLimits.h>
+#include <glslang/SPIRV/GlslangToSpv.h>
 
 #include <fstream>
 #include <iostream>
@@ -55,7 +55,7 @@ const vk::ShaderModule& VulkanEngine::ShaderModule::getVkShaderModule() {
 void VulkanEngine::ShaderModule::readSource( std::filesystem::path file_path, std::vector< uint32_t >& bytecode ) {
   
   // Already compiled just read data
-  if( file_path.extension() == "spv" ) {
+  if( file_path.extension() == ".spv" ) {
     
     std::ifstream file( file_path, std::ios::ate | std::ios::binary );
     if( !file.is_open() ) {
@@ -148,17 +148,17 @@ void VulkanEngine::ShaderModule::glslToSPIRV(
   glslang::EshTargetClientVersion client_version = glslang::EShTargetVulkan_1_0; // TODO
   glslang::EShTargetLanguageVersion language_version = glslang::EShTargetSpv_1_0;
   
-  tshader.setEnvInput( glslang::EShSourceGlsl, shader_type, glslang::EShClientVulkan, 100 ); // TODO 100 means vulkan 1.0
+  tshader.setEnvInput(glslang::EShSourceGlsl, shader_type, glslang::EShClientVulkan, 450); // TODO 100 means vulkan 1.0
   tshader.setEnvClient(glslang::EShClientVulkan, client_version);
   tshader.setEnvTarget(glslang::EShTargetSpv, language_version);
   
-  TBuiltInResource resources = glslang::DefaultTBuiltInResource;
+  const TBuiltInResource* resources = GetDefaultResources();
   EShMessages messages = static_cast< EShMessages >( EShMsgSpvRules | EShMsgVulkanRules );
   glslang::TShader::ForbidIncluder includer; /// TODO google has an includer in the source for glslang. Use that? Write own?
   
   std::string preprocessed_glsl;
   /// TODO 100 is default glsl version
-  if( !tshader.preprocess( &resources, 100, ENoProfile, false, false, messages, &preprocessed_glsl, includer ) ) {
+  if( !tshader.preprocess(resources, 450, ENoProfile, false, false, messages, &preprocessed_glsl, includer ) ) {
     std::cout << "Preprocessing failed for shader " + name << std::endl;
     std::cout << tshader.getInfoLog() << std::endl;
     std::cout << tshader.getInfoDebugLog() << std::endl;
@@ -168,7 +168,7 @@ void VulkanEngine::ShaderModule::glslToSPIRV(
   tshader.setStrings( &preprocessed_glsl_c_str, 1 );
   
   /// TODO 100 is default glsl version
-  if( !tshader.parse( &resources, 100, false, messages ) ) {
+  if( !tshader.parse( resources, 450, false, messages ) ) {
     std::cout << "Parsing failed for shader " + name << std::endl;
     std::cout << tshader.getInfoLog() << std::endl;
     std::cout << tshader.getInfoDebugLog() << std::endl;

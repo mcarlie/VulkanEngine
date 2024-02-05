@@ -26,13 +26,16 @@ void VulkanEngine::SingleUsageCommandBuffer::endSingleUsageCommandBuffer() {
 
   single_use_command_buffer.end();
 
+  vk::FenceCreateInfo fenceInfo;
+  vk::Fence fence = VulkanManager::getInstance()->getVkDevice().createFence(fenceInfo);
+
   auto submit_info = vk::SubmitInfo()
     .setCommandBufferCount( 1 )
     .setPCommandBuffers( &single_use_command_buffer );
 
-  VulkanManager::getInstance()->getVkGraphicsQueue().submit( submit_info, nullptr );
-  VulkanManager::getInstance()->getVkGraphicsQueue().waitIdle(); // TODO
-
+  VulkanManager::getInstance()->getVkGraphicsQueue().submit( submit_info, fence );
+  VulkanManager::getInstance()->getVkDevice().waitForFences(fence, VK_TRUE, std::numeric_limits<uint64_t>::max());
+  VulkanManager::getInstance()->getVkDevice().destroyFence(fence);
   VulkanManager::getInstance()->getVkDevice().freeCommandBuffers( VulkanManager::getInstance()->getVkCommandPool(), single_use_command_buffer );
 
 }

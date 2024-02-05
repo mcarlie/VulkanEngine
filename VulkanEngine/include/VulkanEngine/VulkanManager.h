@@ -130,10 +130,10 @@ namespace VulkanEngine {
     std::vector< vk::Framebuffer > vk_swapchain_framebuffers;
 
     using DepthStencilImageAttachment 
-      = Image< vk::Format::eD24UnormS8Uint, vk::ImageType::e2D, vk::ImageTiling::eOptimal, vk::SampleCountFlagBits::e8 >;
+      = Image< vk::Format::eD32SfloatS8Uint, vk::ImageType::e2D, vk::ImageTiling::eOptimal, vk::SampleCountFlagBits::e4 >;
 
     using ColorAttachment
-      = Image< vk::Format::eB8G8R8A8Unorm, vk::ImageType::e2D, vk::ImageTiling::eOptimal, vk::SampleCountFlagBits::e8 >;
+      = Image< vk::Format::eB8G8R8A8Unorm, vk::ImageType::e2D, vk::ImageTiling::eOptimal, vk::SampleCountFlagBits::e4 >;
 
     std::shared_ptr< DepthStencilImageAttachment > depth_stencil_attachment;
     std::shared_ptr< ColorAttachment > color_attachment;

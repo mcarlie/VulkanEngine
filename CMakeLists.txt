@@ -61,7 +61,7 @@ endif()
 
 add_subdirectory(${LIBS_DIR}/glslang)
 include_directories(${LIBS_DIR}/glslang)
-target_link_libraries(VulkanEngine glslang SPIRV )
+target_link_libraries(VulkanEngine glslang glslang-default-resource-limits SPIRV )
 
 # Makes VK_ICD_FILENAMES env variable settable by user and add to Xcode scheme
 if(SUPPORT_XCODE_SCHEME_ENVIRONMENT_PROPERTY)
@@ -98,7 +98,7 @@ target_link_libraries(VulkanEngine glfw)
 # Add header only libraries
 include_directories("${LIBS_DIR}/eigen-3.3.5")
 include_directories("${LIBS_DIR}/tinyobjloader-1.0.6")
-include_directories("${LIBS_DIR}/VulkanMemoryAllocator/src")
+include_directories("${LIBS_DIR}/VulkanMemoryAllocator/include")
 include_directories("${LIBS_DIR}/stb")
 
 # Add examples
