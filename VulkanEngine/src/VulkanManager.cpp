@@ -195,7 +195,6 @@ void VulkanEngine::VulkanManager::initialize( const std::shared_ptr< Window >& _
 
 void VulkanEngine::VulkanManager::beginRenderPass() {
  
-  /// TODO command buffer shouldn't be ended here
   const std::array< float, 4 > clear_color_array = { 0.0f, 0.0f, 0.0f, 1.0f };
   auto clear_color = vk::ClearValue()
     .setColor( vk::ClearColorValue( clear_color_array ) );
@@ -229,7 +228,6 @@ void VulkanEngine::VulkanManager::beginRenderPass() {
 
 void VulkanEngine::VulkanManager::endRenderPass() {
  
-  /// TODO command buffer shouldn't be ended here
   vk_command_buffers[current_frame].endRenderPass();
   vk_command_buffers[current_frame].end();
   
@@ -288,7 +286,7 @@ void VulkanEngine::VulkanManager::drawImage() {
       .setPWaitSemaphores( wait_semaphores )
       .setPWaitDstStageMask( wait_stages )
       .setCommandBufferCount( 1 )
-      .setPCommandBuffers( &vk_command_buffers[image_index] )
+      .setPCommandBuffers( &vk_command_buffers[current_frame] )
       .setSignalSemaphoreCount( signal_semaphores_count )
       .setPSignalSemaphores( signal_semaphores );
 

@@ -203,7 +203,7 @@ void VulkanEngine::OBJMesh::update( SceneState& scene_state ) {
     mesh->bindVertexBuffers( current_command_buffer );
     mesh->bindIndexBuffer( current_command_buffer );
     if( shader.get() ) {
-      shader->bindDescriptorSet( current_command_buffer, static_cast< uint32_t >( 0 ) ); /// TODO 0 was i for each frame in flight
+      shader->bindDescriptorSet( current_command_buffer, static_cast< uint32_t >( vulkan_manager->getCurrentFrame() ) ); /// TODO 0 was i for each frame in flight
     }
 
     mesh->draw( current_command_buffer );
@@ -238,7 +238,7 @@ void VulkanEngine::OBJMesh::loadOBJ( const char* obj_path, const char* mtl_path 
 
   }
 
-  mvp_buffers.resize( 3 ); /// TODO should be dependent on number of frames in flight
+  mvp_buffers.resize( VulkanManager::getInstance()->getFramesInFlight() ); /// TODO should be dependent on number of frames in flight
   for( auto& ub : mvp_buffers ) {
 	  ub.reset( new VulkanEngine::UniformBuffer< MvpUbo >( 0 ) );
   }
@@ -302,7 +302,7 @@ void VulkanEngine::OBJMesh::loadOBJ( const char* obj_path, const char* mtl_path 
   }
 
   std::vector< std::vector< std::shared_ptr< Descriptor > > > descriptors;
-  for( size_t i = 0; i < 3; ++i ) { /// TODO should be dependent on number of frames in flight
+  for( size_t i = 0; i < VulkanManager::getInstance()->getFramesInFlight(); ++i ) {
     std::vector< std::shared_ptr< Descriptor > > frame_descriptors;
     for( const auto& t : textures ) {
       frame_descriptors.push_back( t.second );

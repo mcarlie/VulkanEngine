@@ -230,8 +230,6 @@ void VulkanEngine::Image< format, image_type, tiling, sample_count_flags >::crea
 
   VmaAllocationCreateInfo allocate_info = {};
   allocate_info.usage = vma_usage;
-
-  
   
   VkImage c_image_handle;
   auto allocation_result = vmaCreateImage( 

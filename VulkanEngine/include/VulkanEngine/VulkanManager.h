@@ -82,6 +82,14 @@ namespace VulkanEngine {
     
     const vk::RenderPass& getVkRenderPass();
 
+    const size_t getCurrentFrame() const {
+      return current_frame;
+    }
+
+    const size_t getFramesInFlight() const {
+      return frames_in_flight;
+    }
+
   private:
 
     void createSwapchain();

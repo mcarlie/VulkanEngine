@@ -56,12 +56,12 @@ int main( int argc, char** argv ) {
   
   scene_children.push_back( { camera_container } );
   
-  // if( option_result["obj"].count() ) {
-    std::string obj_path = "/Users/michael.carlie/Dev/vk/teapot.obj"; //option_result["obj"].as< std::string >();
+  if( option_result["obj"].count() ) {
+    std::string obj_path = option_result["obj"].as< std::string >();
     std::string mtl_path;
-    // if( option_result["mtl"].count() ) {
-    //   mtl_path = option_result["mtl"].as< std::string >();
-    // }
+    if( option_result["mtl"].count() ) {
+      mtl_path = option_result["mtl"].as< std::string >();
+    }
     
     std::shared_ptr< VulkanEngine::OBJMesh > obj_mesh(
       new VulkanEngine::OBJMesh(
@@ -72,9 +72,9 @@ int main( int argc, char** argv ) {
     obj_mesh->setTranform( transform.matrix() );
     
     scene_children.push_back( obj_mesh );
-  // } else {
-  //   std::cout << "Warning: No OBJ file specified. Running empty scene." << std::endl;
-  // }
+  } else {
+    std::cout << "Warning: No OBJ file specified. Running empty scene." << std::endl;
+  }
 
   scene->addChildren( scene_children );
 
