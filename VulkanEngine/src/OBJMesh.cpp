@@ -300,11 +300,9 @@ void VulkanEngine::OBJMesh::loadOBJ(const char *obj_path,
   // Create a shader if one isn't provided
   if (!shader.get()) {
     std::shared_ptr<ShaderModule> vertex_shader(
-        new ShaderModule("/Users/michael.carlie/Dev/vk/shaders/vert.spv", true,
-                         vk::ShaderStageFlagBits::eVertex));
-    std::shared_ptr<ShaderModule> fragment_shader(
-        new ShaderModule("/Users/michael.carlie/Dev/vk/shaders/frag.spv", true,
-                         vk::ShaderStageFlagBits::eFragment));
+        new ShaderModule(getVertexShaderString(!textures.empty()), false, vk::ShaderStageFlagBits::eVertex));
+    std::shared_ptr< ShaderModule > fragment_shader(
+      new ShaderModule(getFragmentShaderString(!textures.empty()), false, vk::ShaderStageFlagBits::eFragment));
     shader.reset(new Shader({fragment_shader, vertex_shader}));
   }
 
@@ -345,11 +343,11 @@ VulkanEngine::OBJMesh::getVertexShaderString(bool has_tex_coords) {
 
                 << "layout(location = 0) in vec3 inPosition;" << std::endl;
 
-  // if (has_tex_coords) {
-  //   return_string
-  //   << "layout(location = 2) in vec2 inTexcoords;" << std::endl
-  //   << "layout(location = 2) out vec2 outTexcoords;" << std::endl;
-  // }
+  if (has_tex_coords) {
+    return_string
+    << "layout(location = 2) in vec2 inTexcoords;" << std::endl
+    << "layout(location = 2) out vec2 outTexcoords;" << std::endl;
+  }
 
   return_string
       << "out gl_PerVertex {" << std::endl
@@ -357,10 +355,12 @@ VulkanEngine::OBJMesh::getVertexShaderString(bool has_tex_coords) {
       << "};" << std::endl
 
       << "void main() {" << std::endl
-      << "  gl_Position = vec4(inPosition.x, inPosition.y, inPosition.z, 1.0);"
-      << std::endl
-      // << "  outTexcoords = inTexcoords;" << std::endl
-      << "}" << std::endl;
+      << "  gl_Position = ubo.proj * ubo.view * ubo.model * vec4(inPosition, 1.0);"
+      << std::endl;
+      if (has_tex_coords) {
+        return_string << "  outTexcoords = inTexcoords;" << std::endl;
+      }
+      return_string << "}" << std::endl;
 
   return return_string.str();
 }
@@ -373,26 +373,26 @@ VulkanEngine::OBJMesh::getFragmentShaderString(bool has_tex_coords) {
                 << "#extension GL_ARB_separate_shader_objects : enable"
                 << std::endl;
 
-  // if (has_tex_coords) {
-  //   return_string
-  //   << "layout(location = 2) in vec2 inTexcoords;" << std::endl;
-  // }
+  if (has_tex_coords) {
+    return_string
+    << "layout(location = 2) in vec2 inTexcoords;" << std::endl;
+  }
 
   return_string << "layout(location = 0) out vec4 outColor;" << std::endl;
 
   // TODO should be if there is a texture
-  // if (has_tex_coords) {
-  //   return_string
-  //   << "layout(binding = 1) uniform sampler2D texSampler;" << std::endl;
-  // }
+  if (has_tex_coords) {
+    return_string
+    << "layout(binding = 1) uniform sampler2D texSampler;" << std::endl;
+  }
 
   return_string << "void main() {" << std::endl;
-  // if (has_tex_coords) {
-  //   return_string
-  //   << "  outColor = texture( texSampler, inTexcoords );" << std::endl;
-  // } else {
-  return_string << "  outColor = vec4(1.0, 1.0, 1.0, 1.0);" << std::endl;
-  // }
+  if (has_tex_coords) {
+    return_string
+    << "  outColor = texture( texSampler, inTexcoords );" << std::endl;
+  } else {
+    return_string << "  outColor = vec4(1.0);" << std::endl;
+  }
   return_string << "}" << std::endl;
 
   return return_string.str();
