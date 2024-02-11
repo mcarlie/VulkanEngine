@@ -2,6 +2,7 @@
 #include <VulkanEngine/MeshBase.h>
 #include <VulkanEngine/Shader.h>
 #include <VulkanEngine/VulkanManager.h>
+#include <VulkanEngine/RenderPass.h>
 
 VulkanEngine::GraphicsPipeline::GraphicsPipeline() {}
 
@@ -114,7 +115,7 @@ void VulkanEngine::GraphicsPipeline::createGraphicsPipeline(
           .setPColorBlendState(&colorblend_info)
           .setPDynamicState(nullptr)
           .setLayout(shader->getVkPipelineLayout())
-          .setRenderPass(VulkanManager::getInstance()->getVkRenderPass())
+          .setRenderPass(VulkanManager::getInstance()->getDefaultRenderPass()->getVkRenderPass())
           .setSubpass(0);
 
   vk_graphics_pipeline =

@@ -1,17 +1,13 @@
+#include "VulkanEngine/VulkanManager.h"
 #include <VulkanEngine/RenderPass.h>
+#include <VulkanEngine/Image.h>
 
-VulkanEngine::RenderPass::RenderPass() {}
-
-VulkanEngine::RenderPass::~RenderPass() {}
-
-void VulkanEngine::RenderPass::createRenderPass(
-    const std::shared_ptr<Window> &window) {
-
+VulkanEngine::RenderPass::RenderPass(uint32_t width, uint32_t height) {
   depth_stencil_attachment.reset(new DepthStencilImageAttachment(
       vk::ImageLayout::eUndefined,
       vk::ImageUsageFlagBits::eDepthStencilAttachment,
-      VmaMemoryUsage::VMA_MEMORY_USAGE_GPU_ONLY, window->getFramebufferWidth(),
-      window->getFramebufferHeight(), 1, 4, false));
+      VmaMemoryUsage::VMA_MEMORY_USAGE_GPU_ONLY, width,
+      height, 1, 4, false));
 
   depth_stencil_attachment->createImageView(vk::ImageViewType::e2D,
                                             vk::ImageAspectFlagBits::eDepth);
@@ -35,8 +31,8 @@ void VulkanEngine::RenderPass::createRenderPass(
 
   color_attachment.reset(new ColorAttachment(
       vk::ImageLayout::eUndefined, vk::ImageUsageFlagBits::eColorAttachment,
-      VmaMemoryUsage::VMA_MEMORY_USAGE_GPU_ONLY, window->getFramebufferWidth(),
-      window->getFramebufferHeight(), 1, 4, false));
+      VmaMemoryUsage::VMA_MEMORY_USAGE_GPU_ONLY, width,
+      height, 1, 4, false));
 
   color_attachment->createImageView(vk::ImageViewType::e2D,
                                     vk::ImageAspectFlagBits::eColor);
@@ -104,8 +100,13 @@ void VulkanEngine::RenderPass::createRenderPass(
                               .setDependencyCount(1)
                               .setPDependencies(&dependency);
 
-  vk_render_pass = VulkanManager::getInstance()->getVkDevice().createRenderPass(
-      render_pass_info);
+  vk_render_pass = VulkanManager::getInstance()->getVkDevice().createRenderPass(render_pass_info);
+}
+
+VulkanEngine::RenderPass::~RenderPass() {
+
+  VulkanManager::getInstance()->getVkDevice().destroyRenderPass(vk_render_pass);
+  vk_render_pass = nullptr;
 }
 
 const vk::RenderPass &VulkanEngine::RenderPass::getVkRenderPass() {

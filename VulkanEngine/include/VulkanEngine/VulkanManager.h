@@ -22,6 +22,7 @@ namespace VulkanEngine {
 template <vk::Format format, vk::ImageType image_type, vk::ImageTiling tiling,
           vk::SampleCountFlagBits sample_count_flags>
 class Image;
+class RenderPass;
 
 class VulkanManager {
 
@@ -82,7 +83,9 @@ public:
   /// memory allocator.
   const VmaAllocator &getVmaAllocator();
 
-  const vk::RenderPass &getVkRenderPass();
+  const std::shared_ptr<RenderPass> &getDefaultRenderPass() {
+    return default_render_pass;
+  }
 
   const size_t getCurrentFrame() const { return current_frame; }
 
@@ -94,7 +97,6 @@ private:
   void createSwapchain();
   void createImageViews();
 
-  void createRenderPass();
   void createSwapchainFramebuffers();
   void createSyncObjects();
 
@@ -109,8 +111,6 @@ private:
 
   /// The Vulkan surface object used with the windowing system.
   vk::SurfaceKHR vk_surface;
-
-  vk::RenderPass vk_render_pass;
 
   vk::SwapchainKHR vk_swapchain;
 
@@ -136,17 +136,6 @@ private:
 
   std::vector<vk::Framebuffer> vk_swapchain_framebuffers;
 
-  using DepthStencilImageAttachment =
-      Image<vk::Format::eD32SfloatS8Uint, vk::ImageType::e2D,
-            vk::ImageTiling::eOptimal, vk::SampleCountFlagBits::e4>;
-
-  using ColorAttachment =
-      Image<vk::Format::eB8G8R8A8Unorm, vk::ImageType::e2D,
-            vk::ImageTiling::eOptimal, vk::SampleCountFlagBits::e4>;
-
-  std::shared_ptr<DepthStencilImageAttachment> depth_stencil_attachment;
-  std::shared_ptr<ColorAttachment> color_attachment;
-
   size_t frames_in_flight;
   size_t current_frame;
 
@@ -157,6 +146,9 @@ private:
   /// Class which allows for dynamic loading of certain functions within Vulkan
   /// classes.
   vk::DispatchLoaderDynamic vk_dispatch_loader_dynamic;
+
+  /// TODO make part of the scene.
+  std::shared_ptr<RenderPass> default_render_pass;
 
 #ifdef ENABLE_VULKAN_VALIDATION
   vk::DebugUtilsMessengerEXT vk_debug_utils_messenger;
