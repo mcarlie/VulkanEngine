@@ -16,7 +16,7 @@
 
 int main(int argc, char **argv) {
 
-  cxxopts::Options options("SimpleTest",
+  cxxopts::Options options("SimpleScene",
                            "Load an OBJ file and render using VulkanEngine");
   options.add_options()("o,obj", "Path to OBJ file",
                         cxxopts::value<std::string>())(

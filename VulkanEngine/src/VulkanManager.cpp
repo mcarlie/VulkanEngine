@@ -563,14 +563,16 @@ void VulkanEngine::VulkanManager::createSyncObjects() {
 
 void VulkanEngine::VulkanManager::cleanup() {
 
-  cleanupSwapchain();
-
   for (size_t i = 0; i < frames_in_flight; ++i) {
     vk_device.destroySemaphore(vk_image_available_semaphores[i]);
     vk_device.destroySemaphore(vk_rendering_finished_semaphores[i]);
     vk_device.destroyFence(vk_in_flight_fences[i]);
   }
-  vk_device.destroyCommandPool(vk_command_pool);
+
+  depth_stencil_attachment.reset();
+  color_attachment.reset();
+
+  cleanupSwapchain();
 
   vmaDestroyAllocator(vma_allocator);
 
@@ -585,13 +587,14 @@ void VulkanEngine::VulkanManager::cleanup() {
 
 void VulkanEngine::VulkanManager::cleanupSwapchain() {
 
+  vk_device.freeCommandBuffers(vk_command_pool, vk_command_buffers);
+  vk_device.destroyCommandPool(vk_command_pool);
+  vk_command_buffers.clear();
+
   for (size_t i = 0; i < vk_swapchain_framebuffers.size(); ++i) {
     vk_device.destroyFramebuffer(vk_swapchain_framebuffers[i]);
   }
   vk_swapchain_framebuffers.clear();
-
-  vk_device.freeCommandBuffers(vk_command_pool, vk_command_buffers);
-  vk_command_buffers.clear();
 
   vk_device.destroyRenderPass(vk_render_pass);
   vk_render_pass = nullptr;
