@@ -89,6 +89,8 @@ public:
   const size_t getFramesInFlight() const { return frames_in_flight; }
 
 private:
+  void createCommandPool();
+
   void createSwapchain();
   void createImageViews();
 

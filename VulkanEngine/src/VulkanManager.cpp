@@ -189,18 +189,13 @@ void VulkanEngine::VulkanManager::initialize(
 
   vk_graphics_queue = vk_device.getQueue(graphics_queue_family_index, 0);
 
-  vk::CommandPoolCreateInfo command_pool_info(
-      vk::CommandPoolCreateFlagBits::eResetCommandBuffer,
-      graphics_queue_family_index);
-
-  vk_command_pool = vk_device.createCommandPool(command_pool_info);
-
   // TODO Use these
   auto surface_formats = vk_physical_device.getSurfaceFormatsKHR(vk_surface);
   auto present_modes = vk_physical_device.getSurfacePresentModesKHR(vk_surface);
   auto surface_support = vk_physical_device.getSurfaceSupportKHR(
       graphics_queue_family_index, vk_surface);
 
+  createCommandPool();
   createSwapchain();
   createImageViews();
   createRenderPass();
@@ -272,10 +267,11 @@ void VulkanEngine::VulkanManager::drawImage() {
 
       // If the window size has changed or the image view is out of date
       // according to Vulkan then recreate the pipeline from the swapchain stage
-      // TODO These errors are generated when submitting the graphics queue
-      if (result == vk::Result::eErrorOutOfDateKHR) {
+
+      if (result == vk::Result::eErrorOutOfDateKHR || window->sizeHasChanged()) {
         vk_device.waitIdle();
         cleanupSwapchain();
+        createCommandPool();
         createSwapchain();
         createImageViews();
         createRenderPass();
@@ -353,6 +349,14 @@ const VmaAllocator &VulkanEngine::VulkanManager::getVmaAllocator() {
 
 const vk::RenderPass &VulkanEngine::VulkanManager::getVkRenderPass() {
   return vk_render_pass;
+}
+
+void VulkanEngine::VulkanManager::createCommandPool() {
+  vk::CommandPoolCreateInfo command_pool_info(
+      vk::CommandPoolCreateFlagBits::eResetCommandBuffer,
+      graphics_queue_family_index);
+
+  vk_command_pool = vk_device.createCommandPool(command_pool_info);
 }
 
 void VulkanEngine::VulkanManager::createSwapchain() {
