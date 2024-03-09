@@ -25,10 +25,6 @@ target_link_libraries(VulkanEngine ${Vulkan_LIBRARIES})
 
 target_link_libraries(VulkanEngine glslang glslang-default-resource-limits SPIRV)
 
-if( WIN32 )
-  add_definitions(-DVK_USE_PLATFORM_WIN32_KHR -DNOMINMAX)
-endif()
-
 set(ENABLE_VULKAN_VALIDATION OFF CACHE BOOL "Enable Vulkan validation layers")
 if(ENABLE_VULKAN_VALIDATION)
   add_definitions(-DENABLE_VULKAN_VALIDATION)
@@ -50,4 +46,8 @@ target_link_libraries(SimpleScene VulkanEngine)
 include_directories("${LIBS_DIR}/cxxopts-2.2.0/include")
 if(SUPPORT_XCODE_SCHEME_ENVIRONMENT_PROPERTY)
   set_property(TARGET SimpleScene APPEND PROPERTY XCODE_SCHEME_ENVIRONMENT ${XCODE_SCHEME_ENVIRONMENT_VARIABLES})
+endif()
+
+if( WIN32 )
+  add_definitions(-DVK_USE_PLATFORM_WIN32_KHR -DNOMINMAX)
 endif()
