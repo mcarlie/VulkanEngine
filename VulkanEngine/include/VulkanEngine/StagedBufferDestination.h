@@ -22,7 +22,7 @@ class StagedBufferDestination : public BufferBase,
   /// Override to return the required data size of the staging buffer in order
   /// to transfer all data to this buffer. \return The data size for the staging
   /// buffer.
-  virtual size_t getStagingBufferSize() = 0;
+  virtual size_t getStagingBufferSize() const = 0;
 };
 
 } // namespace VulkanEngine

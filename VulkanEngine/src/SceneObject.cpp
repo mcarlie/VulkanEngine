@@ -35,7 +35,7 @@ void VulkanEngine::SceneObject::addChildren(
   children.insert(children.end(), _children.cbegin(), _children.cend());
 }
 
-const Eigen::Matrix4f VulkanEngine::SceneObject::getTransform() {
+const Eigen::Matrix4f VulkanEngine::SceneObject::getTransform() const {
   return transform;
 }
 

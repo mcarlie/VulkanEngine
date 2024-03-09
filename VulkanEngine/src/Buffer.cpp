@@ -58,4 +58,4 @@ void VulkanEngine::Buffer::insertTransferCommand(
   command_buffer.copyBuffer(source_buffer, vk_buffer, buffer_copy);
 }
 
-size_t VulkanEngine::Buffer::getStagingBufferSize() { return data_size; }
+size_t VulkanEngine::Buffer::getStagingBufferSize() const { return data_size; }

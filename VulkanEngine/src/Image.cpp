@@ -218,7 +218,7 @@ void VulkanEngine::Image<format, image_type, tiling, sample_count_flags>::
 template <vk::Format format, vk::ImageType image_type, vk::ImageTiling tiling,
           vk::SampleCountFlagBits sample_count_flags>
 size_t VulkanEngine::Image<format, image_type, tiling,
-                           sample_count_flags>::getStagingBufferSize() {
+                           sample_count_flags>::getStagingBufferSize() const {
   return data_size;
 }
 

@@ -19,11 +19,11 @@ public:
   ~Descriptor();
 
   /// \return The vk::DescriptorSetLayoutBinding for this UniformBuffer.
-  const vk::DescriptorSetLayoutBinding getVkDescriptorSetLayoutBinding();
+  const vk::DescriptorSetLayoutBinding getVkDescriptorSetLayoutBinding() const;
 
   /// \return A vk::DescriptorPoolSize describing this descriptor for creating a
   /// descriptor pool.
-  const vk::DescriptorPoolSize getVkDescriptorPoolSize();
+  const vk::DescriptorPoolSize getVkDescriptorPoolSize() const;
 
   /// Appends any write descriptor sets or copy descriptor sets which belong
   /// to this Descriptor to the given vectors.

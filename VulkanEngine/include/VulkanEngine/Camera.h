@@ -34,17 +34,17 @@ public:
   void setLookAt(const Eigen::Vector3f &_look_at);
 
   /// \return The current look at vector
-  const Eigen::Vector3f &getLookAt();
+  const Eigen::Vector3f getLookAt() const;
 
   /// \return The current up vector.
-  const Eigen::Vector3f &getUpVector();
+  const Eigen::Vector3f getUpVector() const;
 
   /// \return The projection matrix of the Camera.
-  const Eigen::Matrix4f getPerspectiveProjectionMatrix();
+  const Eigen::Matrix4f getPerspectiveProjectionMatrix() const;
 
   /// \param _transform The transformation matrix to use when calculating the
   /// view matrix \return The view matrix of the Camera.
-  const Eigen::Matrix4f getViewMatrix();
+  const Eigen::Matrix4f getViewMatrix() const;
 
   void setWidth(uint32_t _width);
 

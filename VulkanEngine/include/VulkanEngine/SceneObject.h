@@ -22,7 +22,7 @@ public:
 
   /// Get the current local transformation matrix.
   /// \return The current local transformation matrix
-  const Eigen::Matrix4f getTransform();
+  const Eigen::Matrix4f getTransform() const;
 
   /// Set the current local transformation matrix.
   /// \param _transform The desired local transformation matrix.

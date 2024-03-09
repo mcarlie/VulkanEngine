@@ -10,4 +10,4 @@ VulkanEngine::Attribute::Attribute(size_t _num_elements, size_t _element_size,
 
 VulkanEngine::Attribute::~Attribute() {}
 
-size_t VulkanEngine::Attribute::getNumElements() { return num_elements; }
+size_t VulkanEngine::Attribute::getNumElements() const { return num_elements; }

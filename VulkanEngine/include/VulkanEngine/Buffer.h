@@ -38,7 +38,7 @@ public:
   /// Override to return the required data size of the staging buffer in order
   /// to transfer all data to this buffer. \return The data size for the staging
   /// buffer.
-  virtual size_t getStagingBufferSize();
+  virtual size_t getStagingBufferSize() const;
 
 private:
   /// Creates the buffer given the parameters.

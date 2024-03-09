@@ -22,7 +22,7 @@ public:
   ~Attribute();
 
   /// \return The number of elements in this Attribute.
-  size_t getNumElements();
+  size_t getNumElements() const;
 
 protected:
   /// The number of elements in this attribute.

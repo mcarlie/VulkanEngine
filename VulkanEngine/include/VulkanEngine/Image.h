@@ -63,7 +63,7 @@ protected:
                                      const vk::Buffer &source_buffer);
 
   /// \return The data size for the staging buffer.
-  virtual size_t getStagingBufferSize();
+  virtual size_t getStagingBufferSize() const;
 
 private:
   /// Creates the Image and allocates memory.
