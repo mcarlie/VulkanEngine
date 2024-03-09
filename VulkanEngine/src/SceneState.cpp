@@ -11,7 +11,7 @@ const VulkanEngine::Scene &VulkanEngine::SceneState::getScene() {
   return scene;
 }
 
-const Eigen::Matrix4f &VulkanEngine::SceneState::getTransform() {
+const Eigen::Matrix4f VulkanEngine::SceneState::getTransform() {
   return total_transform;
 }
 

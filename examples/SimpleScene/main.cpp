@@ -57,6 +57,8 @@ int main(int argc, char **argv) {
 
   scene_children.push_back({camera_container});
 
+  std::shared_ptr<VulkanEngine::OBJMesh> obj_mesh;
+
   if (option_result["obj"].count()) {
     std::string obj_path = option_result["obj"].as<std::string>();
     std::string mtl_path;
@@ -64,11 +66,11 @@ int main(int argc, char **argv) {
       mtl_path = option_result["mtl"].as<std::string>();
     }
 
-    std::shared_ptr<VulkanEngine::OBJMesh> obj_mesh(new VulkanEngine::OBJMesh(
+    obj_mesh.reset(new VulkanEngine::OBJMesh(
         std::filesystem::path(obj_path), std::filesystem::path(mtl_path)));
 
     Eigen::Affine3f transform(Eigen::Translation3f(0.0f, 0.0f, 0.0f));
-    transform *= Eigen::Scaling(1.0f);
+    transform *= Eigen::Scaling(0.5f);
     obj_mesh->setTranform(transform.matrix());
 
     scene_children.push_back(obj_mesh);
@@ -82,6 +84,8 @@ int main(int argc, char **argv) {
   const auto &keyboard_input = window->getKeyboardInput();
 
   const float camera_move_speed = 0.03;
+
+  auto start_time = std::chrono::steady_clock::now();
 
   while (!window->shouldClose()) {
 
@@ -181,6 +185,21 @@ int main(int argc, char **argv) {
           key_s == VulkanEngine::KeyboardInput::REPEAT) {
         camera_movement(2) -= camera_move_speed;
       }
+
+      auto current_time = std::chrono::steady_clock::now();
+      std::chrono::duration<double> elapsed_seconds = current_time - start_time;
+
+      start_time = std::chrono::steady_clock::now();
+
+      auto matrix = obj_mesh->getTransform();
+      Eigen::Transform<float, 3, Eigen::Affine> transform(matrix);
+
+      Eigen::AngleAxis<float> rotation((M_PI / 4) * elapsed_seconds.count(), Eigen::Vector3f::UnitY());
+
+      // Apply the rotation to the transform
+      transform.rotate(rotation);
+
+      obj_mesh->setTranform(transform.matrix());
 
       camera->setLookAt(camera->getLookAt() + camera_movement);
       camera->setTranform(

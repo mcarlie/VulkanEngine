@@ -19,7 +19,7 @@ public:
   const Scene &getScene();
 
   /// \return The current total transformation matrix.
-  const Eigen::Matrix4f &getTransform();
+  const Eigen::Matrix4f getTransform();
 
   /// Set the current total transformation matrix.
   /// \param transform The transform to set
