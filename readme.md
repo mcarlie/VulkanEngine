@@ -2,7 +2,7 @@
 
 This is a basic graphics engine using Vulkan API.
 
-The project was started while I was working on refactoring an engine at a previous job and I wanted to know how modern graphics APIs work.
+The project was started while I was working on refactoring an engine at a previous job and I wanted to get some insight into how modern graphics APIs work.
 
 ## Build
 On Windows make sure you have Vulkan SDK installed.
