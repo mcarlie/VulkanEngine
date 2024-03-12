@@ -33,8 +33,10 @@ endif()
 find_package(glfw3 REQUIRED)
 target_link_libraries(VulkanEngine glfw)
 
+find_package (Eigen3 3.4 REQUIRED NO_MODULE)
+target_link_libraries (VulkanEngine Eigen3::Eigen)
+
 # Add header only libraries
-include_directories("${LIBS_DIR}/eigen-3.3.5")
 include_directories("${LIBS_DIR}/tinyobjloader-1.0.6")
 include_directories("${LIBS_DIR}/VulkanMemoryAllocator/include")
 include_directories("${LIBS_DIR}/stb")
