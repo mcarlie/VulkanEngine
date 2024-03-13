@@ -4,7 +4,10 @@
 #include <VulkanEngine/ImageBase.h>
 #include <VulkanEngine/StagedBufferDestination.h>
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wnullability-completeness"
 #include <vk_mem_alloc.h>
+#pragma clang diagnostic pop
 
 namespace VulkanEngine {
 

@@ -95,7 +95,7 @@ bool VulkanEngine::GLFWWindow::shouldClose() {
 void VulkanEngine::GLFWWindow::setWidth(uint32_t _width) {
 
   if (glfw_window) {
-    glfwSetWindowSize(glfw_window, static_cast<int>(_width), NULL);
+    glfwSetWindowSize(glfw_window, static_cast<int>(_width), 0);
   } else {
     Window::setWidth(_width);
   }
@@ -104,7 +104,7 @@ void VulkanEngine::GLFWWindow::setWidth(uint32_t _width) {
 void VulkanEngine::GLFWWindow::setHeight(uint32_t _height) {
 
   if (glfw_window) {
-    glfwSetWindowSize(glfw_window, NULL, static_cast<int>(_height));
+    glfwSetWindowSize(glfw_window, 0, static_cast<int>(_height));
   } else {
     Window::setHeight(_height);
   }

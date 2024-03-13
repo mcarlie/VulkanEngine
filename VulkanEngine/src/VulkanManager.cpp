@@ -5,7 +5,10 @@
 #include "vulkan/vulkan_core.h"
 
 #define VMA_IMPLEMENTATION
-#include "vk_mem_alloc.h"
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wnullability-completeness"
+#include <vk_mem_alloc.h>
+#pragma clang diagnostic pop
 
 VulkanEngine::VulkanManager::VulkanManager()
     : frames_in_flight(3), current_frame(0) {}

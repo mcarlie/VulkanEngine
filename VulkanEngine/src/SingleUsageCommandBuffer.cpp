@@ -38,8 +38,11 @@ void VulkanEngine::SingleUsageCommandBuffer::endSingleUsageCommandBuffer() {
           &single_use_command_buffer);
 
   VulkanManager::getInstance()->getVkGraphicsQueue().submit(submit_info, fence);
-  VulkanManager::getInstance()->getVkDevice().waitForFences(
+  auto fence_result = VulkanManager::getInstance()->getVkDevice().waitForFences(
       fence, VK_TRUE, std::numeric_limits<uint64_t>::max());
+  if (fence_result != vk::Result::eSuccess) {
+    throw std::runtime_error("Error waiting for fences");
+  }
   VulkanManager::getInstance()->getVkDevice().destroyFence(fence);
   VulkanManager::getInstance()->getVkDevice().freeCommandBuffers(
       VulkanManager::getInstance()->getVkCommandPool(),
