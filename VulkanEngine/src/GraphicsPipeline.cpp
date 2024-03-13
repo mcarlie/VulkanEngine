@@ -23,7 +23,7 @@ void VulkanEngine::GraphicsPipeline::bindPipeline() {
 
 void VulkanEngine::GraphicsPipeline::setViewPort(float x, float y, float width,
                                                  float height, float min_depth,
-                                                 float min_height) {
+                                                 float max_depth) {
 
   vk_viewport = vk::Viewport()
                     .setX(x)
@@ -31,22 +31,22 @@ void VulkanEngine::GraphicsPipeline::setViewPort(float x, float y, float width,
                     .setWidth(width)
                     .setHeight(height)
                     .setMinDepth(min_depth)
-                    .setMaxDepth(min_height);
+                    .setMaxDepth(max_depth);
 }
 
 void VulkanEngine::GraphicsPipeline::setScissor(int32_t offset_x,
                                                 int32_t offset_y,
-                                                int32_t width_x,
-                                                int32_t width_y) {
+                                                int32_t width,
+                                                int32_t height) {
 
   vk_scissor = vk::Rect2D()
                    .setOffset(vk::Offset2D(offset_x, offset_y))
-                   .setExtent(vk::Extent2D(width_x, width_y));
+                   .setExtent(vk::Extent2D(width, height));
 }
 
 void VulkanEngine::GraphicsPipeline::createGraphicsPipeline(
-    const std::shared_ptr<MeshBase> &mesh,
-    const std::shared_ptr<Shader> &shader) {
+    const std::shared_ptr<MeshBase> mesh,
+    const std::shared_ptr<Shader> shader) {
 
   if (vk_graphics_pipeline) {
     VulkanManager::getInstance()->getVkDevice().destroyPipeline(

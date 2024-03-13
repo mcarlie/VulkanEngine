@@ -10,7 +10,6 @@
 class Image;
 
 namespace VulkanEngine {
-
 class RenderPass {
 
 public:
