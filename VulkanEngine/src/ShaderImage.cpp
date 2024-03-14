@@ -4,7 +4,6 @@
 #include <VulkanEngine/Image.h>
 #include <VulkanEngine/ShaderImage.h>
 
-
 template <vk::Format format, vk::ImageType image_type, vk::ImageTiling tiling,
           vk::SampleCountFlagBits sample_count_flags>
 VulkanEngine::ShaderImage<format, image_type, tiling, sample_count_flags>::
@@ -31,7 +30,6 @@ template <vk::Format format, vk::ImageType image_type, vk::ImageTiling tiling,
           vk::SampleCountFlagBits sample_count_flags>
 void VulkanEngine::ShaderImage<format, image_type, tiling,
                                sample_count_flags>::createSampler() {
-
   auto sampler_create_info =
       vk::SamplerCreateInfo()
           .setAddressModeU(vk::SamplerAddressMode::eClampToEdge)
@@ -62,7 +60,6 @@ template <vk::Format format, vk::ImageType image_type, vk::ImageTiling tiling,
 vk::DescriptorImageInfo
 VulkanEngine::ShaderImage<format, image_type, tiling,
                           sample_count_flags>::getVkDescriptorImageInfo() {
-
   return vk::DescriptorImageInfo()
       .setSampler(vk_sampler)
       .setImageView(this->vk_image_view)
@@ -76,7 +73,6 @@ void VulkanEngine::ShaderImage<format, image_type, tiling, sample_count_flags>::
         std::vector<vk::WriteDescriptorSet> &write_descriptor_sets,
         std::vector<vk::CopyDescriptorSet> &copy_descriptor_sets,
         const vk::DescriptorSet &destination_set) {
-
   vk_descriptor_image_info = vk::DescriptorImageInfo()
                                  .setSampler(vk_sampler)
                                  .setImageView(this->vk_image_view)

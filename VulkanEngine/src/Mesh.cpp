@@ -52,7 +52,6 @@ template <typename PositionType, typename IndexType,
 const vk::PipelineVertexInputStateCreateInfo &
 VulkanEngine::Mesh<PositionType, IndexType, AdditionalAttributeTypes...>::
     getVkPipelineVertexInputStateCreateInfo() {
-
   uint32_t binding_index = 0;
 
   binding_descriptions.push_back(
@@ -91,7 +90,6 @@ template <typename PositionType, typename IndexType,
 const vk::PipelineInputAssemblyStateCreateInfo &
 VulkanEngine::Mesh<PositionType, IndexType, AdditionalAttributeTypes...>::
     getVkPipelineInputAssemblyStateCreateInfo() {
-
   pipeline_input_assembly_state_info =
       vk::PipelineInputAssemblyStateCreateInfo()
           .setPrimitiveRestartEnable(VK_FALSE)
@@ -104,7 +102,6 @@ template <typename PositionType, typename IndexType,
           class... AdditionalAttributeTypes>
 void VulkanEngine::Mesh<PositionType, IndexType, AdditionalAttributeTypes...>::
     transferBuffers(const vk::CommandBuffer &command_buffer) {
-
   if (!positions.get()) {
     throw std::runtime_error("No position vertex buffer to transfer for mesh.");
   }
@@ -130,7 +127,6 @@ template <typename PositionType, typename IndexType,
           class... AdditionalAttributeTypes>
 void VulkanEngine::Mesh<PositionType, IndexType, AdditionalAttributeTypes...>::
     bindVertexBuffers(const vk::CommandBuffer &command_buffer) {
-
   if (!positions.get()) {
     throw std::runtime_error("No position vertex buffer to bind for mesh.");
   }
@@ -156,7 +152,6 @@ template <typename PositionType, typename IndexType,
           class... AdditionalAttributeTypes>
 void VulkanEngine::Mesh<PositionType, IndexType, AdditionalAttributeTypes...>::
     bindIndexBuffer(const vk::CommandBuffer &command_buffer) {
-
   if (indices.get()) {
     command_buffer.bindIndexBuffer(indices->getVkBuffer(), 0,
                                    sizeof(IndexType) == sizeof(uint16_t)
@@ -169,7 +164,6 @@ template <typename PositionType, typename IndexType,
           class... AdditionalAttributeTypes>
 void VulkanEngine::Mesh<PositionType, IndexType, AdditionalAttributeTypes...>::
     draw(const vk::CommandBuffer &command_buffer) {
-
   if (indices.get()) {
     command_buffer.drawIndexed(static_cast<uint32_t>(indices->getNumElements()),
                                1, 0, 0, 0);

@@ -12,7 +12,6 @@ namespace VulkanEngine {
 /// The camera provides view and projection matrices for rendering
 /// based on the current state of the camera object.
 class Camera : public SceneObject {
-
 public:
   /// Constructor.
   /// \param _look_at What position the Camera should be oriented towards

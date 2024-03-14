@@ -2,7 +2,6 @@
 #include <VulkanEngine/VulkanManager.h>
 
 void VulkanEngine::SingleUsageCommandBuffer::beginSingleUsageCommandBuffer() {
-
   auto command_buffer_info =
       vk::CommandBufferAllocateInfo()
           .setCommandBufferCount(1)
@@ -26,7 +25,6 @@ void VulkanEngine::SingleUsageCommandBuffer::beginSingleUsageCommandBuffer() {
 }
 
 void VulkanEngine::SingleUsageCommandBuffer::endSingleUsageCommandBuffer() {
-
   single_use_command_buffer.end();
 
   vk::FenceCreateInfo fenceInfo;

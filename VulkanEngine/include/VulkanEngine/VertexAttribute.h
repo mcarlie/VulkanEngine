@@ -3,16 +3,14 @@
 
 #include <VulkanEngine/Attribute.h>
 
-#include <vulkan/vulkan.hpp>
-
 #include <vector>
+#include <vulkan/vulkan.hpp>
 
 namespace VulkanEngine {
 
 /// Class which represents a vertex attribute.
 /// \tparam T The type to use to represent data elements.
 template <typename T> class VertexAttribute : public Attribute {
-
 public:
   /// Constructor.
   /// \param data The vertex data which will be represented by this

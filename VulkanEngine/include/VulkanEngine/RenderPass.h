@@ -2,6 +2,7 @@
 #define RENDERPASS_H
 
 #include <VulkanEngine/VulkanManager.h>
+
 #include <cstdint>
 #include <memory>
 #include <vector>
@@ -11,9 +12,7 @@ class Image;
 
 namespace VulkanEngine {
 class RenderPass {
-
 public:
-
   using DepthStencilImageAttachment =
       Image<vk::Format::eD32SfloatS8Uint, vk::ImageType::e2D,
             vk::ImageTiling::eOptimal, vk::SampleCountFlagBits::e4>;
@@ -23,14 +22,14 @@ public:
             vk::ImageTiling::eOptimal, vk::SampleCountFlagBits::e4>;
 
 public:
-
   RenderPass(uint32_t width, uint32_t height);
 
   ~RenderPass();
 
   const vk::RenderPass &getVkRenderPass();
 
-  const std::shared_ptr<DepthStencilImageAttachment> getDepthStencilAttachment() {
+  const std::shared_ptr<DepthStencilImageAttachment>
+  getDepthStencilAttachment() {
     return depth_stencil_attachment;
   }
 
@@ -39,7 +38,6 @@ public:
   }
 
 private:
-
   std::shared_ptr<DepthStencilImageAttachment> depth_stencil_attachment;
 
   std::shared_ptr<ColorAttachment> color_attachment;

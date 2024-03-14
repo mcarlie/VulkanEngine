@@ -20,7 +20,6 @@ VulkanEngine::StagedBuffer<DestinationClass>::~StagedBuffer() {}
 template <class DestinationClass>
 void VulkanEngine::StagedBuffer<DestinationClass>::transferBuffer(
     const vk::CommandBuffer &command_buffer) {
-
   const vk::CommandBuffer &command_buffer_to_use =
       command_buffer ? command_buffer : this->single_use_command_buffer;
   bool created_single_use_command_buffer = false;

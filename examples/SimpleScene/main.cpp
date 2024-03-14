@@ -6,9 +6,7 @@
 #include <VulkanEngine/UniformBuffer.h>
 #include <VulkanEngine/Utilities.h>
 
-
 #include <cxxopts.hpp>
-
 #include <filesystem>
 #include <iostream>
 #include <vector>
@@ -25,7 +23,6 @@ cxxopts::ParseResult setup_program_options(int argc, char **argv) {
 }
 
 int main(int argc, char **argv) {
-
   auto option_result = setup_program_options(argc, argv);
 
   // Create the GLFW window.
@@ -72,8 +69,8 @@ int main(int argc, char **argv) {
       mtl_path = option_result["mtl"].as<std::string>();
     }
 
-    obj_mesh.reset(new VulkanEngine::OBJMesh(
-        std::filesystem::path(obj_path), std::filesystem::path(mtl_path)));
+    obj_mesh.reset(new VulkanEngine::OBJMesh(std::filesystem::path(obj_path),
+                                             std::filesystem::path(mtl_path)));
 
     Eigen::Affine3f transform(Eigen::Translation3f(0.0f, 0.0f, 0.0f));
     transform *= Eigen::Scaling(0.5f);
@@ -95,13 +92,12 @@ int main(int argc, char **argv) {
 
   // Main scene loop.
   while (!window->shouldClose()) {
-
     if (keyboard_input.get()) {
-
       Eigen::Affine3f camera_transform =
           Eigen::Affine3f(camera->getTransform());
 
-      // WASD keys move the camera in x, z directions, Z and X keys move the camera in y direction.
+      // WASD keys move the camera in x, z directions, Z and X keys move the
+      // camera in y direction.
       const auto key_w = keyboard_input->getLastKeyStatus(GLFW_KEY_W);
       const auto key_a = keyboard_input->getLastKeyStatus(GLFW_KEY_A);
 
@@ -152,7 +148,8 @@ int main(int argc, char **argv) {
       Eigen::Transform<float, 3, Eigen::Affine> transform(matrix);
 
       // Rotate the object around its Y-axis.
-      Eigen::AngleAxis<float> rotation((M_PI / 4) * elapsed_seconds.count(), Eigen::Vector3f::UnitY());
+      Eigen::AngleAxis<float> rotation((M_PI / 4) * elapsed_seconds.count(),
+                                       Eigen::Vector3f::UnitY());
       transform.rotate(rotation);
 
       obj_mesh->setTranform(transform.matrix());

@@ -11,7 +11,6 @@ VulkanEngine::VertexAttribute<T>::VertexAttribute(const T *data,
     : Attribute(_num_elements, sizeof(T),
                 vk::BufferUsageFlagBits::eVertexBuffer),
       location(_location), format(_format) {
-
   updateBuffer(data, sizeof(T) * num_elements);
 }
 
@@ -21,7 +20,6 @@ template <typename T>
 const vk::VertexInputBindingDescription
 VulkanEngine::VertexAttribute<T>::getVkVertexInputBindingDescription(
     uint32_t binding_index) {
-
   return vk::VertexInputBindingDescription()
       .setBinding(binding_index)
       .setInputRate(vk::VertexInputRate::eVertex)
@@ -32,7 +30,6 @@ template <typename T>
 const vk::VertexInputAttributeDescription
 VulkanEngine::VertexAttribute<T>::getVkVertexInputAttributeDescriptions(
     uint32_t binding_index) {
-
   return vk::VertexInputAttributeDescription()
       .setBinding(binding_index)
       .setLocation(location)

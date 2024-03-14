@@ -9,7 +9,6 @@ class RenderPass;
 class ImageBase;
 
 class Framebuffer {
-
 public:
   Framebuffer(const std::shared_ptr<RenderPass> &render_pass,
               const std::vector<std::shared_ptr<ImageBase>> &attachments,

@@ -12,7 +12,6 @@ VulkanEngine::Descriptor::~Descriptor() {}
 
 const vk::DescriptorSetLayoutBinding
 VulkanEngine::Descriptor::getVkDescriptorSetLayoutBinding() const {
-
   return vk::DescriptorSetLayoutBinding()
       .setBinding(binding)
       .setDescriptorCount(descriptor_count)
@@ -22,7 +21,6 @@ VulkanEngine::Descriptor::getVkDescriptorSetLayoutBinding() const {
 
 const vk::DescriptorPoolSize
 VulkanEngine::Descriptor::getVkDescriptorPoolSize() const {
-
   return vk::DescriptorPoolSize()
       .setDescriptorCount(descriptor_count)
       .setType(vk_descriptor_type);

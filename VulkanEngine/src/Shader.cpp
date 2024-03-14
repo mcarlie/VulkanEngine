@@ -3,7 +3,6 @@
 
 VulkanEngine::Shader::Shader(
     const std::vector<std::shared_ptr<ShaderModule>> &_shader_modules) {
-
   shader_modules = _shader_modules;
   for (const auto &sm : shader_modules) {
     auto shader_stage_info = vk::PipelineShaderStageCreateInfo()
@@ -25,7 +24,6 @@ VulkanEngine::Shader::~Shader() {
 
 void VulkanEngine::Shader::setDescriptors(
     const std::vector<std::vector<std::shared_ptr<Descriptor>>> &_descriptors) {
-
   const auto &vk_device = VulkanManager::getInstance()->getVkDevice();
 
   // Causes the pipeline layout to be recreated and include changes to
@@ -62,7 +60,6 @@ void VulkanEngine::Shader::setDescriptors(
   vk_descriptor_pool = vk_device.createDescriptorPool(pool_create_info);
 
   for (uint32_t i = 0; i < descriptors.size(); ++i) {
-
     auto descriptor_set_layout_info =
         vk::DescriptorSetLayoutCreateInfo()
             .setBindingCount(
@@ -83,7 +80,6 @@ void VulkanEngine::Shader::setDescriptors(
       vk_device.allocateDescriptorSets(descriptor_set_allocate_info);
 
   for (size_t i = 0; i < descriptors.size(); ++i) {
-
     std::vector<vk::WriteDescriptorSet> write_descriptor_sets;
     std::vector<vk::CopyDescriptorSet> copy_descriptor_sets;
 
@@ -98,7 +94,6 @@ void VulkanEngine::Shader::setDescriptors(
 
 void VulkanEngine::Shader::bindDescriptorSet(
     const vk::CommandBuffer &command_buffer, uint32_t descriptor_set_index) {
-
   if (descriptor_set_index < vk_descriptor_sets.size()) {
     command_buffer.bindDescriptorSets(
         vk::PipelineBindPoint::eGraphics, getVkPipelineLayout(), 0,
@@ -112,7 +107,6 @@ VulkanEngine::Shader::getVkShaderStages() {
 }
 
 const vk::PipelineLayout VulkanEngine::Shader::getVkPipelineLayout() {
-
   if (!vk_pipeline_layout) {
     auto pipeline_layout_info =
         vk::PipelineLayoutCreateInfo()

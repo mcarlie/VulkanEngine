@@ -20,7 +20,6 @@ void VulkanEngine::Buffer::createBuffer(
     vk::BufferUsageFlags usage_flags,
     vk::MemoryPropertyFlags memory_property_flags,
     VmaMemoryUsage vma_memory_usage) {
-
   auto vulkan_manager = VulkanManager::getInstance();
 
   auto buffer_info = vk::BufferCreateInfo()
@@ -51,7 +50,6 @@ void VulkanEngine::Buffer::createBuffer(
 
 void VulkanEngine::Buffer::insertTransferCommand(
     const vk::CommandBuffer &command_buffer, const vk::Buffer &source_buffer) {
-
   auto buffer_copy =
       vk::BufferCopy().setSrcOffset(0).setDstOffset(0).setSize(data_size);
 

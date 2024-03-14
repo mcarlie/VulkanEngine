@@ -40,7 +40,6 @@ template <vk::Format format, vk::ImageType image_type, vk::ImageTiling tiling,
 void VulkanEngine::Image<format, image_type, tiling, sample_count_flags>::
     createImageView(vk::ImageViewType image_view_type,
                     vk::ImageAspectFlags image_aspect_flags) {
-
   auto subresource_range = vk::ImageSubresourceRange()
                                .setAspectMask(image_aspect_flags)
                                .setBaseMipLevel(0)
@@ -66,7 +65,6 @@ template <vk::Format format, vk::ImageType image_type, vk::ImageTiling tiling,
 void VulkanEngine::Image<format, image_type, tiling, sample_count_flags>::
     transitionImageLayout(vk::ImageLayout new_layout,
                           const vk::CommandBuffer &command_buffer) {
-
   const vk::CommandBuffer &command_buffer_to_use =
       command_buffer ? command_buffer : single_use_command_buffer;
   bool created_single_use_command_buffer = false;
@@ -95,7 +93,6 @@ void VulkanEngine::Image<format, image_type, tiling, sample_count_flags>::
 
   if (vk_image_layout == vk::ImageLayout::eUndefined &&
       new_layout == vk::ImageLayout::eTransferDstOptimal) {
-
     image_memory_barrier.setSrcAccessMask(vk::AccessFlags());
     image_memory_barrier.setDstAccessMask(vk::AccessFlagBits::eTransferWrite);
 
@@ -104,7 +101,6 @@ void VulkanEngine::Image<format, image_type, tiling, sample_count_flags>::
 
   } else if (vk_image_layout == vk::ImageLayout::eUndefined &&
              new_layout == vk::ImageLayout::eColorAttachmentOptimal) {
-
     subresource_range.setAspectMask(vk::ImageAspectFlagBits::eColor);
 
     image_memory_barrier.setSrcAccessMask(vk::AccessFlags());
@@ -117,7 +113,6 @@ void VulkanEngine::Image<format, image_type, tiling, sample_count_flags>::
 
   } else if (vk_image_layout == vk::ImageLayout::eUndefined &&
              new_layout == vk::ImageLayout::eDepthStencilAttachmentOptimal) {
-
     subresource_range.setAspectMask(vk::ImageAspectFlagBits::eDepth |
                                     vk::ImageAspectFlagBits::eStencil);
 
@@ -131,7 +126,6 @@ void VulkanEngine::Image<format, image_type, tiling, sample_count_flags>::
 
   } else if (vk_image_layout == vk::ImageLayout::eTransferDstOptimal &&
              new_layout == vk::ImageLayout::eShaderReadOnlyOptimal) {
-
     image_memory_barrier.setSrcAccessMask(vk::AccessFlagBits::eTransferWrite);
     image_memory_barrier.setDstAccessMask(vk::AccessFlagBits::eShaderRead);
 
@@ -157,7 +151,7 @@ void VulkanEngine::Image<format, image_type, tiling, sample_count_flags>::
 template <vk::Format format, vk::ImageType image_type, vk::ImageTiling tiling,
           vk::SampleCountFlagBits sample_count_flags>
 const vk::Format VulkanEngine::Image<format, image_type, tiling,
-                                     sample_count_flags>::getVkFormat() {
+                                     sample_count_flags>::getVkFormat() const {
   return format;
 }
 
@@ -165,14 +159,15 @@ template <vk::Format format, vk::ImageType image_type, vk::ImageTiling tiling,
           vk::SampleCountFlagBits sample_count_flags>
 const vk::SampleCountFlagBits
 VulkanEngine::Image<format, image_type, tiling,
-                    sample_count_flags>::getVkSampleCountFlags() {
+                    sample_count_flags>::getVkSampleCountFlags() const {
   return sample_count_flags;
 }
 
 template <vk::Format format, vk::ImageType image_type, vk::ImageTiling tiling,
           vk::SampleCountFlagBits sample_count_flags>
-const vk::ImageView &VulkanEngine::Image<format, image_type, tiling,
-                                         sample_count_flags>::getVkImageView() {
+const vk::ImageView
+VulkanEngine::Image<format, image_type, tiling,
+                    sample_count_flags>::getVkImageView() const {
   return vk_image_view;
 }
 
@@ -181,7 +176,6 @@ template <vk::Format format, vk::ImageType image_type, vk::ImageTiling tiling,
 void VulkanEngine::Image<format, image_type, tiling, sample_count_flags>::
     insertTransferCommand(const vk::CommandBuffer &command_buffer,
                           const vk::Buffer &source_buffer) {
-
   transitionImageLayout(vk::ImageLayout::eTransferDstOptimal, command_buffer);
 
   auto image_subresource = vk::ImageSubresourceLayers()
@@ -226,7 +220,6 @@ template <vk::Format format, vk::ImageType image_type, vk::ImageTiling tiling,
           vk::SampleCountFlagBits sample_count_flags>
 void VulkanEngine::Image<format, image_type, tiling, sample_count_flags>::
     createImage(vk::ImageUsageFlags usage_flags, VmaMemoryUsage vma_usage) {
-
   auto image_extent =
       vk::Extent3D().setWidth(width).setHeight(height).setDepth(depth);
 
@@ -267,7 +260,6 @@ template <vk::Format format, vk::ImageType image_type, vk::ImageTiling tiling,
           vk::SampleCountFlagBits sample_count_flags>
 void VulkanEngine::Image<format, image_type, tiling, sample_count_flags>::
     generateMipmaps(const vk::CommandBuffer &command_buffer) {
-
   auto subresource_range = vk::ImageSubresourceRange()
                                .setAspectMask(vk::ImageAspectFlagBits::eColor)
                                .setLevelCount(1)
@@ -284,7 +276,6 @@ void VulkanEngine::Image<format, image_type, tiling, sample_count_flags>::
   uint32_t mip_height = height;
 
   for (uint32_t i = 1; i < mipmap_levels; ++i) {
-
     subresource_range.setBaseMipLevel(i - 1);
 
     image_memory_barrier.setSubresourceRange(subresource_range)

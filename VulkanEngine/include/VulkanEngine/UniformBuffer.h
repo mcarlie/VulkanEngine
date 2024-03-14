@@ -11,7 +11,6 @@ namespace VulkanEngine {
 /// Represents a uniform buffer.
 /// \tparam The data type this UniformBuffer represents.
 template <typename T> class UniformBuffer : public Buffer, public Descriptor {
-
 public:
   /// Constructor.
   /// \param _binding The binding index.

@@ -1,10 +1,8 @@
 #include <VulkanEngine/ShaderModule.h>
 #include <VulkanEngine/VulkanManager.h>
-
 #include <glslang/Public/ResourceLimits.h>
 #include <glslang/Public/ShaderLang.h>
 #include <glslang/SPIRV/GlslangToSpv.h>
-
 
 #include <fstream>
 #include <iostream>
@@ -15,7 +13,6 @@ VulkanEngine::ShaderModule::ShaderModule(
     const std::string &shader_string, bool is_filepath,
     vk::ShaderStageFlagBits shader_stage_flag)
     : vk_shader_stage_flag(shader_stage_flag) {
-
   std::vector<uint32_t> bytecode;
 
   if (!is_filepath) {
@@ -60,10 +57,8 @@ const vk::ShaderModule &VulkanEngine::ShaderModule::getVkShaderModule() {
 
 void VulkanEngine::ShaderModule::readSource(std::filesystem::path file_path,
                                             std::vector<uint32_t> &bytecode) {
-
   // Already compiled just read data
   if (file_path.extension() == ".spv") {
-
     std::ifstream file(file_path, std::ios::ate | std::ios::binary);
     if (!file.is_open()) {
       throw std::runtime_error("Could not open shader file " +
@@ -94,7 +89,6 @@ void VulkanEngine::ShaderModule::readSource(std::filesystem::path file_path,
 void VulkanEngine::ShaderModule::glslToSPIRV(const std::string &name,
                                              const std::string &shader_string,
                                              std::vector<uint32_t> &bytecode) {
-
   if (!glslang_initialized) {
     glslang::InitializeProcess();
     glslang_initialized = true;

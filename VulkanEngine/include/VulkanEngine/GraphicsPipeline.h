@@ -4,18 +4,15 @@
 #include <memory>
 #include <vulkan/vulkan.hpp>
 
-
 namespace VulkanEngine {
 
 class Shader;
 class MeshBase;
 
-/// Defines a graphics pipeline. A graphics pipelines defines the rendering of a mesh
-/// with a shader and rendering configurations of the object.
+/// Defines a graphics pipeline. A graphics pipelines defines the rendering of a
+/// mesh with a shader and rendering configurations of the object.
 class GraphicsPipeline {
-
 public:
-
   /// Contructor.
   GraphicsPipeline();
 
@@ -45,7 +42,6 @@ public:
                   int32_t height);
 
 protected:
-
   /// Create the graphics pipeline.
   /// \param mesh The mesh to render.
   /// \param shader The shader to render the mesh with.
@@ -53,7 +49,6 @@ protected:
                               const std::shared_ptr<Shader> shader);
 
 private:
-
   /// Internal vulkan instance of the graphics pipeline.
   vk::Pipeline vk_graphics_pipeline;
 

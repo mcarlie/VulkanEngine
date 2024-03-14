@@ -1,13 +1,13 @@
-#include "VulkanEngine/VulkanManager.h"
-#include <VulkanEngine/RenderPass.h>
 #include <VulkanEngine/Image.h>
+#include <VulkanEngine/RenderPass.h>
+
+#include "VulkanEngine/VulkanManager.h"
 
 VulkanEngine::RenderPass::RenderPass(uint32_t width, uint32_t height) {
   depth_stencil_attachment.reset(new DepthStencilImageAttachment(
       vk::ImageLayout::eUndefined,
       vk::ImageUsageFlagBits::eDepthStencilAttachment,
-      VmaMemoryUsage::VMA_MEMORY_USAGE_GPU_ONLY, width,
-      height, 1, 4, false));
+      VmaMemoryUsage::VMA_MEMORY_USAGE_GPU_ONLY, width, height, 1, 4, false));
 
   depth_stencil_attachment->createImageView(vk::ImageViewType::e2D,
                                             vk::ImageAspectFlagBits::eDepth);
@@ -31,8 +31,7 @@ VulkanEngine::RenderPass::RenderPass(uint32_t width, uint32_t height) {
 
   color_attachment.reset(new ColorAttachment(
       vk::ImageLayout::eUndefined, vk::ImageUsageFlagBits::eColorAttachment,
-      VmaMemoryUsage::VMA_MEMORY_USAGE_GPU_ONLY, width,
-      height, 1, 4, false));
+      VmaMemoryUsage::VMA_MEMORY_USAGE_GPU_ONLY, width, height, 1, 4, false));
 
   color_attachment->createImageView(vk::ImageViewType::e2D,
                                     vk::ImageAspectFlagBits::eColor);
@@ -100,11 +99,11 @@ VulkanEngine::RenderPass::RenderPass(uint32_t width, uint32_t height) {
                               .setDependencyCount(1)
                               .setPDependencies(&dependency);
 
-  vk_render_pass = VulkanManager::getInstance()->getVkDevice().createRenderPass(render_pass_info);
+  vk_render_pass = VulkanManager::getInstance()->getVkDevice().createRenderPass(
+      render_pass_info);
 }
 
 VulkanEngine::RenderPass::~RenderPass() {
-
   VulkanManager::getInstance()->getVkDevice().destroyRenderPass(vk_render_pass);
   vk_render_pass = nullptr;
 }

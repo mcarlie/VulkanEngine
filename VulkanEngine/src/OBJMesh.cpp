@@ -5,7 +5,6 @@
 #include <VulkanEngine/Utilities.h>
 #include <VulkanEngine/VulkanManager.h>
 
-
 #define TINYOBJLOADER_IMPLEMENTATION
 #include <tiny_obj_loader.h>
 
@@ -19,7 +18,6 @@ namespace OBJMeshInternal {
 template <typename IndexType>
 std::shared_ptr<VulkanEngine::MeshBase>
 getShape(const tinyobj::shape_t &shape, const tinyobj::attrib_t &attrib) {
-
   using Vertex = std::tuple<const Eigen::Vector3f &, const Eigen::Vector3f &,
                             const Eigen::Vector2f &>;
   std::unordered_map<Vertex, size_t> unique_vertices;
@@ -43,7 +41,6 @@ getShape(const tinyobj::shape_t &shape, const tinyobj::attrib_t &attrib) {
   texcoords.reserve(shape.mesh.indices.size());
 
   for (size_t i = 0; i < shape.mesh.indices.size(); ++i) {
-
     positions.emplace_back(
         attrib.vertices[3 * shape.mesh.indices[i].vertex_index + 0],
         attrib.vertices[3 * shape.mesh.indices[i].vertex_index + 1],
@@ -129,7 +126,6 @@ VulkanEngine::OBJMesh::OBJMesh(std::filesystem::path obj_file,
                                const std::shared_ptr<Shader> _shader)
     : SceneObject(), GraphicsPipeline(), shader(_shader),
       graphics_pipeline_updated(false) {
-
   std::error_code obj_file_error;
   if (!std::filesystem::exists(obj_file, obj_file_error)) {
     std::cout << "Provided obj path " + (obj_file.string()) +
@@ -166,7 +162,6 @@ VulkanEngine::OBJMesh::OBJMesh(std::filesystem::path obj_file,
 VulkanEngine::OBJMesh::~OBJMesh() {}
 
 void VulkanEngine::OBJMesh::update(SceneState &scene_state) {
-
   MvpUbo ubo_data;
   ubo_data.projection = scene_state.getProjectionMatrix();
   ubo_data.view = scene_state.getViewMatrix();
@@ -217,7 +212,6 @@ void VulkanEngine::OBJMesh::update(SceneState &scene_state) {
 
 void VulkanEngine::OBJMesh::loadOBJ(const char *obj_path,
                                     const char *mtl_path) {
-
   auto begin = std::chrono::system_clock::now();
 
   tinyobj::attrib_t attrib;
@@ -233,7 +227,6 @@ void VulkanEngine::OBJMesh::loadOBJ(const char *obj_path,
   }
 
   for (const auto &shape : shapes) {
-
     // We represent the indices using uint16_t unless that is not sufficient
     // given the number of indices
     if (shape.mesh.indices.size() > std::numeric_limits<uint16_t>::max()) {
@@ -251,9 +244,7 @@ void VulkanEngine::OBJMesh::loadOBJ(const char *obj_path,
   }
 
   for (const auto &material : materials) {
-
     if (material.diffuse_texname != "") {
-
       int texture_width;
       int texture_height;
       int channels_in_file;
@@ -262,7 +253,6 @@ void VulkanEngine::OBJMesh::loadOBJ(const char *obj_path,
                     &texture_width, &texture_height, &channels_in_file, 4);
 
       if (image_data) {
-
         using RGBATexture2D1S =
             VulkanEngine::StagedBuffer<VulkanEngine::ShaderImage<
                 vk::Format::eR8G8B8A8Unorm, vk::ImageType::e2D,
@@ -300,9 +290,11 @@ void VulkanEngine::OBJMesh::loadOBJ(const char *obj_path,
   // Create a shader if one isn't provided
   if (!shader.get()) {
     std::shared_ptr<ShaderModule> vertex_shader(
-        new ShaderModule(getVertexShaderString(!textures.empty()), false, vk::ShaderStageFlagBits::eVertex));
-    std::shared_ptr< ShaderModule > fragment_shader(
-      new ShaderModule(getFragmentShaderString(!textures.empty()), false, vk::ShaderStageFlagBits::eFragment));
+        new ShaderModule(getVertexShaderString(!textures.empty()), false,
+                         vk::ShaderStageFlagBits::eVertex));
+    std::shared_ptr<ShaderModule> fragment_shader(
+        new ShaderModule(getFragmentShaderString(!textures.empty()), false,
+                         vk::ShaderStageFlagBits::eFragment));
     shader.reset(new Shader({fragment_shader, vertex_shader}));
   }
 
@@ -344,23 +336,22 @@ VulkanEngine::OBJMesh::getVertexShaderString(bool has_tex_coords) {
                 << "layout(location = 0) in vec3 inPosition;" << std::endl;
 
   if (has_tex_coords) {
-    return_string
-    << "layout(location = 2) in vec2 inTexcoords;" << std::endl
-    << "layout(location = 2) out vec2 outTexcoords;" << std::endl;
+    return_string << "layout(location = 2) in vec2 inTexcoords;" << std::endl
+                  << "layout(location = 2) out vec2 outTexcoords;" << std::endl;
   }
 
-  return_string
-      << "out gl_PerVertex {" << std::endl
-      << "  vec4 gl_Position;" << std::endl
-      << "};" << std::endl
+  return_string << "out gl_PerVertex {" << std::endl
+                << "  vec4 gl_Position;" << std::endl
+                << "};" << std::endl
 
-      << "void main() {" << std::endl
-      << "  gl_Position = ubo.proj * ubo.view * ubo.model * vec4(inPosition, 1.0);"
-      << std::endl;
-      if (has_tex_coords) {
-        return_string << "  outTexcoords = inTexcoords;" << std::endl;
-      }
-      return_string << "}" << std::endl;
+                << "void main() {" << std::endl
+                << "  gl_Position = ubo.proj * ubo.view * ubo.model * "
+                   "vec4(inPosition, 1.0);"
+                << std::endl;
+  if (has_tex_coords) {
+    return_string << "  outTexcoords = inTexcoords;" << std::endl;
+  }
+  return_string << "}" << std::endl;
 
   return return_string.str();
 }
@@ -374,22 +365,21 @@ VulkanEngine::OBJMesh::getFragmentShaderString(bool has_tex_coords) {
                 << std::endl;
 
   if (has_tex_coords) {
-    return_string
-    << "layout(location = 2) in vec2 inTexcoords;" << std::endl;
+    return_string << "layout(location = 2) in vec2 inTexcoords;" << std::endl;
   }
 
   return_string << "layout(location = 0) out vec4 outColor;" << std::endl;
 
   // TODO should be if there is a texture
   if (has_tex_coords) {
-    return_string
-    << "layout(binding = 1) uniform sampler2D texSampler;" << std::endl;
+    return_string << "layout(binding = 1) uniform sampler2D texSampler;"
+                  << std::endl;
   }
 
   return_string << "void main() {" << std::endl;
   if (has_tex_coords) {
-    return_string
-    << "  outColor = texture( texSampler, inTexcoords );" << std::endl;
+    return_string << "  outColor = texture( texSampler, inTexcoords );"
+                  << std::endl;
   } else {
     return_string << "  outColor = vec4(1.0);" << std::endl;
   }

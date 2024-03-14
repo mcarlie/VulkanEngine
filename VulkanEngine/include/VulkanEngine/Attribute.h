@@ -9,7 +9,6 @@ namespace VulkanEngine {
 
 /// Abstract base class for shader attributes
 class Attribute : public StagedBuffer<Buffer> {
-
 public:
   /// Constructor.
   /// \param _num_elements The number of elements in this attribute buffer

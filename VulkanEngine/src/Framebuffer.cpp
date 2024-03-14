@@ -2,12 +2,10 @@
 #include <VulkanEngine/ImageBase.h>
 #include <VulkanEngine/RenderPass.h>
 
-
 VulkanEngine::Framebuffer::Framebuffer(
     const std::shared_ptr<RenderPass> &render_pass,
     const std::vector<std::shared_ptr<ImageBase>> &attachments, uint32_t width,
     uint32_t height, uint32_t layers) {
-
   std::vector<vk::ImageView> attachment_data;
   for (auto &attachment : attachments) {
     attachment_data.push_back(attachment->getVkImageView());

@@ -9,7 +9,6 @@ namespace VulkanEngine {
 
 /// Provides an abstract interface for various types of Mesh classes.
 class MeshBase {
-
 public:
   /// Constructor.
   MeshBase();

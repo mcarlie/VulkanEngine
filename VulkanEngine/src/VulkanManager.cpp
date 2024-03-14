@@ -1,6 +1,6 @@
-#include <VulkanEngine/VulkanManager.h>
-#include <VulkanEngine/RenderPass.h>
 #include <VulkanEngine/Image.h>
+#include <VulkanEngine/RenderPass.h>
+#include <VulkanEngine/VulkanManager.h>
 
 #include "vulkan/vulkan_core.h"
 
@@ -33,7 +33,6 @@ void VulkanEngine::VulkanManager::destroyInstance() {
 
 void VulkanEngine::VulkanManager::initialize(
     const std::shared_ptr<Window> &_window) {
-
   window = _window;
 
   std::vector<const char *> instance_extensions(
@@ -124,7 +123,6 @@ void VulkanEngine::VulkanManager::initialize(
   bool found_VK_AMD_negative_viewport_height = false;
   for (auto it = physical_device_extension_names.begin();
        it != physical_device_extension_names.end(); ++it) {
-
     if (!(found_VK_KHR_maintenance1 && found_VK_AMD_negative_viewport_height)) {
       if (std::string(*it) == "VK_KHR_maintenance1") {
         found_VK_KHR_maintenance1 = true;
@@ -203,16 +201,16 @@ void VulkanEngine::VulkanManager::initialize(
   createSwapchain();
   createImageViews();
 
-  default_render_pass.reset(new RenderPass(window->getFramebufferWidth(), window->getFramebufferHeight()));
+  default_render_pass.reset(new RenderPass(window->getFramebufferWidth(),
+                                           window->getFramebufferHeight()));
 
-  //createRenderPass();
+  // createRenderPass();
   createSwapchainFramebuffers();
   createSyncObjects();
   createCommandBuffers();
 }
 
 void VulkanEngine::VulkanManager::beginRenderPass() {
-
   const std::array<float, 4> clear_color_array = {0.0f, 0.0f, 0.0f, 1.0f};
   auto clear_color =
       vk::ClearValue().setColor(vk::ClearColorValue(clear_color_array));
@@ -250,7 +248,6 @@ void VulkanEngine::VulkanManager::beginRenderPass() {
 }
 
 void VulkanEngine::VulkanManager::endRenderPass() {
-
   vk_command_buffers[current_frame].endRenderPass();
   vk_command_buffers[current_frame].end();
 }
@@ -260,13 +257,10 @@ vk::CommandBuffer VulkanEngine::VulkanManager::getCurrentCommandBuffer() {
 }
 
 void VulkanEngine::VulkanManager::drawImage() {
-
   // Submit commands to the queue
   if (!vk_command_buffers.empty()) {
-
     uint32_t image_index;
     while (true) {
-
       // Acquire the next available swapchain image that we can write to
       vk::Result result = vk_device.acquireNextImageKHR(
           vk_swapchain, std::numeric_limits<uint32_t>::max(),
@@ -275,13 +269,15 @@ void VulkanEngine::VulkanManager::drawImage() {
       // If the window size has changed or the image view is out of date
       // according to Vulkan then recreate the pipeline from the swapchain stage
 
-      if (result == vk::Result::eErrorOutOfDateKHR || window->sizeHasChanged()) {
+      if (result == vk::Result::eErrorOutOfDateKHR ||
+          window->sizeHasChanged()) {
         vk_device.waitIdle();
         cleanupSwapchain();
         createCommandPool();
         createSwapchain();
         createImageViews();
-        default_render_pass.reset(new RenderPass(window->getFramebufferWidth(), window->getFramebufferHeight()));
+        default_render_pass.reset(new RenderPass(
+            window->getFramebufferWidth(), window->getFramebufferHeight()));
         createSwapchainFramebuffers();
         createSyncObjects();
         createCommandBuffers();
@@ -363,7 +359,6 @@ void VulkanEngine::VulkanManager::createCommandPool() {
 }
 
 void VulkanEngine::VulkanManager::createSwapchain() {
-
   auto swapchain_info =
       vk::SwapchainCreateInfoKHR()
           .setSurface(vk_surface)
@@ -388,11 +383,9 @@ void VulkanEngine::VulkanManager::createSwapchain() {
 }
 
 void VulkanEngine::VulkanManager::createImageViews() {
-
   vk_image_views.resize(vk_swapchain_images.size());
 
   for (size_t i = 0; i < vk_image_views.size(); ++i) {
-
     auto image_view_info =
         vk::ImageViewCreateInfo()
             .setImage(vk_swapchain_images[i])
@@ -411,13 +404,13 @@ void VulkanEngine::VulkanManager::createImageViews() {
 }
 
 void VulkanEngine::VulkanManager::createSwapchainFramebuffers() {
-
   /// Need a framebuffer wrapper class
   vk_swapchain_framebuffers.resize(vk_image_views.size());
   for (size_t i = 0; i < vk_image_views.size(); ++i) {
     std::array<vk::ImageView, 3> attachments = {
         default_render_pass->getColorAttachment()->getVkImageView(),
-        default_render_pass->getDepthStencilAttachment()->getVkImageView(), vk_image_views[i]};
+        default_render_pass->getDepthStencilAttachment()->getVkImageView(),
+        vk_image_views[i]};
 
     auto framebuffer_info =
         vk::FramebufferCreateInfo()
@@ -434,7 +427,6 @@ void VulkanEngine::VulkanManager::createSwapchainFramebuffers() {
 }
 
 void VulkanEngine::VulkanManager::createCommandBuffers() {
-
   auto command_buffer_allocate_info =
       vk::CommandBufferAllocateInfo()
           .setCommandBufferCount(
@@ -447,7 +439,6 @@ void VulkanEngine::VulkanManager::createCommandBuffers() {
 }
 
 void VulkanEngine::VulkanManager::createSyncObjects() {
-
   auto semaphore_info = vk::SemaphoreCreateInfo();
   auto fence_info =
       vk::FenceCreateInfo().setFlags(vk::FenceCreateFlagBits::eSignaled);
@@ -466,7 +457,6 @@ void VulkanEngine::VulkanManager::createSyncObjects() {
 }
 
 void VulkanEngine::VulkanManager::cleanup() {
-
   for (size_t i = 0; i < frames_in_flight; ++i) {
     vk_device.destroySemaphore(vk_image_available_semaphores[i]);
     vk_device.destroySemaphore(vk_rendering_finished_semaphores[i]);
@@ -489,7 +479,6 @@ void VulkanEngine::VulkanManager::cleanup() {
 }
 
 void VulkanEngine::VulkanManager::cleanupSwapchain() {
-
   vk_device.freeCommandBuffers(vk_command_pool, vk_command_buffers);
   vk_device.destroyCommandPool(vk_command_pool);
   vk_command_buffers.clear();

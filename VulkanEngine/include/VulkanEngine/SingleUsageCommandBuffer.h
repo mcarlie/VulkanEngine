@@ -9,7 +9,6 @@ namespace VulkanEngine {
 /// time recording and submission.
 /// TODO Make this a specialization of a generic command buffer class
 class SingleUsageCommandBuffer {
-
 protected:
   /// Creates and starts recording the command buffer.
   void beginSingleUsageCommandBuffer();

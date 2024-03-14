@@ -2,7 +2,6 @@
 #include <VulkanEngine/Scene.h>
 #include <VulkanEngine/SceneState.h>
 
-
 VulkanEngine::SceneState::SceneState(const Scene &_scene)
     : scene(_scene), total_transform(Eigen::Matrix4f::Identity()),
       view_matrix(), projection_matrix() {}

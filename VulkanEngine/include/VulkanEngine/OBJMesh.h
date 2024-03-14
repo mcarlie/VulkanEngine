@@ -6,16 +6,13 @@
 #include <VulkanEngine/SceneObject.h>
 #include <VulkanEngine/UniformBuffer.h>
 
-
 #include <filesystem>
 #include <unordered_map>
-
 
 namespace VulkanEngine {
 
 /// A SceneObject which represents an OBJMesh.
 class OBJMesh : public SceneObject, public GraphicsPipeline {
-
 public:
   /// Constructor.
   /// \param obj_file Path to obj file.

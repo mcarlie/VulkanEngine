@@ -7,7 +7,6 @@ VulkanEngine::Scene::Scene(const std::vector<std::shared_ptr<Window>> &_windows)
 VulkanEngine::Scene::~Scene() {}
 
 void VulkanEngine::Scene::update() {
-
   if (!state_instance.get()) {
     state_instance.reset(new SceneState(*this));
   }

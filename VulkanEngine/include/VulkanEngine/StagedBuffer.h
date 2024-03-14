@@ -15,7 +15,6 @@ namespace VulkanEngine {
 /// constructor of DestinationClass
 ///                              to call from StagedBuffer's constructor.
 template <class DestinationClass> class StagedBuffer : public DestinationClass {
-
 public:
   /// Contructor.
   /// Creates the staging buffer.

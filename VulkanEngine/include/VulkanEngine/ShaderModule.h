@@ -1,19 +1,16 @@
 #ifndef SHADERMODULE_H
 #define SHADERMODULE_H
 
-#include <vulkan/vulkan.hpp>
-
 #include <filesystem>
 #include <string>
 #include <vector>
-
+#include <vulkan/vulkan.hpp>
 
 namespace VulkanEngine {
 
 /// Class which represents a module in the shader pipeline, e.g vertex or
 /// fragment shader.
 class ShaderModule {
-
 public:
   /// Constructor.
   /// \param shader_string Either the source path or raw shader string

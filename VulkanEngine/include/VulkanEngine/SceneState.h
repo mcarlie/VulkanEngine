@@ -4,14 +4,12 @@
 #include <Eigen/Eigen>
 #include <memory>
 
-
 namespace VulkanEngine {
 
 class Scene;
 
 /// Contains information about the current state of the scene.
 class SceneState {
-
 public:
   /// Constructor.
   SceneState(const Scene &_scene);

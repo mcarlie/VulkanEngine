@@ -6,12 +6,10 @@
 #include <memory>
 #include <vector>
 
-
 namespace VulkanEngine {
 
 /// Represents an object in a scene.
 class SceneObject {
-
 public:
   /// Contructor.
   SceneObject();

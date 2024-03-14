@@ -1,4 +1,5 @@
 #include <VulkanEngine/Window.h>
+
 #include <iostream>
 #include <set>
 
@@ -42,7 +43,6 @@ bool VulkanEngine::Window::isFullScreen() { return full_screen; }
 bool VulkanEngine::Window::sizeHasChanged() { return size_changed; }
 
 void VulkanEngine::Window::mousePositionCallback(double xpos, double ypos) {
-
   if (mouse_input.get()) {
     mouse_input->setPosition(xpos, ypos);
   }
@@ -51,7 +51,6 @@ void VulkanEngine::Window::mousePositionCallback(double xpos, double ypos) {
 void VulkanEngine::Window::mouseButtonPressedCallback(bool left_pressed,
                                                       bool right_pressed,
                                                       bool middle_pressed) {
-
   if (mouse_input.get()) {
     mouse_input->setButtons(left_pressed, right_pressed, middle_pressed);
   }
@@ -59,7 +58,6 @@ void VulkanEngine::Window::mouseButtonPressedCallback(bool left_pressed,
 
 void VulkanEngine::Window::keyboardButtonPressedCallback(
     int scancode, const KeyboardInput::KeyInfo &key_info) {
-
   if (keyboard_input.get()) {
     keyboard_input->key_status_map[scancode] = key_info;
   }

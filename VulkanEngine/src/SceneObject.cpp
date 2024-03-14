@@ -7,12 +7,10 @@ VulkanEngine::SceneObject::SceneObject()
 /// \param scene_state Contains information about the current state of the
 /// scene.
 void VulkanEngine::SceneObject::preUpdate(SceneState &scene_state) {
-
   scene_state.setTransform(scene_state.getTotalTransform() * transform);
 }
 
 void VulkanEngine::SceneObject::update(SceneState &scene_state) {
-
   /// Update all children
   for (const auto &c : children) {
     c->preUpdate(scene_state);
@@ -25,7 +23,6 @@ void VulkanEngine::SceneObject::update(SceneState &scene_state) {
 /// \param scene_state Contains information about the current state of the
 /// scene.
 void VulkanEngine::SceneObject::postUpdate(SceneState &scene_state) {
-
   scene_state.setTransform(scene_state.getTotalTransform() *
                            transform.inverse());
 }

@@ -22,11 +22,9 @@ void VulkanEngine::UniformBuffer<T>::appendVkDescriptorSets(
     std::vector<vk::WriteDescriptorSet> &write_descriptor_sets,
     std::vector<vk::CopyDescriptorSet> &copy_descriptor_sets,
     const vk::DescriptorSet &destination_set) {
-
   vk_descriptor_buffer_infos.clear();
 
   for (uint32_t i = 0; i < array_size; ++i) {
-
     vk_descriptor_buffer_infos.push_back(
         vk::DescriptorBufferInfo()
             .setBuffer(getVkBuffer())

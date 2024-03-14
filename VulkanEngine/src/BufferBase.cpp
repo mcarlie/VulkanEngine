@@ -3,7 +3,6 @@
 
 void VulkanEngine::BufferBase::updateBuffer(const void *_data,
                                             size_t _data_size) {
-
   void *mapped_memory = nullptr;
   const VmaAllocator &vma_allocator =
       VulkanManager::getInstance()->getVmaAllocator();

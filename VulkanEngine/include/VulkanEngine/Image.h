@@ -20,7 +20,6 @@ namespace VulkanEngine {
 template <vk::Format format, vk::ImageType image_type, vk::ImageTiling tiling,
           vk::SampleCountFlagBits sample_count_flags>
 class Image : public StagedBufferDestination, public ImageBase {
-
 public:
   /// Constructor.
   /// \param initial_layout The initial vk::ImageLayout of the Image.
@@ -54,9 +53,9 @@ public:
   void transitionImageLayout(vk::ImageLayout new_layout,
                              const vk::CommandBuffer &command_buffer = nullptr);
 
-  const vk::Format getVkFormat();
-  const vk::SampleCountFlagBits getVkSampleCountFlags();
-  const vk::ImageView &getVkImageView();
+  const vk::Format getVkFormat() const;
+  const vk::SampleCountFlagBits getVkSampleCountFlags() const;
+  const vk::ImageView getVkImageView() const;
 
 protected:
   /// Overridden to handle tranferring data from a StagedBuffer to this Image.

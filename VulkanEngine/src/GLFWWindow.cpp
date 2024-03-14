@@ -6,12 +6,10 @@ VulkanEngine::GLFWWindow::GLFWWindow(int _width, int _height,
                                      const std::string &_title,
                                      bool _full_screen)
     : Window(_width, _height, _title, _full_screen), glfw_window(nullptr) {
-
   glfwSetErrorCallback(errorCallback);
 }
 
 VulkanEngine::GLFWWindow::~GLFWWindow() {
-
   glfwDestroyWindow(glfw_window);
   glfwTerminate();
 }
@@ -22,7 +20,6 @@ void VulkanEngine::GLFWWindow::update() {
 }
 
 bool VulkanEngine::GLFWWindow::initialize() {
-
   if (!glfwInit()) {
     return false;
   }
@@ -63,7 +60,6 @@ bool VulkanEngine::GLFWWindow::initialize() {
 
 vk::SurfaceKHR
 VulkanEngine::GLFWWindow::createVkSurface(const vk::Instance &instance) {
-
   VkSurfaceKHR surface;
   VkResult err =
       glfwCreateWindowSurface(instance, glfw_window, nullptr, &surface);
@@ -76,7 +72,6 @@ VulkanEngine::GLFWWindow::createVkSurface(const vk::Instance &instance) {
 
 const std::vector<const char *>
 VulkanEngine::GLFWWindow::getRequiredVulkanInstanceExtensions() {
-
   uint32_t num_extensions;
   const char **extension_names;
   extension_names = glfwGetRequiredInstanceExtensions(&num_extensions);
@@ -88,12 +83,10 @@ VulkanEngine::GLFWWindow::getRequiredVulkanInstanceExtensions() {
 }
 
 bool VulkanEngine::GLFWWindow::shouldClose() {
-
   return glfwWindowShouldClose(glfw_window);
 }
 
 void VulkanEngine::GLFWWindow::setWidth(uint32_t _width) {
-
   if (glfw_window) {
     glfwSetWindowSize(glfw_window, static_cast<int>(_width), 0);
   } else {
@@ -102,7 +95,6 @@ void VulkanEngine::GLFWWindow::setWidth(uint32_t _width) {
 }
 
 void VulkanEngine::GLFWWindow::setHeight(uint32_t _height) {
-
   if (glfw_window) {
     glfwSetWindowSize(glfw_window, 0, static_cast<int>(_height));
   } else {
@@ -112,14 +104,12 @@ void VulkanEngine::GLFWWindow::setHeight(uint32_t _height) {
 
 void VulkanEngine::GLFWWindow::errorCallback(int error,
                                              const char *description) {
-
   std::cerr << "GLFW error: " << description << " error code:" << error
             << std::endl;
 }
 
 void VulkanEngine::GLFWWindow::windowResizeCallback(GLFWwindow *_glfw_window,
                                                     int _width, int _height) {
-
   GLFWWindow *window =
       static_cast<GLFWWindow *>(glfwGetWindowUserPointer(_glfw_window));
   if ((window->width != static_cast<uint32_t>(_width)) ||
@@ -132,7 +122,6 @@ void VulkanEngine::GLFWWindow::windowResizeCallback(GLFWwindow *_glfw_window,
 
 void VulkanEngine::GLFWWindow::framebufferResizeCallback(
     GLFWwindow *_glfw_window, int _width, int _height) {
-
   GLFWWindow *window =
       static_cast<GLFWWindow *>(glfwGetWindowUserPointer(_glfw_window));
   if ((window->framebuffer_width != static_cast<uint32_t>(_width)) ||
@@ -146,7 +135,6 @@ void VulkanEngine::GLFWWindow::framebufferResizeCallback(
 void VulkanEngine::GLFWWindow::cursorPositionCallback(GLFWwindow *_glfw_window,
                                                       double xpos,
                                                       double ypos) {
-
   GLFWWindow *window =
       static_cast<GLFWWindow *>(glfwGetWindowUserPointer(_glfw_window));
   window->mousePositionCallback(xpos, ypos);

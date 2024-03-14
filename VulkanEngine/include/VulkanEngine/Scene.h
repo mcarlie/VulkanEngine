@@ -9,7 +9,6 @@
 namespace VulkanEngine {
 
 class Scene : public SceneObject {
-
 public:
   /// Constructor.
   Scene(const std::vector<std::shared_ptr<Window>> &_windows);

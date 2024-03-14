@@ -11,8 +11,8 @@ set(CMAKE_CXX_STANDARD 17)
 include_directories("VulkanEngine/include" "VulkanEngine/src")
 
 # Create VulkanEngine library
-file(GLOB SOURCES "VulkanEngine/include/VulkanEngine/*.h" "VulkanEngine/src/*.cpp")
-add_library(VulkanEngine ${SOURCES})
+file(GLOB VULKAN_ENGINE_SOURCES "VulkanEngine/include/VulkanEngine/*.h" "VulkanEngine/src/*.cpp")
+add_library(VulkanEngine ${VULKAN_ENGINE_SOURCES})
 
 # Directory containing libraries
 set(LIBS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/Libs")
@@ -42,13 +42,19 @@ include_directories("${LIBS_DIR}/VulkanMemoryAllocator/include")
 include_directories("${LIBS_DIR}/stb")
 
 # Add examples
-file(GLOB SOURCES "examples/SimpleScene/*.cpp" "examples/SimpleScene/*.h")
-add_executable(SimpleScene ${SOURCES})
+file(GLOB EXAMPLES_SOURCES "examples/SimpleScene/*.cpp" "examples/SimpleScene/*.h")
+add_executable(SimpleScene ${EXAMPLES_SOURCES})
 target_link_libraries(SimpleScene VulkanEngine)
 include_directories("${LIBS_DIR}/cxxopts-2.2.0/include")
 if(SUPPORT_XCODE_SCHEME_ENVIRONMENT_PROPERTY)
   set_property(TARGET SimpleScene APPEND PROPERTY XCODE_SCHEME_ENVIRONMENT ${XCODE_SCHEME_ENVIRONMENT_VARIABLES})
 endif()
+
+# Custom target to format all C++ source and header files
+add_custom_target(format 
+    COMMAND clang-format -i -style=file ${VULKAN_ENGINE_SOURCES} ${EXAMPLES_SOURCES})
+
+add_dependencies(VulkanEngine format)
 
 if( WIN32 )
   add_definitions(-DVK_USE_PLATFORM_WIN32_KHR -DNOMINMAX)

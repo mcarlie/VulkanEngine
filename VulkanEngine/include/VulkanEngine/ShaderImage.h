@@ -10,7 +10,6 @@
 
 #include <vulkan/vulkan.hpp>
 
-
 namespace VulkanEngine {
 
 // Forward declaration
@@ -23,7 +22,6 @@ template <vk::Format format, vk::ImageType image_type, vk::ImageTiling tiling,
 class ShaderImage
     : public Image<format, image_type, tiling, sample_count_flags>,
       public Descriptor {
-
 public:
   /// Constructor.
   /// \param initial_layout The initial vk::ImageLayout of the image.

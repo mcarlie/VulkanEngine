@@ -7,9 +7,7 @@ namespace VulkanEngine {
 
 /// Base class for image types.
 class ImageBase {
-
 public:
-
   /// Contructor.
   ImageBase();
 
@@ -17,13 +15,12 @@ public:
   ~ImageBase();
 
   /// Get the interal vulkan image.
-  const vk::Image &getVkImage();
+  const vk::Image getVkImage() const;
 
   /// Get the internal vulkan image view.
-  const vk::ImageView &getVkImageView();
+  const vk::ImageView getVkImageView() const;
 
 protected:
-
   /// The internal vulkan image.
   vk::Image vk_image;
 

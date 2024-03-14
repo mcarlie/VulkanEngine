@@ -8,7 +8,6 @@ namespace VulkanEngine {
 /// Base class for any classes which interface with the Vulkan resource
 /// descriptor concept.
 class Descriptor {
-
 public:
   /// Constructor.
   Descriptor(uint32_t _binding, uint32_t _desciptor_count,

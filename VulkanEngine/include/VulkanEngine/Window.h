@@ -4,16 +4,13 @@
 #include <VulkanEngine/KeyboardInput.h>
 #include <VulkanEngine/MouseInput.h>
 
-
-#include <vulkan/vulkan.hpp>
-
 #include <string>
+#include <vulkan/vulkan.hpp>
 
 namespace VulkanEngine {
 
 /// Provides an abstract interface for window implementations.
 class Window {
-
 public:
   /// Contructor.
   /// \param _width The desired initial width of the window.

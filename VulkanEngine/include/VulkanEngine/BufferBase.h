@@ -10,7 +10,6 @@ namespace VulkanEngine {
 
 /// Base class for various classes which represent data buffers on the GPU/CPU.
 class BufferBase {
-
 public:
   /// Copy the data to the buffer.
   /// \param data Pointer to the data.

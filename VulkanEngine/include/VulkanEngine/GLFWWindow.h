@@ -1,15 +1,14 @@
 #ifndef GLFWWINDOW_H
 #define GLFWWINDOW_H
 
-#include <VulkanEngine/Window.h>
-
+#define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
+#include <VulkanEngine/Window.h>
 
 namespace VulkanEngine {
 
 /// An implementation of VulkanEngine::Window which uses the GLFW library.
 class GLFWWindow : public Window {
-
 public:
   /// Contructor.
   /// \param _width The desired initial width of the window.

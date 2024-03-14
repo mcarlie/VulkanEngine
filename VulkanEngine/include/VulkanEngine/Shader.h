@@ -4,13 +4,11 @@
 #include <VulkanEngine/Descriptor.h>
 #include <VulkanEngine/ShaderModule.h>
 
-
 namespace VulkanEngine {
 
 /// Class which encapsulates a single shader consisting of several ShaderModule
 /// instances.
 class Shader {
-
 public:
   /// Constructor.
   /// \param shader_modules ShaderModule instances to use in this shader.

@@ -5,7 +5,6 @@
 #include <VulkanEngine/MeshBase.h>
 #include <VulkanEngine/VertexAttribute.h>
 
-
 #include <Eigen/Eigen>
 
 namespace VulkanEngine {
@@ -24,7 +23,6 @@ namespace VulkanEngine {
 template <typename PositionType, typename IndexType,
           class... AdditionalAttributeTypes>
 class Mesh : public MeshBase {
-
   static_assert(sizeof(IndexType) == sizeof(uint16_t) ||
                     sizeof(IndexType) == sizeof(uint32_t),
                 "Mesh IndexType template parameter must be the same size as "

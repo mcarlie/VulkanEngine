@@ -15,7 +15,6 @@ VulkanEngine::Camera::Camera(Eigen::Vector3f _look_at,
 VulkanEngine::Camera::~Camera() {}
 
 void VulkanEngine::Camera::update(SceneState &scene_state) {
-
   auto active_window = scene_state.getScene().getActiveWindow();
   setWidth(active_window->getFramebufferWidth());
   setHeight(active_window->getFramebufferHeight());
@@ -31,12 +30,16 @@ void VulkanEngine::Camera::setLookAt(const Eigen::Vector3f &_look_at) {
   look_at = _look_at;
 }
 
-const Eigen::Vector3f VulkanEngine::Camera::getLookAt() const { return look_at; }
+const Eigen::Vector3f VulkanEngine::Camera::getLookAt() const {
+  return look_at;
+}
 
-const Eigen::Vector3f VulkanEngine::Camera::getUpVector() const { return up_vector; }
+const Eigen::Vector3f VulkanEngine::Camera::getUpVector() const {
+  return up_vector;
+}
 
-const Eigen::Matrix4f VulkanEngine::Camera::getPerspectiveProjectionMatrix() const {
-
+const Eigen::Matrix4f
+VulkanEngine::Camera::getPerspectiveProjectionMatrix() const {
   const float tan_half_fov =
       std::tan(Constants::pi<float>() * fov / (2.0f * 180.0f));
   const float aspect = width / static_cast<float>(height);
@@ -61,7 +64,6 @@ const Eigen::Matrix4f VulkanEngine::Camera::getPerspectiveProjectionMatrix() con
 }
 
 const Eigen::Matrix4f VulkanEngine::Camera::getViewMatrix() const {
-
   Eigen::Vector3f position = Eigen::Affine3f(getTransform()).translation();
 
   const auto &z_axis = (look_at - position).normalized();

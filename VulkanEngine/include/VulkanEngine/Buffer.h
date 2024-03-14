@@ -10,12 +10,10 @@
 
 #include <vulkan/vulkan.hpp>
 
-
 namespace VulkanEngine {
 
 /// Class which represents a single buffer using vk::Buffer.
 class Buffer : public StagedBufferDestination {
-
 public:
   /// Constructor.
   /// Creates the buffer given the parameters.

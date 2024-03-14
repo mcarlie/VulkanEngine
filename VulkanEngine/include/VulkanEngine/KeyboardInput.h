@@ -7,7 +7,6 @@ namespace VulkanEngine {
 
 /// Class which provides ability to read keyboard input from windowing system.
 class KeyboardInput {
-
   friend class Window;
 
 public:
@@ -16,7 +15,6 @@ public:
 
   /// Contains information about a particular key.
   struct KeyInfo {
-
     /// The current status of the key.
     KeyStatus status;
 

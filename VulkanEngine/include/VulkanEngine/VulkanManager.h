@@ -8,11 +8,9 @@
 #include <VulkanEngine/UniformBuffer.h>
 #include <VulkanEngine/VertexAttribute.h>
 #include <VulkanEngine/Window.h>
-
-
-#include <Eigen/Eigen>
 #include <vk_mem_alloc.h>
 
+#include <Eigen/Eigen>
 #include <iostream>
 #include <memory>
 
@@ -25,7 +23,6 @@ class Image;
 class RenderPass;
 
 class VulkanManager {
-
 private:
   /// Constructor.
   /// Private so that an instance may only be created from getInstance().

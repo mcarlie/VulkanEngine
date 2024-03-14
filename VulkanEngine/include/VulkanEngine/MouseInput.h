@@ -7,7 +7,6 @@ class GLFWWindow;
 
 /// Class which can be used to get input from the mouse
 class MouseInput {
-
   friend class Window;
 
 public:

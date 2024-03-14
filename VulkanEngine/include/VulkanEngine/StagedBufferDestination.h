@@ -12,7 +12,6 @@ namespace VulkanEngine {
 /// insertTransferCommand is called from StagedBuffer::tranferBuffer().
 class StagedBufferDestination : public BufferBase,
                                 protected SingleUsageCommandBuffer {
-
   /// Override to handle tranferring data from a StagedBuffer to this buffer.
   /// \param command_buffers The command buffer to insert the command into.
   /// \param source_buffer The source vk::Buffer in the StagedBuffer.
