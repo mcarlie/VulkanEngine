@@ -67,7 +67,7 @@ target_link_libraries (VulkanEngine Eigen3::Eigen)
 
 # Add header only libraries
 include_directories("${LIBS_DIR}/tinyobjloader-1.0.6")
-include_directories("${LIBS_DIR}/VulkanMemoryAllocator/include")
+include_directories("${LIBS_DIR}/VulkanMemoryAllocator")
 include_directories("${LIBS_DIR}/stb")
 
 # Add examples
