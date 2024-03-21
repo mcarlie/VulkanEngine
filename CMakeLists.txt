@@ -17,7 +17,7 @@ file(GLOB VULKAN_ENGINE_SOURCES "VulkanEngine/include/VulkanEngine/*.h" "VulkanE
 add_library(VulkanEngine ${VULKAN_ENGINE_SOURCES})
 
 # Directory containing libraries
-set(LIBS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/Libs")
+set(THIRDPARTY_DIR "${CMAKE_CURRENT_SOURCE_DIR}/thirdparty")
 
 ## Vulkan
 find_package(Vulkan REQUIRED)
@@ -66,15 +66,15 @@ find_package (Eigen3 3.4 REQUIRED NO_MODULE)
 target_link_libraries (VulkanEngine Eigen3::Eigen)
 
 # Add header only libraries
-include_directories("${LIBS_DIR}/tinyobjloader-1.0.6")
-include_directories("${LIBS_DIR}/VulkanMemoryAllocator")
-include_directories("${LIBS_DIR}/stb")
+include_directories("${THIRDPARTY_DIR}/tinyobjloader-1.0.6")
+include_directories("${THIRDPARTY_DIR}/VulkanMemoryAllocator")
+include_directories("${THIRDPARTY_DIR}/stb")
 
 # Add examples
 file(GLOB EXAMPLES_SOURCES "examples/SimpleScene/*.cpp" "examples/SimpleScene/*.h")
 add_executable(SimpleScene ${EXAMPLES_SOURCES})
 target_link_libraries(SimpleScene VulkanEngine)
-include_directories("${LIBS_DIR}/cxxopts-2.2.0")
+include_directories("${THIRDPARTY_DIR}/cxxopts-2.2.0")
 if(SUPPORT_XCODE_SCHEME_ENVIRONMENT_PROPERTY)
   set_property(TARGET SimpleScene APPEND PROPERTY XCODE_SCHEME_ENVIRONMENT ${XCODE_SCHEME_ENVIRONMENT_VARIABLES})
 endif()
