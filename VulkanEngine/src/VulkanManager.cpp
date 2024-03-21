@@ -50,7 +50,9 @@ void VulkanEngine::VulkanManager::initialize(
   instance_extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
 #endif
 
+#ifdef __APPLE__
   instance_extensions.push_back(VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME);
+#endif
   instance_extensions.push_back(
       VK_KHR_EXTERNAL_FENCE_CAPABILITIES_EXTENSION_NAME);
   instance_extensions.push_back(
@@ -67,7 +69,9 @@ void VulkanEngine::VulkanManager::initialize(
 
   auto inst_info =
       vk::InstanceCreateInfo()
+#ifdef __APPLE__
           .setFlags(vk::InstanceCreateFlagBits::eEnumeratePortabilityKHR)
+#endif
           .setPApplicationInfo(&app_info)
           .setEnabledExtensionCount(
               static_cast<uint32_t>(instance_extensions.size()))
@@ -114,10 +118,12 @@ void VulkanEngine::VulkanManager::initialize(
     physical_device_extension_names.push_back(ext.extensionName);
   }
 
+#ifdef __APPLE__
   physical_device_extension_names.push_back(
       VK_EXT_SWAPCHAIN_MAINTENANCE_1_EXTENSION_NAME);
   physical_device_extension_names.push_back(
       VK_EXT_BUFFER_DEVICE_ADDRESS_EXTENSION_NAME);
+#endif
 
   bool found_VK_KHR_maintenance1 = false;
   bool found_VK_AMD_negative_viewport_height = false;

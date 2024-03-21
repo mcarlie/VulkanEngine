@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.24)
+cmake_minimum_required(VERSION 3.22)
 
 project(VulkanEngine)
 
@@ -6,6 +6,8 @@ set(VulkanEngine_VERSION_MAJOR 0)
 set(VulkanEngine_VERSION_MINOR 1)
 
 set(CMAKE_CXX_STANDARD 17)
+
+include(FetchContent)
 
 # Include directories to add
 include_directories("VulkanEngine/include" "VulkanEngine/src")
@@ -22,6 +24,33 @@ find_package(Vulkan REQUIRED)
 include_directories(${Vulkan_INCLUDE_DIRS})
 link_directories(AFTER "${VULKAN_SDK}/lib")
 target_link_libraries(VulkanEngine ${Vulkan_LIBRARIES})
+
+# On Apple glslang includes default resource limits.
+if(NOT APPLE)
+  FetchContent_Declare(
+    glslang
+    GIT_REPOSITORY https://github.com/KhronosGroup/glslang.git
+    GIT_TAG        14.1.0
+  )
+
+  FetchContent_GetProperties(glslang)
+  if(NOT glslang_POPULATED)
+    FetchContent_Populate(glslang)
+    add_subdirectory(${glslang_SOURCE_DIR} ${glslang_BINARY_DIR})
+  endif()
+
+  execute_process(
+    COMMAND ${CMAKE_COMMAND} -E env PYTHONPATH="${glslang_SOURCE_DIR}" python3 "${glslang_SOURCE_DIR}/update_glslang_sources.py"
+    WORKING_DIRECTORY ${glslang_SOURCE_DIR}
+    RESULT_VARIABLE UPDATE_GLSLANG_RESULT
+  )
+
+  if(NOT UPDATE_GLSLANG_RESULT EQUAL "0")
+    message(FATAL_ERROR "Failed to update glslang sources")
+  endif()
+
+  target_include_directories(VulkanEngine PRIVATE ${glslang_SOURCE_DIR})
+endif()
 
 target_link_libraries(VulkanEngine glslang glslang-default-resource-limits SPIRV)
 
@@ -51,10 +80,12 @@ if(SUPPORT_XCODE_SCHEME_ENVIRONMENT_PROPERTY)
 endif()
 
 # Custom target to format all C++ source and header files
-add_custom_target(format 
+if(APPLE)
+  add_custom_target(format 
     COMMAND clang-format -i -style=file ${VULKAN_ENGINE_SOURCES} ${EXAMPLES_SOURCES})
 
-add_dependencies(VulkanEngine format)
+  add_dependencies(VulkanEngine format)
+endif()
 
 if( WIN32 )
   add_definitions(-DVK_USE_PLATFORM_WIN32_KHR -DNOMINMAX)
