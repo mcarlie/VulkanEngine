@@ -10,10 +10,10 @@ set(CMAKE_CXX_STANDARD 17)
 include(FetchContent)
 
 # Include directories to add
-include_directories("VulkanEngine/include" "VulkanEngine/src")
+include_directories("src/include" "src")
 
 # Create VulkanEngine library
-file(GLOB VULKAN_ENGINE_SOURCES "VulkanEngine/include/VulkanEngine/*.h" "VulkanEngine/src/*.cpp")
+file(GLOB VULKAN_ENGINE_SOURCES "src/include/VulkanEngine/*.h" "src/*.cpp")
 add_library(VulkanEngine ${VULKAN_ENGINE_SOURCES})
 
 # Directory containing libraries
