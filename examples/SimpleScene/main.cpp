@@ -33,7 +33,9 @@ int main(int argc, char **argv) {
 
   // Create the engine instance.
   auto vulkan_manager = VulkanEngine::VulkanManager::getInstance();
-  vulkan_manager->initialize(window);
+  if (!vulkan_manager->initialize(window)) {
+    return 1;
+  }
 
   // Add the window to the engine.
   std::vector<std::shared_ptr<VulkanEngine::Window>> window_list;

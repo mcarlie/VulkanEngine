@@ -35,7 +35,7 @@ void VulkanEngine::VulkanManager::destroyInstance() {
   singleton_vulkan_manager_instance.reset();
 }
 
-void VulkanEngine::VulkanManager::initialize(
+bool VulkanEngine::VulkanManager::initialize(
     const std::shared_ptr<Window> &_window) {
   window = _window;
 
@@ -191,9 +191,11 @@ void VulkanEngine::VulkanManager::initialize(
     vk_device = vk_physical_device.createDevice(device_info);
   } catch (const std::exception &e) {
     std::cerr << "Exception during device creation: " << e.what() << std::endl;
+    return false;
   } catch (...) {
     std::cerr << "An unknown error occurred during device creation."
               << std::endl;
+    return false;
   }
 
   VmaAllocatorCreateInfo vma_allocator_create_info = {};
@@ -225,6 +227,8 @@ void VulkanEngine::VulkanManager::initialize(
   createSwapchainFramebuffers();
   createSyncObjects();
   createCommandBuffers();
+
+  return true;
 }
 
 void VulkanEngine::VulkanManager::beginRenderPass() {

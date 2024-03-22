@@ -50,7 +50,7 @@ public:
 
   /// Initialize the VulkanManager.
   /// \param _window The Window instance to use with the manager.
-  void initialize(const std::shared_ptr<Window> &_window);
+  bool initialize(const std::shared_ptr<Window> &_window);
 
   void createCommandBuffers();
 
