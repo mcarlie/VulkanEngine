@@ -187,7 +187,14 @@ void VulkanEngine::VulkanManager::initialize(
               static_cast<uint32_t>(physical_device_extension_names.size()));
 
   /// TODO Device class which holds queue, allocator and device info
-  vk_device = vk_physical_device.createDevice(device_info);
+  try {
+    vk_device = vk_physical_device.createDevice(device_info);
+  } catch (const std::exception &e) {
+    std::cerr << "Exception during device creation: " << e.what() << std::endl;
+  } catch (...) {
+    std::cerr << "An unknown error occurred during device creation."
+              << std::endl;
+  }
 
   VmaAllocatorCreateInfo vma_allocator_create_info = {};
   vma_allocator_create_info.device = vk_device;

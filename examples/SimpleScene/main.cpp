@@ -70,8 +70,14 @@ int main(int argc, char **argv) {
       mtl_path = option_result["mtl"].as<std::string>();
     }
 
-    obj_mesh.reset(new VulkanEngine::OBJMesh(std::filesystem::path(obj_path),
-                                             std::filesystem::path(mtl_path)));
+    try {
+      obj_mesh.reset(new VulkanEngine::OBJMesh(
+          std::filesystem::path(obj_path), std::filesystem::path(mtl_path)));
+    } catch (const std::exception &e) {
+      std::cerr << "Failed to load obj mesh: " << e.what() << std::endl;
+    } catch (...) {
+      std::cerr << "An unknown exception occurred." << std::endl;
+    }
 
     Eigen::Affine3f transform(Eigen::Translation3f(0.0f, 0.0f, 0.0f));
     transform *= Eigen::Scaling(0.5f);
@@ -140,22 +146,25 @@ int main(int argc, char **argv) {
         camera_movement(2) -= camera_move_speed;
       }
 
-      auto current_time = std::chrono::steady_clock::now();
-      std::chrono::duration<double> elapsed_seconds = current_time - start_time;
+      if (obj_mesh.get()) {
+        auto current_time = std::chrono::steady_clock::now();
+        std::chrono::duration<double> elapsed_seconds =
+            current_time - start_time;
 
-      start_time = std::chrono::steady_clock::now();
+        start_time = std::chrono::steady_clock::now();
 
-      auto matrix = obj_mesh->getTransform();
-      Eigen::Transform<float, 3, Eigen::Affine> transform(matrix);
+        auto matrix = obj_mesh->getTransform();
+        Eigen::Transform<float, 3, Eigen::Affine> transform(matrix);
 
-      // Rotate the object around its Y-axis.
-      Eigen::AngleAxis<float> rotation(
-          (VulkanEngine::Constants::pi<float>() / 4.0f) *
-              elapsed_seconds.count(),
-          Eigen::Vector3f::UnitY());
-      transform.rotate(rotation);
+        // Rotate the object around its Y-axis.
+        Eigen::AngleAxis<float> rotation(
+            (VulkanEngine::Constants::pi<float>() / 4.0f) *
+                elapsed_seconds.count(),
+            Eigen::Vector3f::UnitY());
+        transform.rotate(rotation);
 
-      obj_mesh->setTranform(transform.matrix());
+        obj_mesh->setTranform(transform.matrix());
+      }
 
       camera->setLookAt(camera->getLookAt() + camera_movement);
       camera->setTranform(

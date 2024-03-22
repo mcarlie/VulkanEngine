@@ -55,9 +55,6 @@ file(GLOB EXAMPLES_SOURCES "examples/SimpleScene/*.cpp" "examples/SimpleScene/*.
 add_executable(SimpleScene ${EXAMPLES_SOURCES})
 target_link_libraries(SimpleScene VulkanEngine)
 include_directories("${THIRDPARTY_DIR}/cxxopts-2.2.0")
-if(SUPPORT_XCODE_SCHEME_ENVIRONMENT_PROPERTY)
-  set_property(TARGET SimpleScene APPEND PROPERTY XCODE_SCHEME_ENVIRONMENT ${XCODE_SCHEME_ENVIRONMENT_VARIABLES})
-endif()
 
 # Look for clang-format
 find_program(CLANG_FORMAT "clang-format")
