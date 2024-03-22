@@ -45,8 +45,12 @@ public:
   /// view matrix \return The view matrix of the Camera.
   const Eigen::Matrix4f getViewMatrix() const;
 
+  /// Set the width of the camera.
+  /// \param _width The width of the camera.
   void setWidth(uint32_t _width);
 
+  /// Set the heigth of the camera.
+  /// \param _height The height of the camera.
   void setHeight(uint32_t _height);
 
 private:

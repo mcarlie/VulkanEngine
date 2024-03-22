@@ -41,6 +41,7 @@ public:
   /// Get a MouseInfo instance which retrieves values from this Window instance
   virtual std::shared_ptr<MouseInput> getMouseInput();
 
+  /// Get keyboard input instance for this window.
   virtual std::shared_ptr<KeyboardInput> getKeyboardInput();
 
   /// Do anything needed to update the window.

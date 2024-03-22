@@ -10,6 +10,7 @@ namespace VulkanEngine {
 class RenderPass;
 class ImageBase;
 
+/// TODO: This is a work in progress and is not currently used.
 class Framebuffer {
 public:
   Framebuffer(const std::shared_ptr<RenderPass> &render_pass,

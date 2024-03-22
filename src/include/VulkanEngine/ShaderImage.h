@@ -44,10 +44,13 @@ public:
   /// Destructor.
   ~ShaderImage();
 
+  /// Create image sampler.
   void createSampler();
 
+  /// Get descriptor image info.
   vk::DescriptorImageInfo getVkDescriptorImageInfo();
 
+  /// Append descriptor sets to this shader image.
   virtual void appendVkDescriptorSets(
       std::vector<vk::WriteDescriptorSet> &write_descriptor_sets,
       std::vector<vk::CopyDescriptorSet> &copy_descriptor_sets,

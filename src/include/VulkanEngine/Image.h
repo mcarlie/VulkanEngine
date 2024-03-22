@@ -46,6 +46,9 @@ public:
   /// \param data Pointer to the image data.
   void setImageData(const void *data);
 
+  /// Create vk::ImageView.
+  /// \param image_view_type The type of image view.
+  /// \param image_aspect_flags Image aspect flags.
   void createImageView(vk::ImageViewType image_view_type,
                        vk::ImageAspectFlags image_aspect_flags);
 
@@ -57,8 +60,13 @@ public:
   void transitionImageLayout(vk::ImageLayout new_layout,
                              const vk::CommandBuffer &command_buffer = nullptr);
 
+  /// Get the vk::Format of the image.
   const vk::Format getVkFormat() const;
+
+  /// Get vk::SampleCountFlagBits.
   const vk::SampleCountFlagBits getVkSampleCountFlags() const;
+  
+  /// Get the vk::ImageView.
   const vk::ImageView getVkImageView() const;
 
 protected:
@@ -105,6 +113,7 @@ protected:
   /// The vk::ImageView created in createImageView().
   vk::ImageView vk_image_view;
 
+  /// VkImageCreateInfo.
   VkImageCreateInfo image_create_info;
 };
 

@@ -34,12 +34,17 @@ private:
   /// scene.
   virtual void update(SceneState &scene_state) override;
 
+  /// Load an obj file from the given path
+  /// \param obj_path Path to the obj file.
+  /// \param mtl_path Optional path to the mtl file.
   void loadOBJ(const char *obj_path, const char *mtl_path);
 
   /// \return Auto generated vertex shader for this OBJMesh.
+  /// \param has_tex_coords Set to true if the obj has texture coordinates.
   const std::string getVertexShaderString(bool has_tex_coords);
 
   /// \return Auto generated fragment shader for this OBJMesh.
+  /// \param has_tex_coords Set to true if the obj has texture coordinates.
   const std::string getFragmentShaderString(bool has_tex_coords);
 
   /// Meshes composing this OBJMesh.
@@ -48,11 +53,13 @@ private:
   /// The shader to use for rendering the OBJMesh.
   std::shared_ptr<Shader> shader;
 
+  /// Model view projection uniform buffers for each frame in flight.
   std::vector<std::shared_ptr<UniformBuffer<MvpUbo>>> mvp_buffers;
 
   /// Textures belonging to this mesh.
   std::unordered_map<std::string, std::shared_ptr<Descriptor>> textures;
 
+  /// True if the graphics pipeline has been updated.
   bool graphics_pipeline_updated;
 };
 

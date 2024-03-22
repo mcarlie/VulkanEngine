@@ -10,6 +10,7 @@
 // Forward decleration.
 class Image;
 
+/// TODO development of this class is in progress.
 namespace VulkanEngine {
 class RenderPass {
 public:

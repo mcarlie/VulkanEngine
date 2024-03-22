@@ -78,7 +78,7 @@ private:
   static void cursorPositionCallback(GLFWwindow *_glfw_window, double xpos,
                                      double ypos);
 
-  /// Callback which gives which buttons are current clicked on the mouse.
+  /// Callback which gives which buttons are currently clicked on the mouse.
   /// \param _glfw_window The window which recieved the event.
   /// \param button The button which has an event.
   /// \param action The action performed on the button.
@@ -86,6 +86,12 @@ private:
   static void mouseButtonCallback(GLFWwindow *_glfw_window, int button,
                                   int action, int mods);
 
+  /// Callback which gives which buttons are currently pressed on the keyboard.
+  /// \param _glfw_window The window which recieved the event.
+  /// \param key GLFW key id.
+  /// \param scancode scanecode id.
+  /// \param action The action performed on the button.
+  /// \param mods The modifier buttons pressed.
   static void keyCallback(GLFWwindow *_glfw_window, int key, int scancode,
                           int action, int mods);
 };

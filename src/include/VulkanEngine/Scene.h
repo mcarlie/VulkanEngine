@@ -16,8 +16,10 @@ public:
   /// Destructor.
   virtual ~Scene();
 
+  /// Update the scene object.
   void update();
 
+  /// Get the currently active window.
   const std::shared_ptr<Window> &getActiveWindow() const;
 
 private:
@@ -25,8 +27,10 @@ private:
   /// scene.
   virtual void update(SceneState &scene_state) override;
 
+  /// The current state of the scene.
   std::unique_ptr<SceneState> state_instance;
 
+  /// List of windows to render to.
   std::vector<std::shared_ptr<Window>> windows;
 };
 
