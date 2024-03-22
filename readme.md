@@ -79,3 +79,10 @@ docker run -v ./build:/build -e DISPLAY=host.docker.internal:0 vulkanengine /bui
 ```
 
 [Docker supports GPU rendering with NVidia GPUs.](https://docs.docker.com/config/containers/resource_constraints/#expose-gpus-for-use)
+
+## Documentation
+Documentation can be generated with Doxygen:
+
+```
+doxygen doc/Doxyfile
+```
