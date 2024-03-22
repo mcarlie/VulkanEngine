@@ -1,3 +1,4 @@
+#include <VulkanEngine/Constants.h>
 #include <VulkanEngine/GLFWWindow.h>
 #include <VulkanEngine/OBJMesh.h>
 #include <VulkanEngine/Scene.h>
@@ -148,8 +149,10 @@ int main(int argc, char **argv) {
       Eigen::Transform<float, 3, Eigen::Affine> transform(matrix);
 
       // Rotate the object around its Y-axis.
-      Eigen::AngleAxis<float> rotation((M_PI / 4) * elapsed_seconds.count(),
-                                       Eigen::Vector3f::UnitY());
+      Eigen::AngleAxis<float> rotation(
+          (VulkanEngine::Constants::pi<float>() / 4.0f) *
+              elapsed_seconds.count(),
+          Eigen::Vector3f::UnitY());
       transform.rotate(rotation);
 
       obj_mesh->setTranform(transform.matrix());
