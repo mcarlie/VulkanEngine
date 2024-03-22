@@ -36,14 +36,14 @@ cmake --build .
 Ubuntu 23.04 or higher is required. Tested with GCC 12.3.0.
 
 ```
-apt-get install -y \
+sudo apt-get install -y \
     libglfw3 \
     libglfw3-dev \
     libeigen3-dev \
     libvulkan-dev \
     glslang-dev \
     glslang-tools \
-    vulkan-validationlayers-dev \
+    vulkan-validationlayers-dev
 
 git clone https://github.com/mcarlie/VulkanEngine.git
 cd VulkanEngine
