@@ -11,6 +11,7 @@ Current short term goals are:
 * Write unit tests and integration tests
 * Test on different hardware
 * Setup automated continuous integration
+* Come up with a better name
 
 The engine has been tested on MacOS 14 Sonoma, Ubuntu 23.03 and Windows 11. However I do not have access to a Windows 11 machine with Vulkan support so only know that it builds.
 
