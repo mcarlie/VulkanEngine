@@ -47,18 +47,19 @@ bool VulkanEngine::VulkanManager::initialize(
     // Use validation layers if this is a debug build
     std::vector<const char *> layers;
 
-  #ifdef ENABLE_VULKAN_VALIDATION
+#ifdef ENABLE_VULKAN_VALIDATION
     layers.push_back("VK_LAYER_KHRONOS_validation");
     instance_extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
     instance_extensions.push_back(VK_EXT_DEBUG_REPORT_EXTENSION_NAME);
     instance_extensions.push_back("VK_KHR_get_physical_device_properties2");
     instance_extensions.push_back("VK_KHR_device_group_creation");
     instance_extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
-  #endif
+#endif
 
-  #ifdef __APPLE__
-    instance_extensions.push_back(VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME);
-  #endif
+#ifdef __APPLE__
+    instance_extensions.push_back(
+        VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME);
+#endif
     instance_extensions.push_back(
         VK_KHR_EXTERNAL_FENCE_CAPABILITIES_EXTENSION_NAME);
     instance_extensions.push_back(
@@ -75,9 +76,9 @@ bool VulkanEngine::VulkanManager::initialize(
 
     auto inst_info =
         vk::InstanceCreateInfo()
-  #ifdef __APPLE__
+#ifdef __APPLE__
             .setFlags(vk::InstanceCreateFlagBits::eEnumeratePortabilityKHR)
-  #endif
+#endif
             .setPApplicationInfo(&app_info)
             .setEnabledExtensionCount(
                 static_cast<uint32_t>(instance_extensions.size()))
@@ -87,7 +88,7 @@ bool VulkanEngine::VulkanManager::initialize(
 
     vk_instance = vk::createInstance(inst_info);
 
-  #ifdef ENABLE_VULKAN_VALIDATION
+#ifdef ENABLE_VULKAN_VALIDATION
     vk::DebugUtilsMessengerCreateInfoEXT debug_message_create_info;
     debug_message_create_info.messageSeverity =
         vk::DebugUtilsMessageSeverityFlagBitsEXT::eError |
@@ -99,8 +100,8 @@ bool VulkanEngine::VulkanManager::initialize(
     debug_message_create_info.pfnUserCallback = debugCallback;
     debug_message_create_info.pUserData = nullptr;
 
-    vk_dispatch_loader_dynamic.init(vk_instance, vkGetInstanceProcAddr, vk_device,
-                                    vkGetDeviceProcAddr);
+    vk_dispatch_loader_dynamic.init(vk_instance, vkGetInstanceProcAddr,
+                                    vk_device, vkGetDeviceProcAddr);
     vk_debug_utils_messenger = vk_instance.createDebugUtilsMessengerEXT(
         debug_message_create_info, nullptr, vk_dispatch_loader_dynamic);
 
@@ -108,7 +109,7 @@ bool VulkanEngine::VulkanManager::initialize(
       throw std::runtime_error(
           "Could not initialize debug reporting for vulkan!");
     }
-  #endif
+#endif
 
     vk_surface = window->createVkSurface(vk_instance);
 
@@ -124,18 +125,19 @@ bool VulkanEngine::VulkanManager::initialize(
       physical_device_extension_names.push_back(ext.extensionName);
     }
 
-  #ifdef __APPLE__
+#ifdef __APPLE__
     physical_device_extension_names.push_back(
         VK_EXT_SWAPCHAIN_MAINTENANCE_1_EXTENSION_NAME);
     physical_device_extension_names.push_back(
         VK_EXT_BUFFER_DEVICE_ADDRESS_EXTENSION_NAME);
-  #endif
+#endif
 
     bool found_VK_KHR_maintenance1 = false;
     bool found_VK_AMD_negative_viewport_height = false;
     for (auto it = physical_device_extension_names.begin();
-        it != physical_device_extension_names.end(); ++it) {
-      if (!(found_VK_KHR_maintenance1 && found_VK_AMD_negative_viewport_height)) {
+         it != physical_device_extension_names.end(); ++it) {
+      if (!(found_VK_KHR_maintenance1 &&
+            found_VK_AMD_negative_viewport_height)) {
         if (std::string(*it) == "VK_KHR_maintenance1") {
           found_VK_KHR_maintenance1 = true;
         } else if (std::string(*it) == "VK_AMD_negative_viewport_height") {
@@ -145,9 +147,9 @@ bool VulkanEngine::VulkanManager::initialize(
 
       if (found_VK_KHR_maintenance1 && found_VK_AMD_negative_viewport_height) {
         std::cout << "Both VK_KHR_maintenance1 and "
-                    "VK_AMD_negative_viewport_height were found in the "
+                     "VK_AMD_negative_viewport_height were found in the "
                   << "list of physical device extensions. Removed "
-                    "VK_AMD_negative_viewport_height since enabling "
+                     "VK_AMD_negative_viewport_height since enabling "
                   << "both is not allowed by the Vulkan specification."
                   << std::endl;
         physical_device_extension_names.erase(it);
@@ -205,7 +207,8 @@ bool VulkanEngine::VulkanManager::initialize(
 
     // TODO Use these
     auto surface_formats = vk_physical_device.getSurfaceFormatsKHR(vk_surface);
-    auto present_modes = vk_physical_device.getSurfacePresentModesKHR(vk_surface);
+    auto present_modes =
+        vk_physical_device.getSurfacePresentModesKHR(vk_surface);
     auto surface_support = vk_physical_device.getSurfaceSupportKHR(
         graphics_queue_family_index, vk_surface);
 
@@ -214,7 +217,7 @@ bool VulkanEngine::VulkanManager::initialize(
     createImageViews();
 
     default_render_pass.reset(new RenderPass(window->getFramebufferWidth(),
-                                            window->getFramebufferHeight()));
+                                             window->getFramebufferHeight()));
 
     // createRenderPass();
     createSwapchainFramebuffers();
@@ -222,7 +225,8 @@ bool VulkanEngine::VulkanManager::initialize(
     createCommandBuffers();
 
   } catch (const std::exception &e) {
-    std::cerr << "Exception during engine initialization: " << e.what() << std::endl;
+    std::cerr << "Exception during engine initialization: " << e.what()
+              << std::endl;
     return false;
   } catch (...) {
     std::cerr << "An unknown error occurred during engine initialization."
