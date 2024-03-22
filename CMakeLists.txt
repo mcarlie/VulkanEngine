@@ -59,12 +59,16 @@ if(SUPPORT_XCODE_SCHEME_ENVIRONMENT_PROPERTY)
   set_property(TARGET SimpleScene APPEND PROPERTY XCODE_SCHEME_ENVIRONMENT ${XCODE_SCHEME_ENVIRONMENT_VARIABLES})
 endif()
 
-# Custom target to format all C++ source and header files
-if(APPLE)
+# Look for clang-format
+find_program(CLANG_FORMAT "clang-format")
+
+if(APPLE AND CLANG_FORMAT)
   add_custom_target(format 
-    COMMAND clang-format -i -style=file ${VULKAN_ENGINE_SOURCES} ${EXAMPLES_SOURCES})
+    COMMAND ${CLANG_FORMAT} -i -style=file ${VULKAN_ENGINE_SOURCES} ${EXAMPLES_SOURCES})
 
   add_dependencies(VulkanEngine format)
+else()
+  message(STATUS "clang-format not found, skipping format target")
 endif()
 
 if( WIN32 )
