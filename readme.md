@@ -59,13 +59,12 @@ cmake --build .
 ### Docker
 A Dockerfile is provided which includes all dependencies and can be used to build.
 
-To build:
 ```
 docker build -f Dockerfile -t vulkan-engine .
 docker run -v ./:/src vulkan-engine /bin/sh -c "cd /src && cmake -B build . && cd build && make"
 ```
 
-Build output will be available in the build folder on the host.
+Build output will be available in the `build` folder on the host.
 
 ## Running
 There is an example SimpleScene which demontrates how to use the API.
