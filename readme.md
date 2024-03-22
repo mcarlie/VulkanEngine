@@ -6,6 +6,11 @@ This project was started while I was working on creating an engine at a previous
 
 The goal is to have a custom engine to use for exploring new graphical techniques.
 
+Current short term goals are:
+* Fully modulerize the backend (some functionality is missing such as configurable framebuffers)
+* Write unit tests and integration tests
+* Test on different hardware
+
 The engine has been tested on MacOS 14 Sonoma, Ubuntu 23.03 and Windows 11. However I do not have access to a Windows 11 machine with Vulkan support so only know that it builds.
 
 ## Build
