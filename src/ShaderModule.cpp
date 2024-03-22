@@ -2,11 +2,7 @@
 #include <VulkanEngine/VulkanManager.h>
 #include <glslang/Public/ResourceLimits.h>
 #include <glslang/Public/ShaderLang.h>
-#ifdef __APPLE__
 #include <glslang/SPIRV/GlslangToSpv.h>
-#else
-#include <SPIRV/GlslangToSpv.h>
-#endif
 
 #include <fstream>
 #include <iostream>

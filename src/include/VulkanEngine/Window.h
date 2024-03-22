@@ -4,6 +4,7 @@
 #include <VulkanEngine/KeyboardInput.h>
 #include <VulkanEngine/MouseInput.h>
 
+#include <memory>
 #include <string>
 #include <vulkan/vulkan.hpp>
 

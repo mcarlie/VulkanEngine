@@ -3,6 +3,8 @@
 
 #include <vulkan/vulkan.hpp>
 
+#include <memory>
+
 namespace VulkanEngine {
 
 class RenderPass;

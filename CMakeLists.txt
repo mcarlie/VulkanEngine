@@ -25,34 +25,14 @@ include_directories(${Vulkan_INCLUDE_DIRS})
 link_directories(AFTER "${VULKAN_SDK}/lib")
 target_link_libraries(VulkanEngine ${Vulkan_LIBRARIES})
 
-# On Apple glslang includes default resource limits.
-if(NOT APPLE)
-  FetchContent_Declare(
-    glslang
-    GIT_REPOSITORY https://github.com/KhronosGroup/glslang.git
-    GIT_TAG        14.1.0
-  )
+find_package(Threads)
+find_package(glslang REQUIRED)
 
-  FetchContent_GetProperties(glslang)
-  if(NOT glslang_POPULATED)
-    FetchContent_Populate(glslang)
-    add_subdirectory(${glslang_SOURCE_DIR} ${glslang_BINARY_DIR})
-  endif()
-
-  execute_process(
-    COMMAND ${CMAKE_COMMAND} -E env PYTHONPATH="${glslang_SOURCE_DIR}" python3 "${glslang_SOURCE_DIR}/update_glslang_sources.py"
-    WORKING_DIRECTORY ${glslang_SOURCE_DIR}
-    RESULT_VARIABLE UPDATE_GLSLANG_RESULT
-  )
-
-  if(NOT UPDATE_GLSLANG_RESULT EQUAL "0")
-    message(FATAL_ERROR "Failed to update glslang sources")
-  endif()
-
-  target_include_directories(VulkanEngine PRIVATE ${glslang_SOURCE_DIR})
-endif()
-
-target_link_libraries(VulkanEngine glslang glslang-default-resource-limits SPIRV)
+target_link_libraries(VulkanEngine
+  glslang::glslang 
+  glslang::glslang-default-resource-limits 
+  glslang::SPIRV 
+)
 
 set(ENABLE_VULKAN_VALIDATION OFF CACHE BOOL "Enable Vulkan validation layers")
 if(ENABLE_VULKAN_VALIDATION)

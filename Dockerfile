@@ -1,5 +1,5 @@
 # Use Ubuntu 22.04 as the base image
-FROM ubuntu:22.04
+FROM ubuntu:23.04
 
 # Avoid prompts from apt
 ENV DEBIAN_FRONTEND=noninteractive
@@ -24,12 +24,9 @@ RUN apt-get install -y \
 # Set the working directory in the container
 WORKDIR /usr/src/app
 
-# Copy your project files into the Docker container
 # COPY . .
 
-# Uncomment these lines if you want to build your project during the Docker image build
 # RUN cmake .
 # RUN make
 
-# Command to run your application
 # CMD ["./your_application"]
