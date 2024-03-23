@@ -4,7 +4,7 @@ This is a scene-graph graphics engine based on Vulkan.
 
 This project was started while I was working on creating an engine at a previous job and I wanted to get some insight into how modern graphics APIs work to prepare the engine for it.
 
-The goal is to have a custom engine to use for exploring new and familar graphical techniques such as modern ray tracing.
+The goal is to have a custom engine to use as a base for further personal projects in graphics.
 
 Current short term goals are:
 * Fully modulerize the backend (some functionality is missing such as configurable framebuffers)
