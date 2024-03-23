@@ -192,7 +192,8 @@ VulkanEngine::OBJMesh::OBJMesh(std::filesystem::path obj_file,
 
 VulkanEngine::OBJMesh::~OBJMesh() {}
 
-const BoundingBox<Eigen::Vector3f> &VulkanEngine::OBJMesh::getBoundingBox() const {
+const BoundingBox<Eigen::Vector3f> &
+VulkanEngine::OBJMesh::getBoundingBox() const {
   return bounding_box;
 }
 

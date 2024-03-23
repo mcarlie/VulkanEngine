@@ -53,7 +53,6 @@ public:
   }
 
 protected:
-
   /// The Mesh's bounding box.
   std::shared_ptr<BoundingBoxBase> bounding_box;
 };
