@@ -1,6 +1,7 @@
 #ifndef OBJMESH_H
 #define OBJMESH_H
 
+#include <VulkanEngine/BoundingBox.h>
 #include <VulkanEngine/GraphicsPipeline.h>
 #include <VulkanEngine/MeshBase.h>
 #include <VulkanEngine/SceneObject.h>
@@ -22,6 +23,9 @@ public:
 
   /// Destructor.
   virtual ~OBJMesh();
+
+  /// \return The OBJMesh's bounding box.
+  const BoundingBox<Eigen::Vector3f> &getBoundingBox() const;
 
 private:
   struct MvpUbo {
@@ -61,6 +65,9 @@ private:
 
   /// True if the graphics pipeline has been updated.
   bool graphics_pipeline_updated;
+
+  /// The OBJMesh's bounding box.
+  BoundingBox<Eigen::Vector3f> bounding_box;
 };
 
 } // namespace VulkanEngine

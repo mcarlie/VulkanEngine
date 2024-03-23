@@ -1,13 +1,14 @@
 #ifndef MESHBASE_H
 #define MESHBASE_H
 
+#include <VulkanEngine/BoundingBox.h>
 #include <VulkanEngine/Shader.h>
 
 #include <memory>
 
 namespace VulkanEngine {
 
-/// Provides an abstract interface for various types of Mesh classes.
+/// Base class for Mesh specializations.
 class MeshBase {
 public:
   /// Constructor.
@@ -45,6 +46,16 @@ public:
   /// Insert drawing commands.
   /// \param command_buffer The vk::CommandBuffer to insert the commands into.
   virtual void draw(const vk::CommandBuffer &command_buffer) = 0;
+
+  template <typename PositionType>
+  const BoundingBox<PositionType> &getBoundingBox() {
+    return *static_cast<const BoundingBox<PositionType> *>(bounding_box.get());
+  }
+
+protected:
+
+  /// The Mesh's bounding box.
+  std::shared_ptr<BoundingBoxBase> bounding_box;
 };
 
 } // namespace VulkanEngine

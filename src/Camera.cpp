@@ -91,4 +91,8 @@ void VulkanEngine::Camera::setWidth(uint32_t _width) { width = _width; }
 
 void VulkanEngine::Camera::setHeight(uint32_t _height) { height = _height; }
 
+float VulkanEngine::Camera::getWidth() const { return width; }
+
+float VulkanEngine::Camera::getHeight() const { return height; }
+
 #endif /* CAMERA_CPP */

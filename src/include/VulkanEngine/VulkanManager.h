@@ -22,8 +22,8 @@ template <vk::Format format, vk::ImageType image_type, vk::ImageTiling tiling,
 class Image;
 class RenderPass;
 
-/// TODO this class is a work in progress. The current goal is to modulerize this more
-/// and place functionality in seperate classes.
+/// TODO this class is a work in progress. The current goal is to modulerize
+/// this more and place functionality in seperate classes.
 class VulkanManager {
 private:
   /// Constructor.

@@ -65,7 +65,7 @@ public:
 
   /// Get vk::SampleCountFlagBits.
   const vk::SampleCountFlagBits getVkSampleCountFlags() const;
-  
+
   /// Get the vk::ImageView.
   const vk::ImageView getVkImageView() const;
 

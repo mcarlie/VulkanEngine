@@ -78,7 +78,8 @@ int main(int argc, char **argv) {
     } catch (const std::exception &e) {
       std::cerr << "Failed to load obj mesh: " << e.what() << std::endl;
     } catch (...) {
-      std::cerr << "An unknown exception occurred when loading obj mesh." << std::endl;
+      std::cerr << "An unknown exception occurred when loading obj mesh."
+                << std::endl;
     }
 
     Eigen::Affine3f transform(Eigen::Translation3f(0.0f, 0.0f, 0.0f));

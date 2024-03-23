@@ -1,13 +1,16 @@
 #ifndef MESH_CPP
 #define MESH_CPP
 
+#include "VulkanEngine/BoundingBox.h"
 #include <VulkanEngine/Mesh.h>
 #include <VulkanEngine/Utilities.h>
 
 template <typename PositionType, typename IndexType,
           class... AdditionalAttributeTypes>
 VulkanEngine::Mesh<PositionType, IndexType,
-                   AdditionalAttributeTypes...>::Mesh() {}
+                   AdditionalAttributeTypes...>::Mesh() {
+  bounding_box.reset(new BoundingBox<PositionType>());
+}
 
 template <typename PositionType, typename IndexType,
           class... AdditionalAttributeTypes>
@@ -45,6 +48,16 @@ void VulkanEngine::Mesh<PositionType, IndexType, AdditionalAttributeTypes...>::
         const std::tuple<AttributeContainer<AdditionalAttributeTypes>...>
             &_attributes) {
   attributes = _attributes;
+}
+
+template <typename PositionType, typename IndexType,
+          class... AdditionalAttributeTypes>
+void VulkanEngine::Mesh<PositionType, IndexType, AdditionalAttributeTypes...>::
+    setBoundingBox(const PositionType &max, const PositionType &min) {
+  auto downcast_bbox =
+      static_cast<BoundingBox<PositionType> *>(bounding_box.get());
+  downcast_bbox->max = max;
+  downcast_bbox->min = min;
 }
 
 template <typename PositionType, typename IndexType,

@@ -4,6 +4,8 @@
 #include <VulkanEngine/ShaderImage.h>
 #include <VulkanEngine/Utilities.h>
 #include <VulkanEngine/VulkanManager.h>
+#include <limits>
+#include <memory>
 
 #define TINYOBJLOADER_IMPLEMENTATION
 #include <tiny_obj_loader.h>
@@ -40,11 +42,40 @@ getShape(const tinyobj::shape_t &shape, const tinyobj::attrib_t &attrib) {
   std::vector<Eigen::Vector2f> texcoords;
   texcoords.reserve(shape.mesh.indices.size());
 
+  Eigen::Vector3f max_position = {std::numeric_limits<float>::min(),
+                                  std::numeric_limits<float>::min(),
+                                  std::numeric_limits<float>::min()},
+                  min_position = {std::numeric_limits<float>::max(),
+                                  std::numeric_limits<float>::max(),
+                                  std::numeric_limits<float>::max()};
+
   for (size_t i = 0; i < shape.mesh.indices.size(); ++i) {
     positions.emplace_back(
         attrib.vertices[3 * shape.mesh.indices[i].vertex_index + 0],
         attrib.vertices[3 * shape.mesh.indices[i].vertex_index + 1],
         attrib.vertices[3 * shape.mesh.indices[i].vertex_index + 2]);
+
+    // Calculate bounding box.
+    auto &position = positions.back();
+    if (position.x() > max_position.x()) {
+      max_position.x() = position.x();
+    }
+    if (position.y() > max_position.y()) {
+      max_position.y() = position.y();
+    }
+    if (position.z() > max_position.z()) {
+      max_position.z() = position.z();
+    }
+
+    if (position.x() < min_position.x()) {
+      min_position.x() = position.x();
+    }
+    if (position.y() < min_position.y()) {
+      min_position.y() = position.y();
+    }
+    if (position.z() < min_position.z()) {
+      min_position.z() = position.z();
+    }
 
     if (shape.mesh.indices[i].normal_index > -1) {
       normals.emplace_back(
@@ -115,7 +146,7 @@ getShape(const tinyobj::shape_t &shape, const tinyobj::attrib_t &attrib) {
   mesh->setPositions(position_attribute);
   mesh->setIndices(index_attribute);
   mesh->setAttributes(additional_attributes);
-
+  mesh->setBoundingBox(max_position, min_position);
   return std::shared_ptr<VulkanEngine::MeshBase>(mesh);
 }
 
@@ -125,7 +156,7 @@ VulkanEngine::OBJMesh::OBJMesh(std::filesystem::path obj_file,
                                std::filesystem::path mtl_path,
                                const std::shared_ptr<Shader> _shader)
     : SceneObject(), GraphicsPipeline(), shader(_shader),
-      graphics_pipeline_updated(false) {
+      graphics_pipeline_updated(false), bounding_box() {
   std::error_code obj_file_error;
   if (!std::filesystem::exists(obj_file, obj_file_error)) {
     std::cout << "Provided obj path " + (obj_file.string()) +
@@ -160,6 +191,10 @@ VulkanEngine::OBJMesh::OBJMesh(std::filesystem::path obj_file,
 }
 
 VulkanEngine::OBJMesh::~OBJMesh() {}
+
+const BoundingBox<Eigen::Vector3f> &VulkanEngine::OBJMesh::getBoundingBox() const {
+  return bounding_box;
+}
 
 void VulkanEngine::OBJMesh::update(SceneState &scene_state) {
   MvpUbo ubo_data;
@@ -199,9 +234,7 @@ void VulkanEngine::OBJMesh::update(SceneState &scene_state) {
     if (shader.get()) {
       shader->bindDescriptorSet(
           current_command_buffer,
-          static_cast<uint32_t>(
-              vulkan_manager->getCurrentFrame())); /// TODO 0 was i for each
-                                                   /// frame in flight
+          static_cast<uint32_t>(vulkan_manager->getCurrentFrame()));
     }
 
     mesh->draw(current_command_buffer);
@@ -226,6 +259,13 @@ void VulkanEngine::OBJMesh::loadOBJ(const char *obj_path,
         "Could not load obj file: " + std::string(obj_path) + ", " + err);
   }
 
+  bounding_box.max = {std::numeric_limits<float>::min(),
+                      std::numeric_limits<float>::min(),
+                      std::numeric_limits<float>::min()};
+  bounding_box.min = {std::numeric_limits<float>::max(),
+                      std::numeric_limits<float>::max(),
+                      std::numeric_limits<float>::max()};
+
   for (const auto &shape : shapes) {
     // We represent the indices using uint16_t unless that is not sufficient
     // given the number of indices
@@ -234,11 +274,31 @@ void VulkanEngine::OBJMesh::loadOBJ(const char *obj_path,
     } else {
       meshes.push_back(OBJMeshInternal::getShape<uint16_t>(shape, attrib));
     }
+
+    // Calculate the bbox for the whole OBJ
+    const auto &mesh_bbox = meshes.back()->getBoundingBox<Eigen::Vector3f>();
+    if (mesh_bbox.max.x() > bounding_box.max.x()) {
+      bounding_box.max.x() = mesh_bbox.max.x();
+    }
+    if (mesh_bbox.max.y() > bounding_box.max.y()) {
+      bounding_box.max.y() = mesh_bbox.max.y();
+    }
+    if (mesh_bbox.max.z() > bounding_box.max.z()) {
+      bounding_box.max.z() = mesh_bbox.max.z();
+    }
+
+    if (mesh_bbox.min.x() < bounding_box.min.x()) {
+      bounding_box.min.x() = mesh_bbox.min.x();
+    }
+    if (mesh_bbox.min.y() < bounding_box.min.y()) {
+      bounding_box.min.y() = mesh_bbox.min.y();
+    }
+    if (mesh_bbox.min.z() < bounding_box.min.z()) {
+      bounding_box.min.z() = mesh_bbox.min.z();
+    }
   }
 
-  mvp_buffers.resize(VulkanManager::getInstance()
-                         ->getFramesInFlight()); /// TODO should be dependent on
-                                                 /// number of frames in flight
+  mvp_buffers.resize(VulkanManager::getInstance()->getFramesInFlight());
   for (auto &ub : mvp_buffers) {
     ub.reset(new VulkanEngine::UniformBuffer<MvpUbo>(0));
   }
@@ -263,9 +323,7 @@ void VulkanEngine::OBJMesh::loadOBJ(const char *obj_path,
             vk::ImageLayout::eUndefined,
             vk::ImageUsageFlagBits::eTransferDst |
                 vk::ImageUsageFlagBits::eTransferSrc |
-                vk::ImageUsageFlagBits::eSampled, /// TODO These could be
-                                                  /// template parameters
-                                                  /// instead
+                vk::ImageUsageFlagBits::eSampled,
             VMA_MEMORY_USAGE_GPU_ONLY, static_cast<uint32_t>(texture_width),
             static_cast<uint32_t>(texture_height), 1, sizeof(unsigned char) * 4,
             1,

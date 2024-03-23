@@ -36,7 +36,6 @@ public:
   const vk::PipelineLayout getVkPipelineLayout();
 
 private:
-
   /// List of ShaderStages for this shader.
   std::vector<vk::PipelineShaderStageCreateInfo> shader_stages;
 

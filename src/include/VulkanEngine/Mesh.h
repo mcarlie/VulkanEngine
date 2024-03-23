@@ -65,10 +65,14 @@ public:
   /// Sets the additional attributes of the Mesh.
   /// \param _additional_attributes A list of additional VertexAttribute
   /// instances which will be used when rendering the Mesh.
-  /// TODO Some bug not allowing this to build with visual studio 2017
   void setAttributes(
       const std::tuple<AttributeContainer<AdditionalAttributeTypes>...>
           &_attributes);
+
+  /// Set the Mesh's BoundingBox.
+  /// \param max The maximum position of the bounding box.
+  /// \param min The minimum position of the bounding box.
+  void setBoundingBox(const PositionType &max, const PositionType &min);
 
   /// \return The vk::PipelineVertexInputStateCreateInfo instance describing the
   /// attributes that constitute the Mesh.

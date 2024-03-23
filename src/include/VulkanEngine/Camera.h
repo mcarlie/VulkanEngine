@@ -53,6 +53,12 @@ public:
   /// \param _height The height of the camera.
   void setHeight(uint32_t _height);
 
+  /// \return The width of the camera.
+  float getWidth() const;
+
+  /// \return The height of the camera.
+  float getHeight() const;
+
 private:
   /// Update the camera. Updates the projection and view matrix in \c
   /// scene_state with the camera's values. \param scene_state Represents the
