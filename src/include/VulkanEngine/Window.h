@@ -31,7 +31,7 @@ public:
   /// \return A list of vulkan extensions required by the underlying windowing
   /// system.
   virtual const std::vector<const char *>
-  getRequiredVulkanInstanceExtensions() = 0;
+  getRequiredVulkanInstanceExtensions() const = 0;
 
   /// Create and return a vk::SurfaceKHR instance.
   /// \param instance The vk::Instance to create the surface for.
@@ -39,10 +39,10 @@ public:
   virtual vk::SurfaceKHR createVkSurface(const vk::Instance &instance) = 0;
 
   /// Get a MouseInfo instance which retrieves values from this Window instance
-  virtual std::shared_ptr<MouseInput> getMouseInput();
+  virtual std::shared_ptr<MouseInput> getMouseInput() const;
 
   /// Get keyboard input instance for this window.
-  virtual std::shared_ptr<KeyboardInput> getKeyboardInput();
+  virtual std::shared_ptr<KeyboardInput> getKeyboardInput() const;
 
   /// Do anything needed to update the window.
   virtual void update() = 0;
@@ -59,25 +59,25 @@ public:
   virtual void setHeight(uint32_t _height);
 
   /// \return The width of the window.
-  uint32_t getWidth();
+  uint32_t getWidth() const;
 
   /// \return The height of the window.
-  uint32_t getHeight();
+  uint32_t getHeight() const;
 
   /// \return The width of the window's framebuffer.
-  uint32_t getFramebufferWidth();
+  uint32_t getFramebufferWidth() const;
 
   /// \return The width of the window's framebuffer.
-  uint32_t getFramebufferHeight();
+  uint32_t getFramebufferHeight() const;
 
   /// \return The window's title.
-  const std::string &getTitle();
+  const std::string &getTitle() const;
 
   /// \return True if the window is in full screen mode.
-  bool isFullScreen();
+  bool isFullScreen() const;
 
   /// \return True if the size has changed.
-  bool sizeHasChanged();
+  bool sizeHasChanged() const;
 
 protected:
   /// Callback which gets the current position of the mouse

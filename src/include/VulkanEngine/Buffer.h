@@ -33,7 +33,7 @@ public:
   ~Buffer();
 
   /// \return The vk::Buffer instance of this Attribute.
-  const vk::Buffer getVkBuffer();
+  const vk::Buffer getVkBuffer() const;
 
   /// Overriden to handle tranferring data from a StagedBuffer to this buffer.
   /// \param command_buffers The command buffer to insert the command into.

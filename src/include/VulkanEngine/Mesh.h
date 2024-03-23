@@ -77,12 +77,12 @@ public:
   /// \return The vk::PipelineVertexInputStateCreateInfo instance describing the
   /// attributes that constitute the Mesh.
   virtual const vk::PipelineVertexInputStateCreateInfo &
-  getVkPipelineVertexInputStateCreateInfo();
+  createVkPipelineVertexInputStateCreateInfo();
 
   /// \return The vk::PipelineInputAssemblyStateCreateInfo describing how to
   /// handle the input assembly stage for the Mesh.
   virtual const vk::PipelineInputAssemblyStateCreateInfo &
-  getVkPipelineInputAssemblyStateCreateInfo();
+  createVkPipelineInputAssemblyStateCreateInfo();
 
   /// Start transfer of data belonging to all associated VertexAttribute
   /// instances from staging buffer to vertex buffer memory. \param

@@ -47,11 +47,11 @@ VulkanEngine::ShaderModule::~ShaderModule() {
 }
 
 const vk::ShaderStageFlagBits
-VulkanEngine::ShaderModule::getVkShaderStageFlag() {
+VulkanEngine::ShaderModule::getVkShaderStageFlag() const {
   return vk_shader_stage_flag;
 }
 
-const vk::ShaderModule &VulkanEngine::ShaderModule::getVkShaderModule() {
+const vk::ShaderModule &VulkanEngine::ShaderModule::getVkShaderModule() const {
   return vk_shader_module;
 }
 

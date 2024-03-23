@@ -64,7 +64,7 @@ template <typename PositionType, typename IndexType,
           class... AdditionalAttributeTypes>
 const vk::PipelineVertexInputStateCreateInfo &
 VulkanEngine::Mesh<PositionType, IndexType, AdditionalAttributeTypes...>::
-    getVkPipelineVertexInputStateCreateInfo() {
+    createVkPipelineVertexInputStateCreateInfo() {
   uint32_t binding_index = 0;
 
   binding_descriptions.push_back(
@@ -102,7 +102,7 @@ template <typename PositionType, typename IndexType,
           class... AdditionalAttributeTypes>
 const vk::PipelineInputAssemblyStateCreateInfo &
 VulkanEngine::Mesh<PositionType, IndexType, AdditionalAttributeTypes...>::
-    getVkPipelineInputAssemblyStateCreateInfo() {
+    createVkPipelineInputAssemblyStateCreateInfo() {
   pipeline_input_assembly_state_info =
       vk::PipelineInputAssemblyStateCreateInfo()
           .setPrimitiveRestartEnable(VK_FALSE)

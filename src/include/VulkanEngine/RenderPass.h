@@ -27,14 +27,14 @@ public:
 
   ~RenderPass();
 
-  const vk::RenderPass &getVkRenderPass();
+  const vk::RenderPass &getVkRenderPass() const;
 
   const std::shared_ptr<DepthStencilImageAttachment>
-  getDepthStencilAttachment() {
+  getDepthStencilAttachment() const {
     return depth_stencil_attachment;
   }
 
-  const std::shared_ptr<ColorAttachment> getColorAttachment() {
+  const std::shared_ptr<ColorAttachment> getColorAttachment() const {
     return color_attachment;
   }
 

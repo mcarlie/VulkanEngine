@@ -23,10 +23,10 @@ public:
   ~ShaderModule();
 
   /// \return The vk::ShaderStageFlagBits flag for the ShaderModule.
-  const vk::ShaderStageFlagBits getVkShaderStageFlag();
+  const vk::ShaderStageFlagBits getVkShaderStageFlag() const;
 
   /// \return The internal vk::ShaderModule instance.
-  const vk::ShaderModule &getVkShaderModule();
+  const vk::ShaderModule &getVkShaderModule() const;
 
 private:
   /// Read the source code file.

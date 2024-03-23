@@ -71,7 +71,7 @@ VulkanEngine::GLFWWindow::createVkSurface(const vk::Instance &instance) {
 }
 
 const std::vector<const char *>
-VulkanEngine::GLFWWindow::getRequiredVulkanInstanceExtensions() {
+VulkanEngine::GLFWWindow::getRequiredVulkanInstanceExtensions() const {
   uint32_t num_extensions;
   const char **extension_names;
   extension_names = glfwGetRequiredInstanceExtensions(&num_extensions);

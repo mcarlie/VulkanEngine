@@ -108,6 +108,6 @@ VulkanEngine::RenderPass::~RenderPass() {
   vk_render_pass = nullptr;
 }
 
-const vk::RenderPass &VulkanEngine::RenderPass::getVkRenderPass() {
+const vk::RenderPass &VulkanEngine::RenderPass::getVkRenderPass() const {
   return vk_render_pass;
 }

@@ -19,7 +19,7 @@ template <typename T> VulkanEngine::VertexAttribute<T>::~VertexAttribute() {}
 template <typename T>
 const vk::VertexInputBindingDescription
 VulkanEngine::VertexAttribute<T>::getVkVertexInputBindingDescription(
-    uint32_t binding_index) {
+    uint32_t binding_index) const {
   return vk::VertexInputBindingDescription()
       .setBinding(binding_index)
       .setInputRate(vk::VertexInputRate::eVertex)
@@ -29,7 +29,7 @@ VulkanEngine::VertexAttribute<T>::getVkVertexInputBindingDescription(
 template <typename T>
 const vk::VertexInputAttributeDescription
 VulkanEngine::VertexAttribute<T>::getVkVertexInputAttributeDescriptions(
-    uint32_t binding_index) {
+    uint32_t binding_index) const {
   return vk::VertexInputAttributeDescription()
       .setBinding(binding_index)
       .setLocation(location)
@@ -38,7 +38,7 @@ VulkanEngine::VertexAttribute<T>::getVkVertexInputAttributeDescriptions(
 }
 
 template <typename T>
-vk::Format VulkanEngine::VertexAttribute<T>::getVkFormat() {
+vk::Format VulkanEngine::VertexAttribute<T>::getVkFormat() const {
   return format;
 }
 

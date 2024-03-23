@@ -357,23 +357,24 @@ void VulkanEngine::VulkanManager::drawImage() {
   current_frame = (current_frame + 1) % frames_in_flight;
 }
 
-const vk::Device &VulkanEngine::VulkanManager::getVkDevice() {
+const vk::Device &VulkanEngine::VulkanManager::getVkDevice() const {
   return vk_device;
 };
 
-const vk::PhysicalDevice &VulkanEngine::VulkanManager::getVKPhysicalDevice() {
+const vk::PhysicalDevice &
+VulkanEngine::VulkanManager::getVKPhysicalDevice() const {
   return vk_physical_device;
 };
 
-const vk::CommandPool &VulkanEngine::VulkanManager::getVkCommandPool() {
+const vk::CommandPool &VulkanEngine::VulkanManager::getVkCommandPool() const {
   return vk_command_pool;
 }
 
-const vk::Queue &VulkanEngine::VulkanManager::getVkGraphicsQueue() {
+const vk::Queue &VulkanEngine::VulkanManager::getVkGraphicsQueue() const {
   return vk_graphics_queue;
 }
 
-const VmaAllocator &VulkanEngine::VulkanManager::getVmaAllocator() {
+const VmaAllocator &VulkanEngine::VulkanManager::getVmaAllocator() const {
   return vma_allocator;
 }
 

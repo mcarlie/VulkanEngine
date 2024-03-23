@@ -66,23 +66,23 @@ public:
   void drawImage();
 
   /// \return The manager's vk::Device instance.
-  const vk::Device &getVkDevice();
+  const vk::Device &getVkDevice() const;
 
   /// \return The manager's vk::PhysicalDevice instance.
-  const vk::PhysicalDevice &getVKPhysicalDevice();
+  const vk::PhysicalDevice &getVKPhysicalDevice() const;
 
   /// \return The manager's vk::CommandPool for allocating command buffers.
-  const vk::CommandPool &getVkCommandPool();
+  const vk::CommandPool &getVkCommandPool() const;
 
   /// \return The manager's vk::Queue for submitting graphics related command
   /// buffers.
-  const vk::Queue &getVkGraphicsQueue();
+  const vk::Queue &getVkGraphicsQueue() const;
 
   /// \return The VmaAllocator instance for performing allocations with Vulkan
   /// memory allocator.
-  const VmaAllocator &getVmaAllocator();
+  const VmaAllocator &getVmaAllocator() const;
 
-  const std::shared_ptr<RenderPass> &getDefaultRenderPass() {
+  const std::shared_ptr<RenderPass> &getDefaultRenderPass() const {
     return default_render_pass;
   }
 

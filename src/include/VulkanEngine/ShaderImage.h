@@ -48,7 +48,7 @@ public:
   void createSampler();
 
   /// Get descriptor image info.
-  vk::DescriptorImageInfo getVkDescriptorImageInfo();
+  vk::DescriptorImageInfo getVkDescriptorImageInfo() const;
 
   /// Append descriptor sets to this shader image.
   virtual void appendVkDescriptorSets(

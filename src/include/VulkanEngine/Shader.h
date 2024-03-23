@@ -30,10 +30,11 @@ public:
                          uint32_t descriptor_set_index);
 
   /// \return Vulkan PipelineShaderStageCreateInfo instances.
-  const std::vector<vk::PipelineShaderStageCreateInfo> &getVkShaderStages();
+  const std::vector<vk::PipelineShaderStageCreateInfo> &
+  getVkShaderStages() const;
 
   /// \return Vulkan PipelineLayout instances.
-  const vk::PipelineLayout getVkPipelineLayout();
+  const vk::PipelineLayout createVkPipelineLayout();
 
 private:
   /// List of ShaderStages for this shader.

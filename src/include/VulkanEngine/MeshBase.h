@@ -20,12 +20,12 @@ public:
   /// \return The vk::PipelineVertexInputStateCreateInfo instance describing the
   /// attributes that consitute the Mesh.
   virtual const vk::PipelineVertexInputStateCreateInfo &
-  getVkPipelineVertexInputStateCreateInfo() = 0;
+  createVkPipelineVertexInputStateCreateInfo() = 0;
 
   /// \return The vk::PipelineInputAssemblyStateCreateInfo describing how to
   /// handle the input assembly stage for the Mesh.
   virtual const vk::PipelineInputAssemblyStateCreateInfo &
-  getVkPipelineInputAssemblyStateCreateInfo() = 0;
+  createVkPipelineInputAssemblyStateCreateInfo() = 0;
 
   /// Start transfer of data belonging to all associated VertexAttribute
   /// instances from staging buffer to vertex buffer memory. \param
@@ -48,7 +48,7 @@ public:
   virtual void draw(const vk::CommandBuffer &command_buffer) = 0;
 
   template <typename PositionType>
-  const BoundingBox<PositionType> &getBoundingBox() {
+  const BoundingBox<PositionType> &getBoundingBox() const {
     return *static_cast<const BoundingBox<PositionType> *>(bounding_box.get());
   }
 

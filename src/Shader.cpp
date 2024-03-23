@@ -96,17 +96,17 @@ void VulkanEngine::Shader::bindDescriptorSet(
     const vk::CommandBuffer &command_buffer, uint32_t descriptor_set_index) {
   if (descriptor_set_index < vk_descriptor_sets.size()) {
     command_buffer.bindDescriptorSets(
-        vk::PipelineBindPoint::eGraphics, getVkPipelineLayout(), 0,
+        vk::PipelineBindPoint::eGraphics, createVkPipelineLayout(), 0,
         vk_descriptor_sets[descriptor_set_index], nullptr);
   }
 }
 
 const std::vector<vk::PipelineShaderStageCreateInfo> &
-VulkanEngine::Shader::getVkShaderStages() {
+VulkanEngine::Shader::getVkShaderStages() const {
   return shader_stages;
 }
 
-const vk::PipelineLayout VulkanEngine::Shader::getVkPipelineLayout() {
+const vk::PipelineLayout VulkanEngine::Shader::createVkPipelineLayout() {
   if (!vk_pipeline_layout) {
     auto pipeline_layout_info =
         vk::PipelineLayoutCreateInfo()

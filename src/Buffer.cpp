@@ -14,7 +14,7 @@ VulkanEngine::Buffer::~Buffer() {
                    static_cast<VkBuffer>(vk_buffer), vma_allocation);
 }
 
-const vk::Buffer VulkanEngine::Buffer::getVkBuffer() { return vk_buffer; }
+const vk::Buffer VulkanEngine::Buffer::getVkBuffer() const { return vk_buffer; }
 
 void VulkanEngine::Buffer::createBuffer(
     vk::BufferUsageFlags usage_flags,

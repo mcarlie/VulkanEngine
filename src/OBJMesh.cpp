@@ -377,7 +377,7 @@ void VulkanEngine::OBJMesh::loadOBJ(const char *obj_path,
 }
 
 const std::string
-VulkanEngine::OBJMesh::getVertexShaderString(bool has_tex_coords) {
+VulkanEngine::OBJMesh::getVertexShaderString(bool has_tex_coords) const {
   std::stringstream return_string;
 
   return_string << std::endl
@@ -416,7 +416,7 @@ VulkanEngine::OBJMesh::getVertexShaderString(bool has_tex_coords) {
 }
 
 const std::string
-VulkanEngine::OBJMesh::getFragmentShaderString(bool has_tex_coords) {
+VulkanEngine::OBJMesh::getFragmentShaderString(bool has_tex_coords) const {
   std::stringstream return_string;
 
   return_string << "#version 450" << std::endl

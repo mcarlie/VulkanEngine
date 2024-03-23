@@ -45,11 +45,11 @@ private:
 
   /// \return Auto generated vertex shader for this OBJMesh.
   /// \param has_tex_coords Set to true if the obj has texture coordinates.
-  const std::string getVertexShaderString(bool has_tex_coords);
+  const std::string getVertexShaderString(bool has_tex_coords) const;
 
   /// \return Auto generated fragment shader for this OBJMesh.
   /// \param has_tex_coords Set to true if the obj has texture coordinates.
-  const std::string getFragmentShaderString(bool has_tex_coords);
+  const std::string getFragmentShaderString(bool has_tex_coords) const;
 
   /// Meshes composing this OBJMesh.
   std::vector<std::shared_ptr<MeshBase>> meshes;

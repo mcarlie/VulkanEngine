@@ -25,16 +25,16 @@ public:
   /// \return The Vulkan VertexInputBindingDescription for this VertexAttribute
   /// instance.
   const vk::VertexInputBindingDescription
-  getVkVertexInputBindingDescription(uint32_t binding_index);
+  getVkVertexInputBindingDescription(uint32_t binding_index) const;
 
   /// \return All vk::VertexInputAttributeDescription for this VertexAttribute
   /// instance.
   const vk::VertexInputAttributeDescription
-  getVkVertexInputAttributeDescriptions(uint32_t binding_index);
+  getVkVertexInputAttributeDescriptions(uint32_t binding_index) const;
 
   /// \return The vk::Format of the VertexAttribute describing the format of the
   /// vertex data.
-  vk::Format getVkFormat();
+  vk::Format getVkFormat() const;
 
 private:
   /// Number representing the shader location of the VertexAttribute.

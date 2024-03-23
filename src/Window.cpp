@@ -11,12 +11,12 @@ VulkanEngine::Window::Window(uint32_t _width, uint32_t _height,
 VulkanEngine::Window::~Window() {}
 
 std::shared_ptr<VulkanEngine::MouseInput>
-VulkanEngine::Window::getMouseInput() {
+VulkanEngine::Window::getMouseInput() const {
   return mouse_input;
 }
 
 std::shared_ptr<VulkanEngine::KeyboardInput>
-VulkanEngine::Window::getKeyboardInput() {
+VulkanEngine::Window::getKeyboardInput() const {
   return keyboard_input;
 }
 
@@ -24,23 +24,23 @@ void VulkanEngine::Window::setWidth(uint32_t _width) { width = _width; }
 
 void VulkanEngine::Window::setHeight(uint32_t _height) { height = _height; }
 
-uint32_t VulkanEngine::Window::getWidth() { return width; }
+uint32_t VulkanEngine::Window::getWidth() const { return width; }
 
-uint32_t VulkanEngine::Window::getHeight() { return height; }
+uint32_t VulkanEngine::Window::getHeight() const { return height; }
 
-uint32_t VulkanEngine::Window::getFramebufferWidth() {
+uint32_t VulkanEngine::Window::getFramebufferWidth() const {
   return framebuffer_width;
 }
 
-uint32_t VulkanEngine::Window::getFramebufferHeight() {
+uint32_t VulkanEngine::Window::getFramebufferHeight() const {
   return framebuffer_height;
 }
 
-const std::string &VulkanEngine::Window::getTitle() { return title; }
+const std::string &VulkanEngine::Window::getTitle() const { return title; }
 
-bool VulkanEngine::Window::isFullScreen() { return full_screen; }
+bool VulkanEngine::Window::isFullScreen() const { return full_screen; }
 
-bool VulkanEngine::Window::sizeHasChanged() { return size_changed; }
+bool VulkanEngine::Window::sizeHasChanged() const { return size_changed; }
 
 void VulkanEngine::Window::mousePositionCallback(double xpos, double ypos) {
   if (mouse_input.get()) {

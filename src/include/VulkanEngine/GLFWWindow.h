@@ -34,7 +34,8 @@ public:
   virtual void update();
 
   /// \return The required vulkan extensions for using GLFW.
-  virtual const std::vector<const char *> getRequiredVulkanInstanceExtensions();
+  virtual const std::vector<const char *>
+  getRequiredVulkanInstanceExtensions() const;
 
   /// \return True if the window should close.
   virtual bool shouldClose();

@@ -59,7 +59,8 @@ template <vk::Format format, vk::ImageType image_type, vk::ImageTiling tiling,
           vk::SampleCountFlagBits sample_count_flags>
 vk::DescriptorImageInfo
 VulkanEngine::ShaderImage<format, image_type, tiling,
-                          sample_count_flags>::getVkDescriptorImageInfo() {
+                          sample_count_flags>::getVkDescriptorImageInfo()
+    const {
   return vk::DescriptorImageInfo()
       .setSampler(vk_sampler)
       .setImageView(this->vk_image_view)
