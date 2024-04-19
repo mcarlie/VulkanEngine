@@ -85,16 +85,16 @@ jobs:
 
     - name: Configure CMake
       run: |
-        toolchainArg=""
+        toolchain_arg=""
         if [[ "${{ runner.os }}" == "Windows" ]]; then
-          toolchainArg="-DCMAKE_TOOLCHAIN_FILE=${{ github.workspace }}/vcpkg/scripts/buildsystems/vcpkg.cmake"
+          toolchain_arg="-DCMAKE_TOOLCHAIN_FILE=${{ github.workspace }}/vcpkg/scripts/buildsystems/vcpkg.cmake"
         fi
         cmake -B ${{ steps.strings.outputs.build-output-dir }} \
               -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }} \
               -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} \
               -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
               -S ${{ github.workspace }} \
-              $toolchainArg
+              $toolchain_arg
       shell: bash
 
     - name: Build
