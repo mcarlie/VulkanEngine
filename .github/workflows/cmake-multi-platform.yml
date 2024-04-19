@@ -83,18 +83,25 @@ jobs:
         .\vcpkg\vcpkg install glfw3 eigen3 glslang vulkan
         echo "VULKAN_SDK=${{ github.workspace }}/vcpkg/installed/x64-windows" >> $GITHUB_ENV
 
-    - name: Configure CMake
+    - name: Configure CMake for Windows
+      if: runner.os == 'Windows'
       run: |
-        toolchain_arg=""
-        if [[ "${{ runner.os }}" == "Windows" ]]; then
-          toolchain_arg="-DCMAKE_TOOLCHAIN_FILE=${{ github.workspace }}/vcpkg/scripts/buildsystems/vcpkg.cmake"
-        fi
         cmake -B ${{ steps.strings.outputs.build-output-dir }} \
               -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }} \
               -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} \
               -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
               -S ${{ github.workspace }} \
-              "${toolchain_arg}"
+              -DCMAKE_TOOLCHAIN_FILE=${{ github.workspace }}/vcpkg/scripts/buildsystems/vcpkg.cmake
+      shell: pwsh
+
+    - name: Configure CMake for Ubuntu
+      if: runner.os != 'Windows'
+      run: |
+        cmake -B ${{ steps.strings.outputs.build-output-dir }} \
+              -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }} \
+              -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} \
+              -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
+              -S ${{ github.workspace }}
       shell: bash
 
     - name: Build

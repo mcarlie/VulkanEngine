@@ -33,7 +33,7 @@ cmake --build .
 ```
 
 ### Ubuntu
-Ubuntu 23.04 or higher is required. Tested with GCC 12.3.0.
+Ubuntu 22.04 or higher is required.
 
 ```
 sudo apt-get install -y \
