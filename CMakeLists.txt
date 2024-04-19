@@ -19,7 +19,7 @@ file(GLOB VULKAN_ENGINE_SOURCES "src/*.cpp")
 file(GLOB VULKAN_ENGINE_HEADERS "include/VulkanEngine/*.h")
 
 include_directories(${VULKAN_ENGINE_INCLUDE_DIR})
-add_library(VulkanEngine ${VULKAN_ENGINE_SOURCES} ${VULKAN_ENGINE_HEADERS})
+add_library(VulkanEngine STATIC ${VULKAN_ENGINE_SOURCES} ${VULKAN_ENGINE_HEADERS})
 
 target_include_directories(VulkanEngine PUBLIC ${VULKAN_ENGINE_INCLUDE_DIR})
 
@@ -49,8 +49,8 @@ endif()
 find_package(glfw3 REQUIRED)
 target_link_libraries(VulkanEngine glfw)
 
-find_package (Eigen3 3.4 REQUIRED NO_MODULE)
-target_link_libraries (VulkanEngine Eigen3::Eigen)
+find_package(Eigen3 3.4 REQUIRED NO_MODULE)
+target_link_libraries(VulkanEngine Eigen3::Eigen)
 
 # Add header only libraries
 include_directories("${THIRDPARTY_DIR}/tinyobjloader-1.0.6")
@@ -58,10 +58,7 @@ include_directories("${THIRDPARTY_DIR}/VulkanMemoryAllocator")
 include_directories("${THIRDPARTY_DIR}/stb")
 
 # Add examples
-file(GLOB EXAMPLES_SOURCES "examples/SimpleScene/*.cpp" "examples/SimpleScene/*.h")
-add_executable(SimpleScene ${EXAMPLES_SOURCES})
-target_link_libraries(SimpleScene VulkanEngine)
-include_directories("${THIRDPARTY_DIR}/cxxopts-2.2.0")
+add_subdirectory(examples)
 
 # Look for clang-format
 find_program(CLANG_FORMAT "clang-format")
