@@ -12,9 +12,16 @@ include(FetchContent)
 # Include directories to add
 include_directories("src/include" "src")
 
+set(VULKAN_ENGINE_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/include")
+
 # Create VulkanEngine library
-file(GLOB VULKAN_ENGINE_SOURCES "src/include/VulkanEngine/*.h" "src/*.cpp")
-add_library(VulkanEngine ${VULKAN_ENGINE_SOURCES})
+file(GLOB VULKAN_ENGINE_SOURCES "src/*.cpp")
+file(GLOB VULKAN_ENGINE_HEADERS "include/VulkanEngine/*.h")
+
+include_directories(${VULKAN_ENGINE_INCLUDE_DIR})
+add_library(VulkanEngine ${VULKAN_ENGINE_SOURCES} ${VULKAN_ENGINE_HEADERS})
+
+target_include_directories(VulkanEngine PUBLIC ${VULKAN_ENGINE_INCLUDE_DIR})
 
 # Directory containing libraries
 set(THIRDPARTY_DIR "${CMAKE_CURRENT_SOURCE_DIR}/thirdparty")

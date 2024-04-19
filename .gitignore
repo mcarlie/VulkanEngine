@@ -2,5 +2,6 @@ build/*
 assets/*
 .cache/*
 .vscode/*
+.devcontainer/*
 .DS_Store
 doc/*
