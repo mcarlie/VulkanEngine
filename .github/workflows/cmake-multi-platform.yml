@@ -94,7 +94,7 @@ jobs:
               -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} \
               -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
               -S ${{ github.workspace }} \
-              $toolchain_arg
+              "${toolchain_arg}"
       shell: bash
 
     - name: Build
