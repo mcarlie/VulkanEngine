@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.22)
+cmake_minimum_required(VERSION 3.16)
 
 project(VulkanEngine)
 
@@ -33,12 +33,29 @@ link_directories(AFTER "${VULKAN_SDK}/lib")
 target_link_libraries(VulkanEngine ${Vulkan_LIBRARIES})
 
 find_package(Threads)
-find_package(glslang REQUIRED)
+
+# glslang
+include(FetchContent)
+# Try to find glslang locally first
+find_package(glslang QUIET)
+if(NOT glslang_FOUND)  # If not found, fetch and build it
+    message(STATUS "glslang not found locally. Fetching from repository...")
+    FetchContent_Declare(
+        glslang
+        GIT_REPOSITORY https://github.com/KhronosGroup/glslang.git
+        GIT_TAG        12.3.1
+    )
+    FetchContent_MakeAvailable(glslang)
+    set(glslang_lib_name_prefix "")
+else()
+    message(STATUS "Found glslang locally: ${glslang_VERSION}")
+    set(glslang_lib_name_prefix "glslang::")
+endif()
 
 target_link_libraries(VulkanEngine
-  glslang::glslang 
-  glslang::glslang-default-resource-limits 
-  glslang::SPIRV 
+  ${glslang_lib_name_prefix}glslang 
+  ${glslang_lib_name_prefix}glslang-default-resource-limits 
+  ${glslang_lib_name_prefix}SPIRV 
 )
 
 set(ENABLE_VULKAN_VALIDATION OFF CACHE BOOL "Enable Vulkan validation layers")
@@ -49,7 +66,7 @@ endif()
 find_package(glfw3 REQUIRED)
 target_link_libraries(VulkanEngine glfw)
 
-find_package(Eigen3 3.4 REQUIRED NO_MODULE)
+find_package(Eigen3 3.3 REQUIRED NO_MODULE)
 target_link_libraries(VulkanEngine Eigen3::Eigen)
 
 # Add header only libraries

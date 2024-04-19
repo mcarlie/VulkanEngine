@@ -8,6 +8,19 @@
 #include <VulkanEngine/UniformBuffer.h>
 #include <VulkanEngine/VertexAttribute.h>
 #include <VulkanEngine/Window.h>
+
+// Support latest vk_mem_alloc with older Vulkan SDK headers.
+#ifndef VK_API_VERSION_MAJOR
+#define VK_API_VERSION_MAJOR(version) VK_VERSION_MAJOR(version)
+#endif
+
+#ifndef VK_API_VERSION_MINOR
+#define VK_API_VERSION_MINOR(version) VK_VERSION_MINOR(version)
+#endif
+
+#ifndef VK_API_VERSION_PATCH
+#define VK_API_VERSION_PATCH(version) VK_VERSION_PATCH(version)
+#endif
 #include <vk_mem_alloc.h>
 
 #include <Eigen/Eigen>
