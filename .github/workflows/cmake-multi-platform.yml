@@ -81,6 +81,7 @@ jobs:
         .\vcpkg\bootstrap-vcpkg.bat
         .\vcpkg\vcpkg integrate install
         .\vcpkg\vcpkg install glfw3 eigen3 glslang vulkan
+        echo "VULKAN_SDK=$(pwd)/vcpkg/installed/x64-windows" >> $GITHUB_ENV
 
     - name: Configure CMake
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
