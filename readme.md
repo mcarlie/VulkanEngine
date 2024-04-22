@@ -72,7 +72,7 @@ cmake --build build
 A Dockerfile is provided which includes all dependencies and can be used to build for Ubuntu 22.04.
 
 ```
-docker build -f Dockerfile -t vulkan-engine .  && \
+docker build -f Dockerfile -t vulkan-engine .
 docker run -v $(pwd):/src vulkan-engine /bin/sh -c "cmake -B /src/build /src && cmake --build /src/build"
 ```
 
