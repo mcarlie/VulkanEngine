@@ -21,7 +21,7 @@ CMake is required for building.
 First clone and enter the project directory.
 
 ```
-git clone https://github.com/mcarlie/VulkanEngine.git
+git clone https://github.com/mcarlie/VulkanEngine.git && \
 cd VulkanEngine
 ```
 
@@ -57,7 +57,6 @@ Visual Studio is required. Tested on Windows 11 with Visual Studio 2022 MSBuild 
 
 You can install dependencies with [vcpkg](https://vcpkg.io).
 
-Command Prompt:
 ```
 git clone https://github.com/microsoft/vcpkg.git && \
 .\vcpkg\bootstrap-vcpkg.bat && \
@@ -73,7 +72,7 @@ cmake --build build
 A Dockerfile is provided which includes all dependencies and can be used to build for Ubuntu 22.04.
 
 ```
-docker build -f Dockerfile -t vulkan-engine .
+docker build -f Dockerfile -t vulkan-engine .  && \
 docker run -v $(pwd):/src vulkan-engine /bin/sh -c "cmake -B /src/build /src && cmake --build /src/build"
 ```
 
@@ -84,9 +83,10 @@ There is an example SimpleScene which demontrates how to use the API.
 
 Use the `--obj` option to specify the obj file and `--mtl` to specify the mtl file (if it's not in the same directory).
 
-### Inside a Docker container
-You can run the engine inside a Docker container with software rendering (expect very slow performance).
+### Inside the Docker container
+You can run the engine inside the Docker container with software rendering (expect very slow performance).
 
+After building inside the container run:
 ```
 docker run -v ./build:/build -e DISPLAY=host.docker.internal:0 vulkan-engine /build/SimpleScene
 ```
