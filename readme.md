@@ -89,7 +89,7 @@ You can run the engine inside the Docker container with software rendering (expe
 
 After building inside the container run:
 ```
-docker run -v ./build:/build -e DISPLAY=host.docker.internal:0 vulkan-engine /build/SimpleScene
+docker run -v ./build:/build -e DISPLAY=host.docker.internal:0 vulkan-engine /build/examples/SimpleScene
 ```
 
 [Docker supports GPU rendering with NVidia GPUs.](https://docs.docker.com/config/containers/resource_constraints/#expose-gpus-for-use)
