@@ -97,9 +97,9 @@ docker run -v ./build:/build -e DISPLAY=host.docker.internal:0 vulkan-engine /bu
 ## Documentation
 Documentation can be generated with Doxygen:
 
-## Continuous Integration
-There are Github actions which compile the project for Ubuntu with gcc and clang as well as Windows 11.
-
 ```
 doxygen doc/Doxyfile
 ```
+
+## Continuous Integration
+There are Github actions which compile the project for Ubuntu with gcc and clang as well as Windows 11.
