@@ -18,6 +18,13 @@ The engine has been tested on MacOS 14 Sonoma, Ubuntu 23.04 and Windows 11. Howe
 
 CMake is required for building.
 
+First clone and enter the project directory.
+
+```
+git clone https://github.com/mcarlie/VulkanEngine.git
+cd VulkanEngine
+```
+
 ### MacOS
 Tested on MacOS 14 Sonoma with Clang 15.
 
