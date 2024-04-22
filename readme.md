@@ -21,17 +21,17 @@ CMake is required for building.
 First clone and enter the project directory.
 
 ```
-git clone https://github.com/mcarlie/VulkanEngine.git && \
+git clone https://github.com/mcarlie/VulkanEngine.git
 cd VulkanEngine
 ```
 
 ### MacOS
-Tested on MacOS 14 Sonoma with Clang 15.
+Tested on MacOS 14 Sonoma with Clang 15. Dependencies can be installed with [Homebrew](https://brew.sh/)
 
 ```
-brew install vulkan-tools glfw3 eigen && \
-mkdir build && \
-cmake -S . -B build && \
+brew install vulkan-tools glfw3 eigen
+mkdir build
+cmake -S . -B build
 cmake --build build
 ```
 
@@ -46,9 +46,9 @@ sudo apt-get install -y \
     libvulkan-dev \
     glslang-dev \
     glslang-tools \
-    vulkan-validationlayers-dev && \
-mkdir build && \
-cmake -S . -B build && \
+    vulkan-validationlayers-dev
+mkdir build
+cmake -S . -B build
 cmake --build build
 ```
 
@@ -58,13 +58,13 @@ Visual Studio is required. Tested on Windows 11 with Visual Studio 2022 MSBuild 
 You can install dependencies with [vcpkg](https://vcpkg.io).
 
 ```
-git clone https://github.com/microsoft/vcpkg.git && \
-.\vcpkg\bootstrap-vcpkg.bat && \
-.\vcpkg\vcpkg integrate install && \
-.\vcpkg\vcpkg install glfw3 eigen3 glslang vulkan && \
-$env:VULKAN_SDK="$PWD\vcpkg\installed\x64-windows" && \
-mkdir build && \
-cmake -S . -B build -DCMAKE_TOOLCHAIN_FILE=$PWD\vcpkg\scripts\buildsystems\vcpkg.cmake && \
+git clone https://github.com/microsoft/vcpkg.git
+.\vcpkg\bootstrap-vcpkg.bat
+.\vcpkg\vcpkg integrate install
+.\vcpkg\vcpkg install glfw3 eigen3 glslang vulkan
+$env:VULKAN_SDK="$PWD\vcpkg\installed\x64-windows"
+mkdir build
+cmake -S . -B build -DCMAKE_TOOLCHAIN_FILE="$PWD\vcpkg\scripts\buildsystems\vcpkg.cmake"
 cmake --build build
 ```
 
@@ -95,6 +95,9 @@ docker run -v ./build:/build -e DISPLAY=host.docker.internal:0 vulkan-engine /bu
 
 ## Documentation
 Documentation can be generated with Doxygen:
+
+## Continuous Integration
+There are Github actions which compile the project for Ubuntu with gcc and clang as well as Windows 11.
 
 ```
 doxygen doc/Doxyfile
