@@ -57,6 +57,7 @@ Visual Studio is required. Tested on Windows 11 with Visual Studio 2022 MSBuild 
 
 You can install dependencies with [vcpkg](https://vcpkg.io).
 
+PowerShell:
 ```
 git clone https://github.com/microsoft/vcpkg.git
 .\vcpkg\bootstrap-vcpkg.bat
