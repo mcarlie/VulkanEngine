@@ -87,7 +87,7 @@ Use the `--obj` option to specify the obj file and `--mtl` to specify the mtl fi
 ### Inside the Docker container
 You can run the engine inside the Docker container with software rendering (expect very slow performance).
 
-After building inside the container run:
+The following command is for MacOS. After building inside the container run:
 ```
 docker run -v ./build:/build -e DISPLAY=host.docker.internal:0 vulkan-engine /build/examples/SimpleScene
 ```
