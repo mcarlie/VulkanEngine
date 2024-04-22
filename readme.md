@@ -59,7 +59,11 @@ You can install dependencies with [vcpkg](https://vcpkg.io).
 
 Command Prompt:
 ```
-./vcpkg install glfw3 eigen3 glslang vulkan
+git clone https://github.com/microsoft/vcpkg.git
+.\vcpkg\bootstrap-vcpkg.bat
+.\vcpkg\vcpkg integrate install
+.\vcpkg\vcpkg install glfw3 eigen3 glslang vulkan
+export VULKAN_SDK=$pwd/vcpkg/installed/x64-windows
 mkdir build && cd build
 cmake .. -DCMAKE_TOOLCHAIN_FILE=<path-to-vcpkg>\scripts\buildsystems\vcpkg.cmake
 cmake --build .
