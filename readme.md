@@ -29,13 +29,10 @@ cd VulkanEngine
 Tested on MacOS 14 Sonoma with Clang 15.
 
 ```
-brew install vulkan-tools glfw3 eigen
-
-git clone https://github.com/mcarlie/VulkanEngine.git
-cd VulkanEngine
-mkdir build && cd build
-cmake ..
-cmake --build .
+brew install vulkan-tools glfw3 eigen && \
+mkdir build && \
+cmake -S . -B build && \
+cmake --build build
 ```
 
 ### Ubuntu
@@ -49,30 +46,27 @@ sudo apt-get install -y \
     libvulkan-dev \
     glslang-dev \
     glslang-tools \
-    vulkan-validationlayers-dev
-
-git clone https://github.com/mcarlie/VulkanEngine.git
-cd VulkanEngine
-mkdir build && cd build
-cmake ..
-cmake --build .
+    vulkan-validationlayers-dev && \
+mkdir build && \
+cmake -S . -B build && \
+cmake --build build
 ```
 
 ### Windows
-Tested on Windows 11 with MSBuild version 17.9.8.
+Visual Studio is required. Tested on Windows 11 with Visual Studio 2022 MSBuild version 17.9.8.
 
 You can install dependencies with [vcpkg](https://vcpkg.io).
 
 Command Prompt:
 ```
-git clone https://github.com/microsoft/vcpkg.git
-.\vcpkg\bootstrap-vcpkg.bat
-.\vcpkg\vcpkg integrate install
-.\vcpkg\vcpkg install glfw3 eigen3 glslang vulkan
-export VULKAN_SDK=$pwd/vcpkg/installed/x64-windows
-mkdir build && cd build
-cmake .. -DCMAKE_TOOLCHAIN_FILE=<path-to-vcpkg>\scripts\buildsystems\vcpkg.cmake
-cmake --build .
+git clone https://github.com/microsoft/vcpkg.git && \
+.\vcpkg\bootstrap-vcpkg.bat && \
+.\vcpkg\vcpkg integrate install && \
+.\vcpkg\vcpkg install glfw3 eigen3 glslang vulkan && \
+$env:VULKAN_SDK="$PWD\vcpkg\installed\x64-windows" && \
+mkdir build && \
+cmake -S . -B build -DCMAKE_TOOLCHAIN_FILE=$PWD\vcpkg\scripts\buildsystems\vcpkg.cmake && \
+cmake --build build
 ```
 
 ### Docker
@@ -80,7 +74,7 @@ A Dockerfile is provided which includes all dependencies and can be used to buil
 
 ```
 docker build -f Dockerfile -t vulkan-engine .
-docker run -v ./:/src vulkan-engine /bin/sh -c "cd /src && cmake -B build . && cd build && make"
+docker run -v $(pwd):/src vulkan-engine /bin/sh -c "cmake -B /src/build /src && cmake --build /src/build"
 ```
 
 Build output will be available in the `build` folder on the host.
