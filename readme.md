@@ -101,5 +101,18 @@ Documentation can be generated with Doxygen:
 doxygen doc/Doxyfile
 ```
 
-## Continuous Integration
-There are Github actions which compile the project for Ubuntu with gcc and clang as well as Windows 11.
+## Tests
+Tests can be enabled with the BUILD_TESTS CMake option.
+
+```
+cmake -S . -B build -DBUILD_TESTS=ON
+```
+
+After building cd to the tests folder in the build output and run using ctest.
+
+```
+cd build/tests
+ctest
+```
+
+Tests are also run by Github Actions for each commit.
