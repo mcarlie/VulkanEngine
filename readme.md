@@ -12,7 +12,7 @@ Current short term goals are:
 * Test on different hardware
 * Come up with a better name
 
-The engine has been tested on MacOS 14 Sonoma, Ubuntu 23.04 and Windows 11. However I do not have access to a Windows 11 machine with Vulkan support so only know that it builds.
+The engine has been tested on MacOS 14 Sonoma, Ubuntu 22.04 and Windows 11. However I do not have access to a Windows 11 machine with Vulkan support so only know that it builds.
 
 ## Build
 
