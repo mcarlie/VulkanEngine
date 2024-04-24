@@ -8,6 +8,7 @@ set(VulkanEngine_VERSION_MINOR 1)
 set(CMAKE_CXX_STANDARD 17)
 
 option(BUILD_TESTS "Build the engine tests." OFF)
+option(USE_MESA3D "Use Mesa 3D drivers." OFF)
 
 include(FetchContent)
 
@@ -35,6 +36,11 @@ link_directories(AFTER "${VULKAN_SDK}/lib")
 target_link_libraries(VulkanEngine ${Vulkan_LIBRARIES})
 
 find_package(Threads)
+
+if(USE_MESA3D)
+  find_package(mesa3d CONFIG REQUIRED)
+  target_link_libraries(VulkanEngine mesa3d::mesa3d)
+endif()
 
 # glslang
 include(FetchContent)
