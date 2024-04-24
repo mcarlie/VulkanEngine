@@ -81,7 +81,7 @@ jobs:
         git clone https://github.com/microsoft/vcpkg.git
         .\vcpkg\bootstrap-vcpkg.bat
         .\vcpkg\vcpkg integrate install
-        .\vcpkg\vcpkg install glfw3 eigen3 glslang vulkan mesa3d
+        .\vcpkg\vcpkg install glfw3 eigen3 glslang vulkan
         echo "VULKAN_SDK=${{ github.workspace }}/vcpkg/installed/x64-windows" >> $GITHUB_ENV
 
     - name: Configure CMake for Windows
