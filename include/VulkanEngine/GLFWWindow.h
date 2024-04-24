@@ -22,8 +22,9 @@ public:
   virtual ~GLFWWindow();
 
   /// Initialize the window.
+  /// \param invisible If set to true the window will be invisible.
   /// \return True if initialization succeded without error.
-  virtual bool initialize();
+  virtual bool initialize(bool invisible = false);
 
   /// Create and return a vk::SurfaceKHR instance.
   /// \param instance The vk::Instance to create the surface for.

@@ -19,7 +19,7 @@ void VulkanEngine::GLFWWindow::update() {
   glfwPollEvents();
 }
 
-bool VulkanEngine::GLFWWindow::initialize() {
+bool VulkanEngine::GLFWWindow::initialize(bool invisible) {
   if (!glfwInit()) {
     return false;
   }
@@ -31,6 +31,11 @@ bool VulkanEngine::GLFWWindow::initialize() {
   }
 
   glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+
+  if (invisible) {
+    glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
+  }
+
   glfw_window = glfwCreateWindow(
       getWidth(), getHeight(), getTitle().c_str(),
       isFullScreen() ? glfwGetPrimaryMonitor() : nullptr, nullptr);

@@ -1,5 +1,4 @@
 build/*
-assets/*
 .cache/*
 .vscode/*
 .devcontainer/*

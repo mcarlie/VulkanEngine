@@ -7,6 +7,8 @@ set(VulkanEngine_VERSION_MINOR 1)
 
 set(CMAKE_CXX_STANDARD 17)
 
+option(BUILD_TESTS "Build the engine tests." OFF)
+
 include(FetchContent)
 
 # Include directories to add
@@ -76,6 +78,11 @@ include_directories("${THIRDPARTY_DIR}/stb")
 
 # Add examples
 add_subdirectory(examples)
+
+# Add tests if enabled
+if(BUILD_TESTS)
+    add_subdirectory(tests)
+endif()
 
 # Look for clang-format
 find_program(CLANG_FORMAT "clang-format")

@@ -159,7 +159,7 @@ VulkanEngine::OBJMesh::OBJMesh(std::filesystem::path obj_file,
       graphics_pipeline_updated(false), bounding_box() {
   std::error_code obj_file_error;
   if (!std::filesystem::exists(obj_file, obj_file_error)) {
-    std::cout << "Provided obj path " + (obj_file.string()) +
+    std::cerr << "Provided obj path " + (obj_file.string()) +
                      " is invalid. Error code: "
               << obj_file_error.value() << " " << obj_file_error.message()
               << std::endl;
@@ -169,7 +169,7 @@ VulkanEngine::OBJMesh::OBJMesh(std::filesystem::path obj_file,
   std::error_code mtl_path_error;
   if (!mtl_path.empty()) {
     if (!std::filesystem::exists(mtl_path, mtl_path_error)) {
-      std::cout << "Provided mtl path " + mtl_path.string() +
+      std::cerr << "Provided mtl path " + mtl_path.string() +
                        " is invalid. Error code: "
                 << mtl_path_error.value() << " " << mtl_path_error.message()
                 << std::endl;

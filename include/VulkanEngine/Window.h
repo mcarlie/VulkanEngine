@@ -26,7 +26,7 @@ public:
 
   /// Initialize the window.
   /// \return True on success.
-  virtual bool initialize() = 0;
+  virtual bool initialize(bool invisible = false) = 0;
 
   /// \return A list of vulkan extensions required by the underlying windowing
   /// system.

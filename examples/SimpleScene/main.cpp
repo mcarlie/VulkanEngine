@@ -37,7 +37,7 @@ int main(int argc, char **argv) {
     return 1;
   }
 
-  // Add the window to the engine.
+  // Add the window to the scene.
   std::vector<std::shared_ptr<VulkanEngine::Window>> window_list;
   window_list.push_back(window);
 
