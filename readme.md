@@ -112,7 +112,7 @@ Tests can be enabled with the BUILD_TESTS CMake option.
 cmake -S . -B build -DBUILD_TESTS=ON
 ```
 
-After building, run using tests using ctest.
+After building, run tests with ctest.
 
 ```
 ctest --test-dir build/tests
