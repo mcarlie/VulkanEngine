@@ -95,3 +95,10 @@ TEST_F(OBJMeshIntegrationTest, CreateOBJMeshBunny) {
 
   ASSERT_TRUE(cerr_buffer.str().find("Provided obj path path is invalid") == std::string::npos);
 }
+
+TEST_F(OBJMeshIntegrationTest, CreateOBJMeshCapsule) {
+  std::shared_ptr<VulkanEngine::OBJMesh> obj_mesh(new VulkanEngine::OBJMesh(
+    std::filesystem::path("./assets/capsule/capsule.obj"), std::filesystem::path("./assets/capsule/capsule.mtl")));
+
+  ASSERT_TRUE(cerr_buffer.str().find("Provided obj path path is invalid") == std::string::npos);
+}
