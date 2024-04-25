@@ -112,11 +112,10 @@ Tests can be enabled with the BUILD_TESTS CMake option.
 cmake -S . -B build -DBUILD_TESTS=ON
 ```
 
-After building, cd to the tests folder in the build output and run using ctest.
+After building, run using tests using ctest.
 
 ```
-cd build/tests
-ctest
+ctest --test-dir build/tests
 ```
 
 Tests are also run by Github Actions for each commit.
