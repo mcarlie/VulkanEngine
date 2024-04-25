@@ -10,9 +10,10 @@
 #include <cxxopts.hpp>
 #include <filesystem>
 #include <iostream>
+#include <memory>
 #include <vector>
 
-cxxopts::ParseResult setup_program_options(int argc, char **argv) {
+cxxopts::ParseResult setupProgramOptions(int argc, char **argv) {
   cxxopts::Options options("SimpleScene",
                            "Load an OBJ file and render using VulkanEngine");
   options.add_options()("o,obj", "Path to OBJ file",
@@ -23,8 +24,59 @@ cxxopts::ParseResult setup_program_options(int argc, char **argv) {
   return options.parse(argc, argv);
 }
 
+void moveCamera(std::shared_ptr<VulkanEngine::KeyboardInput> keyboard_input, std::shared_ptr<VulkanEngine::Camera> camera, float speed = 0.03) {
+    // WASD keys move the camera in x, z directions, Z and X keys move the
+    // camera in y direction.
+    const auto key_w = keyboard_input->getLastKeyStatus(GLFW_KEY_W);
+    const auto key_a = keyboard_input->getLastKeyStatus(GLFW_KEY_A);
+
+    const auto key_s = keyboard_input->getLastKeyStatus(GLFW_KEY_S);
+    const auto key_d = keyboard_input->getLastKeyStatus(GLFW_KEY_D);
+
+    const auto key_z = keyboard_input->getLastKeyStatus(GLFW_KEY_Z);
+    const auto key_x = keyboard_input->getLastKeyStatus(GLFW_KEY_X);
+
+    Eigen::Vector3f camera_movement = {0.0f, 0.0f, 0.0f};
+
+    if (key_a == VulkanEngine::KeyboardInput::PRESSED ||
+        key_a == VulkanEngine::KeyboardInput::REPEAT) {
+      camera_movement(0) += speed;
+    }
+
+    if (key_d == VulkanEngine::KeyboardInput::PRESSED ||
+        key_d == VulkanEngine::KeyboardInput::REPEAT) {
+      camera_movement(0) -= speed;
+    }
+
+    if (key_z == VulkanEngine::KeyboardInput::PRESSED ||
+        key_z == VulkanEngine::KeyboardInput::REPEAT) {
+      camera_movement(1) += speed;
+    }
+
+    if (key_x == VulkanEngine::KeyboardInput::PRESSED ||
+        key_x == VulkanEngine::KeyboardInput::REPEAT) {
+      camera_movement(1) -= speed;
+    }
+
+    if (key_w == VulkanEngine::KeyboardInput::PRESSED ||
+        key_w == VulkanEngine::KeyboardInput::REPEAT) {
+      camera_movement(2) += speed;
+    }
+
+    if (key_s == VulkanEngine::KeyboardInput::PRESSED ||
+        key_s == VulkanEngine::KeyboardInput::REPEAT) {
+      camera_movement(2) -= speed;
+    }
+
+    camera->setLookAt(camera->getLookAt() + camera_movement);
+    camera->setTranform(
+        Eigen::Affine3f(Eigen::Translation3f(camera_movement) *
+                        Eigen::Affine3f(camera->getTransform()))
+            .matrix());
+}
+
 int main(int argc, char **argv) {
-  auto option_result = setup_program_options(argc, argv);
+  auto option_result = setupProgramOptions(argc, argv);
 
   // Create the GLFW window.
   std::shared_ptr<VulkanEngine::Window> window(
@@ -37,30 +89,19 @@ int main(int argc, char **argv) {
     return 1;
   }
 
-  // Add the window to the scene.
-  std::vector<std::shared_ptr<VulkanEngine::Window>> window_list;
-  window_list.push_back(window);
-
   // Create a new scene.
   std::shared_ptr<VulkanEngine::Scene> scene(
-      new VulkanEngine::Scene(window_list));
-
-  // Contains all objects in the scene.
-  std::vector<std::shared_ptr<VulkanEngine::SceneObject>> scene_children;
+      new VulkanEngine::Scene({window}));
 
   // Define a camera to view renderable objects.
-  std::shared_ptr<VulkanEngine::Camera> camera;
-  camera.reset(new VulkanEngine::Camera(
+  std::shared_ptr<VulkanEngine::Camera> camera(
+    new VulkanEngine::Camera(
       {0.0f, 0.0f, 0.1f}, {0.0f, 1.0f, 0.0f}, 0.1f, 1000.0f, 45.0f,
       window->getFramebufferWidth(), window->getFramebufferHeight()));
 
+  // Set initial camera transform.
   camera->setTranform(
       Eigen::Affine3f(Eigen::Translation3f(0.0f, 0.0f, 5.0f)).matrix());
-  std::shared_ptr<VulkanEngine::SceneObject> camera_container(
-      new VulkanEngine::SceneObject());
-
-  camera_container->addChildren({camera});
-  scene_children.push_back({camera_container});
 
   // Load an OBJ mesh and MTL file if configured.
   std::shared_ptr<VulkanEngine::OBJMesh> obj_mesh;
@@ -86,17 +127,14 @@ int main(int argc, char **argv) {
     transform *= Eigen::Scaling(0.5f);
     obj_mesh->setTranform(transform.matrix());
 
-    scene_children.push_back(obj_mesh);
   } else {
-    std::cout << "Warning: No OBJ file specified. Running empty scene."
+    std::cout << "No OBJ file specified. Running empty scene."
               << std::endl;
   }
 
-  scene->addChildren(scene_children);
+  scene->addChildren({{camera}, obj_mesh});
 
-  const auto &keyboard_input = window->getKeyboardInput();
-
-  const float camera_move_speed = 0.03;
+  const auto keyboard_input = window->getKeyboardInput();
 
   auto start_time = std::chrono::steady_clock::now();
 
@@ -105,49 +143,6 @@ int main(int argc, char **argv) {
     if (keyboard_input.get()) {
       Eigen::Affine3f camera_transform =
           Eigen::Affine3f(camera->getTransform());
-
-      // WASD keys move the camera in x, z directions, Z and X keys move the
-      // camera in y direction.
-      const auto key_w = keyboard_input->getLastKeyStatus(GLFW_KEY_W);
-      const auto key_a = keyboard_input->getLastKeyStatus(GLFW_KEY_A);
-
-      const auto key_s = keyboard_input->getLastKeyStatus(GLFW_KEY_S);
-      const auto key_d = keyboard_input->getLastKeyStatus(GLFW_KEY_D);
-
-      const auto key_z = keyboard_input->getLastKeyStatus(GLFW_KEY_Z);
-      const auto key_x = keyboard_input->getLastKeyStatus(GLFW_KEY_X);
-
-      Eigen::Vector3f camera_movement = {0.0f, 0.0f, 0.0f};
-
-      if (key_a == VulkanEngine::KeyboardInput::PRESSED ||
-          key_a == VulkanEngine::KeyboardInput::REPEAT) {
-        camera_movement(0) += camera_move_speed;
-      }
-
-      if (key_d == VulkanEngine::KeyboardInput::PRESSED ||
-          key_d == VulkanEngine::KeyboardInput::REPEAT) {
-        camera_movement(0) -= camera_move_speed;
-      }
-
-      if (key_z == VulkanEngine::KeyboardInput::PRESSED ||
-          key_z == VulkanEngine::KeyboardInput::REPEAT) {
-        camera_movement(1) += camera_move_speed;
-      }
-
-      if (key_x == VulkanEngine::KeyboardInput::PRESSED ||
-          key_x == VulkanEngine::KeyboardInput::REPEAT) {
-        camera_movement(1) -= camera_move_speed;
-      }
-
-      if (key_w == VulkanEngine::KeyboardInput::PRESSED ||
-          key_w == VulkanEngine::KeyboardInput::REPEAT) {
-        camera_movement(2) += camera_move_speed;
-      }
-
-      if (key_s == VulkanEngine::KeyboardInput::PRESSED ||
-          key_s == VulkanEngine::KeyboardInput::REPEAT) {
-        camera_movement(2) -= camera_move_speed;
-      }
 
       if (obj_mesh.get()) {
         auto current_time = std::chrono::steady_clock::now();
@@ -167,13 +162,9 @@ int main(int argc, char **argv) {
         transform.rotate(rotation);
 
         obj_mesh->setTranform(transform.matrix());
-      }
 
-      camera->setLookAt(camera->getLookAt() + camera_movement);
-      camera->setTranform(
-          Eigen::Affine3f(Eigen::Translation3f(camera_movement) *
-                          Eigen::Affine3f(camera->getTransform()))
-              .matrix());
+        moveCamera(keyboard_input, camera);
+      }
     }
 
     scene->update();
