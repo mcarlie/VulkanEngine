@@ -82,6 +82,10 @@ Build output will be available in the `build` folder on the host.
 ## Running
 There is an example SimpleScene which demontrates how to use the API.
 
+```
+./build/examples/SimpleScene --obj assets/bunny.obj
+```
+
 Use the `--obj` option to specify the obj file and `--mtl` to specify the mtl file (if it's not in the same directory).
 
 ### Inside the Docker container
