@@ -209,36 +209,37 @@ void VulkanEngine::OBJMesh::update(SceneState &scene_state) {
 
   auto vulkan_manager = VulkanManager::getInstance();
 
-  const std::shared_ptr<Window> &window =
-      scene_state.getScene().getActiveWindow();
-  if (graphics_pipeline_updated) {
-    graphics_pipeline_updated = !window->sizeHasChanged();
-  }
-
-  if (!graphics_pipeline_updated) {
-    int32_t width = window->getFramebufferWidth();
-    int32_t height = window->getFramebufferHeight();
-    setViewPort(0, 0, static_cast<float>(width), static_cast<float>(height),
-                0.0f, 1.0f);
-    setScissor(0, 0, width, height);
-    createGraphicsPipeline(meshes[0], shader);
-    graphics_pipeline_updated = true;
-  }
-
-  bindPipeline();
-
-  auto current_command_buffer = vulkan_manager->getCurrentCommandBuffer();
-
-  for (auto &mesh : meshes) {
-    mesh->bindVertexBuffers(current_command_buffer);
-    mesh->bindIndexBuffer(current_command_buffer);
-    if (shader.get()) {
-      shader->bindDescriptorSet(
-          current_command_buffer,
-          static_cast<uint32_t>(vulkan_manager->getCurrentFrame()));
+  const auto window = scene_state.getScene().getActiveWindow();
+  if (window.get() != nullptr) {
+    if (graphics_pipeline_updated) {
+      graphics_pipeline_updated = !window->sizeHasChanged();
     }
 
-    mesh->draw(current_command_buffer);
+    if (!graphics_pipeline_updated) {
+      int32_t width = window->getFramebufferWidth();
+      int32_t height = window->getFramebufferHeight();
+      setViewPort(0, 0, static_cast<float>(width), static_cast<float>(height),
+                  0.0f, 1.0f);
+      setScissor(0, 0, width, height);
+      createGraphicsPipeline(meshes[0], shader);
+      graphics_pipeline_updated = true;
+    }
+
+    bindPipeline();
+
+    auto current_command_buffer = vulkan_manager->getCurrentCommandBuffer();
+
+    for (auto &mesh : meshes) {
+      mesh->bindVertexBuffers(current_command_buffer);
+      mesh->bindIndexBuffer(current_command_buffer);
+      if (shader.get()) {
+        shader->bindDescriptorSet(
+            current_command_buffer,
+            static_cast<uint32_t>(vulkan_manager->getCurrentFrame()));
+      }
+
+      mesh->draw(current_command_buffer);
+    }
   }
 
   SceneObject::update(scene_state);

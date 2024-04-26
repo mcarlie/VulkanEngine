@@ -25,11 +25,34 @@ TEST(EngineIntegrationTests, CreateScene) {
       new VulkanEngine::GLFWWindow(1280, 800, "SimpleScene", false));
   ASSERT_TRUE(window->initialize(true));
 
-  std::vector<std::shared_ptr<VulkanEngine::Window>> window_list;
-  window_list.push_back(window);
+  std::shared_ptr<VulkanEngine::Scene> scene(
+      new VulkanEngine::Scene({window}));
+}
+
+TEST(EngineIntegrationTests, UpdateEmptyScene) {
+  std::shared_ptr<VulkanEngine::Window> window(
+      new VulkanEngine::GLFWWindow(1280, 800, "SimpleScene", false));
+  ASSERT_TRUE(window->initialize(true));
 
   std::shared_ptr<VulkanEngine::Scene> scene(
-      new VulkanEngine::Scene(window_list));
+      new VulkanEngine::Scene({window}));
+
+  scene->update();
+}
+
+TEST(EngineIntegrationTests, RenderEmptyScene) {
+  std::shared_ptr<VulkanEngine::Window> window(
+      new VulkanEngine::GLFWWindow(1280, 800, "SimpleScene", false));
+  ASSERT_TRUE(window->initialize(true));
+
+  std::shared_ptr<VulkanEngine::Scene> scene(
+      new VulkanEngine::Scene({window}));
+
+  auto vulkan_manager = VulkanEngine::VulkanManager::getInstance();
+  ASSERT_TRUE(vulkan_manager->initialize(window));
+
+  scene->update();
+  vulkan_manager->drawImage();
 }
 
 TEST(EngineIntegrationTests, CreateCamera) {
@@ -44,11 +67,8 @@ TEST(EngineIntegrationTests, AddCameraToScene) {
       new VulkanEngine::GLFWWindow(1280, 800, "SimpleScene", false));
   ASSERT_TRUE(window->initialize(true));
 
-  std::vector<std::shared_ptr<VulkanEngine::Window>> window_list;
-  window_list.push_back(window);
-
   std::shared_ptr<VulkanEngine::Scene> scene(
-      new VulkanEngine::Scene(window_list));
+      new VulkanEngine::Scene({window}));
 
   std::vector<std::shared_ptr<VulkanEngine::SceneObject>> scene_children;
 
@@ -59,11 +79,8 @@ TEST(EngineIntegrationTests, AddCameraToScene) {
 
   camera->setTranform(
       Eigen::Affine3f(Eigen::Translation3f(0.0f, 0.0f, 5.0f)).matrix());
-  std::shared_ptr<VulkanEngine::SceneObject> camera_container(
-      new VulkanEngine::SceneObject());
 
-  camera_container->addChildren({camera});
-  scene_children.push_back({camera_container});
+  scene->addChildren({camera});
 }
 
 class OBJMeshIntegrationTest : public ::testing::Test {
@@ -94,6 +111,26 @@ TEST_F(OBJMeshIntegrationTest, CreateOBJMeshBunny) {
     std::filesystem::path("./assets/bunny.obj"), std::filesystem::path("")));
 
   ASSERT_TRUE(cerr_buffer.str().find("Provided obj path path is invalid") == std::string::npos);
+}
+
+TEST_F(OBJMeshIntegrationTest, RenderOBJMeshBunnyNoCamera) {
+  std::shared_ptr<VulkanEngine::OBJMesh> obj_mesh(new VulkanEngine::OBJMesh(
+    std::filesystem::path("./assets/bunny.obj"), std::filesystem::path("")));
+
+  std::shared_ptr<VulkanEngine::Window> window(
+      new VulkanEngine::GLFWWindow(1280, 800, "SimpleScene", false));
+  ASSERT_TRUE(window->initialize(true));
+
+  auto vulkan_manager = VulkanEngine::VulkanManager::getInstance();
+  ASSERT_TRUE(vulkan_manager->initialize(window));
+
+  std::shared_ptr<VulkanEngine::Scene> scene(
+      new VulkanEngine::Scene({window}));
+
+  scene->addChildren({obj_mesh});
+
+  scene->update();
+  vulkan_manager->drawImage();
 }
 
 TEST_F(OBJMeshIntegrationTest, CreateOBJMeshCapsule) {

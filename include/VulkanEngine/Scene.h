@@ -20,7 +20,7 @@ public:
   void update();
 
   /// Get the currently active window.
-  const std::shared_ptr<Window> &getActiveWindow() const;
+  const std::shared_ptr<Window> getActiveWindow() const;
 
 private:
   /// \param scene_state Contains information about the current state of the
