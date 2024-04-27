@@ -26,11 +26,6 @@ public:
   /// \return True if initialization succeded without error.
   virtual bool initialize(bool invisible = false);
 
-  /// Create and return a vk::SurfaceKHR instance.
-  /// \param instance The vk::Instance to create the surface for.
-  /// \return The created vk::SurfaceKHR.
-  virtual vk::SurfaceKHR createVkSurface(const vk::Instance &instance);
-
   /// Do anything needed to update the window.
   virtual void update();
 
@@ -53,9 +48,16 @@ public:
   /// \param new_title The new window title.
   virtual void setTitle(const std::string& new_title);
 
+  /// Get the Vulkan surface defined for this window.
+  /// \return The vk::SurfaceKHR.
+  virtual vk::SurfaceKHR getVkSurface();
+
 private:
   /// Internal instance of the glfw window.
   GLFWwindow *glfw_window;
+
+  /// Vulkan surface created by this window.
+  VkSurfaceKHR vk_surface;
 
   /// Callback which is called by glfw to indicate errors.
   /// Prints the error to std::err.

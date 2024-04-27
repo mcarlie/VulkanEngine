@@ -1,4 +1,5 @@
 #include <VulkanEngine/GLFWWindow.h>
+#include <VulkanEngine/VulkanManager.h>
 
 #include <iostream>
 
@@ -10,7 +11,12 @@ VulkanEngine::GLFWWindow::GLFWWindow(int _width, int _height,
 }
 
 VulkanEngine::GLFWWindow::~GLFWWindow() {
-  glfwDestroyWindow(glfw_window);
+  if (vk_surface) {
+    VulkanManager::getInstance().getVkInstance().destroySurfaceKHR(vk_surface);
+  }
+  if (glfw_window != nullptr) {
+    glfwDestroyWindow(glfw_window);
+  }
   glfwTerminate();
 }
 
@@ -61,18 +67,6 @@ bool VulkanEngine::GLFWWindow::initialize(bool invisible) {
   framebuffer_height = fb_height;
 
   return true;
-}
-
-vk::SurfaceKHR
-VulkanEngine::GLFWWindow::createVkSurface(const vk::Instance &instance) {
-  VkSurfaceKHR surface;
-  VkResult err =
-      glfwCreateWindowSurface(instance, glfw_window, nullptr, &surface);
-  if (err != VK_SUCCESS) {
-    throw std::runtime_error("Could not create Vulkan surface");
-  }
-
-  return surface;
 }
 
 const std::vector<const char *>
@@ -208,4 +202,16 @@ void VulkanEngine::GLFWWindow::keyCallback(GLFWwindow *_glfw_window, int key,
   key_info.status = key_status;
 
   window->keyboardButtonPressedCallback(scancode, key_info);
+}
+
+vk::SurfaceKHR VulkanEngine::GLFWWindow::getVkSurface() {
+  if (!vk_surface) {
+    VkResult err =
+        glfwCreateWindowSurface(VulkanManager::getInstance().getVkInstance(),
+                                glfw_window, nullptr, &vk_surface);
+    if (err != VK_SUCCESS) {
+      throw std::runtime_error("Could not create Vulkan Surface.");
+    }
+  }
+  return vk_surface;
 }

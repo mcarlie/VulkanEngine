@@ -1,5 +1,7 @@
+#include <VulkanEngine/Framebuffer.h>
 #include <VulkanEngine/Image.h>
 #include <VulkanEngine/RenderPass.h>
+#include <VulkanEngine/Swapchain.h>
 #include <VulkanEngine/VulkanManager.h>
 #include <memory>
 
@@ -116,8 +118,6 @@ bool VulkanEngine::VulkanManager::initialize(
     }
 #endif
 
-    vk_surface = window->createVkSurface(vk_instance);
-
     // TODO Check suitability and handle case where there is no device
     std::vector<vk::PhysicalDevice> physical_devices =
         vk_instance.enumeratePhysicalDevices();
@@ -211,22 +211,19 @@ bool VulkanEngine::VulkanManager::initialize(
     vk_graphics_queue = vk_device.getQueue(graphics_queue_family_index, 0);
 
     // TODO Use these
-    auto surface_formats = vk_physical_device.getSurfaceFormatsKHR(vk_surface);
-    auto present_modes =
-        vk_physical_device.getSurfacePresentModesKHR(vk_surface);
-    auto surface_support = vk_physical_device.getSurfaceSupportKHR(
-        graphics_queue_family_index, vk_surface);
+    // auto surface_formats =
+    // vk_physical_device.getSurfaceFormatsKHR(vk_surface); auto present_modes =
+    //     vk_physical_device.getSurfacePresentModesKHR(vk_surface);
+    // auto surface_support = vk_physical_device.getSurfaceSupportKHR(
+    //     graphics_queue_family_index, vk_surface);
 
     createCommandPool();
-    createSwapchain();
-    createImageViews();
 
     default_render_pass.reset(new RenderPass(window->getFramebufferWidth(),
                                              window->getFramebufferHeight()));
+    swapchain.reset(
+        new Swapchain(frames_in_flight, window, default_render_pass));
 
-    // createRenderPass();
-    createSwapchainFramebuffers();
-    createSyncObjects();
     createCommandBuffers();
 
   } catch (const std::exception &e) {
@@ -247,85 +244,25 @@ vk::CommandBuffer VulkanEngine::VulkanManager::getCurrentCommandBuffer() {
 }
 
 vk::Framebuffer VulkanEngine::VulkanManager::getCurrentSwapchainFramebuffer() {
-  return vk_swapchain_framebuffers[current_frame];
+  return swapchain->getFramebuffer(current_frame);
 }
 
-void VulkanEngine::VulkanManager::waitForFence() {
-  auto fence_result = VulkanManager::getVkDevice().waitForFences(
-      vk_in_flight_fences[current_frame], VK_TRUE,
-      std::numeric_limits<uint32_t>::max());
-  if (fence_result != vk::Result::eSuccess) {
-    throw std::runtime_error("Error waiting for fences");
-  }
-}
+void VulkanEngine::VulkanManager::waitForFence() { swapchain->waitForFence(); }
 
 void VulkanEngine::VulkanManager::drawImage() {
   // Submit commands to the queue
   if (!vk_command_buffers.empty()) {
-    uint32_t image_index;
-    while (true) {
-      // Acquire the next available swapchain image that we can write to
-      vk::Result result = vk_device.acquireNextImageKHR(
-          vk_swapchain, std::numeric_limits<uint32_t>::max(),
-          vk_image_available_semaphores[current_frame], nullptr, &image_index);
-
-      // If the window size has changed or the image view is out of date
-      // according to Vulkan then recreate the pipeline from the swapchain stage
-      if (result == vk::Result::eErrorOutOfDateKHR ||
-          window->sizeHasChanged()) {
-        vk_device.waitIdle();
-        cleanupSwapchain();
-        createCommandPool();
-        createSwapchain();
-        createImageViews();
-        default_render_pass.reset(new RenderPass(
-            window->getFramebufferWidth(), window->getFramebufferHeight()));
-        createSwapchainFramebuffers();
-        createSyncObjects();
-        createCommandBuffers();
-        current_frame = 0;
-        return;
-      } else if (result != vk::Result::eSuccess &&
-                 result != vk::Result::eSuboptimalKHR) {
-        throw std::runtime_error("Failed to acquire image!");
-      } else {
-        break;
-      }
-    }
-
-    vk::Semaphore signal_semaphores[] = {
-        vk_rendering_finished_semaphores[current_frame]};
-    uint32_t signal_semaphores_count = 1;
-
-    vk::Semaphore wait_semaphores[] = {
-        vk_image_available_semaphores[current_frame]};
-    vk::PipelineStageFlags wait_stages[] = {
-        vk::PipelineStageFlagBits::eColorAttachmentOutput};
-    auto submit_info =
-        vk::SubmitInfo()
-            .setWaitSemaphoreCount(1)
-            .setPWaitSemaphores(wait_semaphores)
-            .setPWaitDstStageMask(wait_stages)
-            .setCommandBufferCount(1)
-            .setPCommandBuffers(&vk_command_buffers[current_frame])
-            .setSignalSemaphoreCount(signal_semaphores_count)
-            .setPSignalSemaphores(signal_semaphores);
-
-    vk_device.resetFences(vk_in_flight_fences[current_frame]);
-
-    vk_graphics_queue.submit(submit_info, vk_in_flight_fences[current_frame]);
-
-    vk::SwapchainKHR swapchains[] = {vk_swapchain};
-    auto present_info = vk::PresentInfoKHR()
-                            .setWaitSemaphoreCount(signal_semaphores_count)
-                            .setPWaitSemaphores(signal_semaphores)
-                            .setSwapchainCount(1)
-                            .setPSwapchains(swapchains)
-                            .setPImageIndices(&image_index);
-
-    auto present_result = vk_graphics_queue.presentKHR(present_info);
-    if (present_result != vk::Result::eSuccess) {
-      throw std::runtime_error("Error presenting image to screen");
+    if (!swapchain->present()) {
+      vk_device.waitIdle();
+      cleanupCommandBuffers();
+      createCommandPool();
+      default_render_pass.reset(new RenderPass(window->getFramebufferWidth(),
+                                               window->getFramebufferHeight()));
+      swapchain.reset(
+          new Swapchain(frames_in_flight, window, default_render_pass));
+      createCommandBuffers();
+      current_frame = 0;
+      return;
     }
   }
 
@@ -361,102 +298,15 @@ void VulkanEngine::VulkanManager::createCommandPool() {
   vk_command_pool = vk_device.createCommandPool(command_pool_info);
 }
 
-void VulkanEngine::VulkanManager::createSwapchain() {
-  auto swapchain_info =
-      vk::SwapchainCreateInfoKHR()
-          .setSurface(vk_surface)
-          .setMinImageCount(frames_in_flight)
-          .setImageFormat(vk::Format::eB8G8R8A8Unorm)
-          .setImageColorSpace(vk::ColorSpaceKHR::eSrgbNonlinear)
-          .setImageExtent(
-              {window->getFramebufferWidth(), window->getFramebufferHeight()})
-          .setImageArrayLayers(1)
-          .setImageUsage(vk::ImageUsageFlagBits::eColorAttachment)
-          .setImageSharingMode(vk::SharingMode::eExclusive)
-          .setQueueFamilyIndexCount(0)
-          .setPQueueFamilyIndices(nullptr)
-          .setPreTransform(vk::SurfaceTransformFlagBitsKHR::eIdentity)
-          .setCompositeAlpha(vk::CompositeAlphaFlagBitsKHR::eOpaque)
-          .setPresentMode(vk::PresentModeKHR::eFifo)
-          .setClipped(VK_TRUE)
-          .setOldSwapchain(nullptr);
-
-  vk_swapchain = vk_device.createSwapchainKHR(swapchain_info);
-  vk_swapchain_images = vk_device.getSwapchainImagesKHR(vk_swapchain);
-}
-
-void VulkanEngine::VulkanManager::createImageViews() {
-  vk_image_views.resize(vk_swapchain_images.size());
-
-  for (size_t i = 0; i < vk_image_views.size(); ++i) {
-    auto image_view_info =
-        vk::ImageViewCreateInfo()
-            .setImage(vk_swapchain_images[i])
-            .setViewType(vk::ImageViewType::e2D)
-            .setFormat(vk::Format::eB8G8R8A8Unorm)
-            .setComponents(
-                vk::ComponentMapping(vk::ComponentSwizzle::eIdentity,
-                                     vk::ComponentSwizzle::eIdentity,
-                                     vk::ComponentSwizzle::eIdentity,
-                                     vk::ComponentSwizzle::eIdentity))
-            .setSubresourceRange(vk::ImageSubresourceRange(
-                vk::ImageAspectFlagBits::eColor, 0, 1, 0, 1));
-
-    vk_image_views[i] = vk_device.createImageView(image_view_info);
-  }
-}
-
-void VulkanEngine::VulkanManager::createSwapchainFramebuffers() {
-  /// Need a framebuffer wrapper class
-  vk_swapchain_framebuffers.resize(vk_image_views.size());
-  for (size_t i = 0; i < vk_image_views.size(); ++i) {
-    std::array<vk::ImageView, 3> attachments = {
-        default_render_pass->getColorAttachment()->getVkImageView(),
-        default_render_pass->getDepthStencilAttachment()->getVkImageView(),
-        vk_image_views[i]};
-
-    auto framebuffer_info =
-        vk::FramebufferCreateInfo()
-            .setRenderPass(default_render_pass->getVkRenderPass())
-            .setAttachmentCount(static_cast<uint32_t>(attachments.size()))
-            .setPAttachments(attachments.data())
-            .setWidth(window->getFramebufferWidth())
-            .setHeight(window->getFramebufferHeight())
-            .setLayers(1);
-
-    vk_swapchain_framebuffers[i] =
-        vk_device.createFramebuffer(framebuffer_info);
-  }
-}
-
 void VulkanEngine::VulkanManager::createCommandBuffers() {
   auto command_buffer_allocate_info =
       vk::CommandBufferAllocateInfo()
-          .setCommandBufferCount(
-              static_cast<uint32_t>(vk_swapchain_framebuffers.size()))
+          .setCommandBufferCount(static_cast<uint32_t>(frames_in_flight))
           .setCommandPool(vk_command_pool)
           .setLevel(vk::CommandBufferLevel::ePrimary);
 
   vk_command_buffers =
       vk_device.allocateCommandBuffers(command_buffer_allocate_info);
-}
-
-void VulkanEngine::VulkanManager::createSyncObjects() {
-  auto semaphore_info = vk::SemaphoreCreateInfo();
-  auto fence_info =
-      vk::FenceCreateInfo().setFlags(vk::FenceCreateFlagBits::eSignaled);
-  for (size_t i = 0; i < frames_in_flight; ++i) {
-    vk_image_available_semaphores.push_back(
-        vk_device.createSemaphore(semaphore_info));
-    vk_rendering_finished_semaphores.push_back(
-        vk_device.createSemaphore(semaphore_info));
-    vk_in_flight_fences.push_back(vk_device.createFence(fence_info));
-    if (!vk_image_available_semaphores.back() ||
-        !vk_rendering_finished_semaphores.back() ||
-        !vk_in_flight_fences.back()) {
-      throw std::runtime_error("Could not create sync objects for rendering!");
-    }
-  }
 }
 
 void VulkanEngine::VulkanManager::cleanup() {
@@ -466,14 +316,9 @@ void VulkanEngine::VulkanManager::cleanup() {
 
   vk_device.waitIdle();
   default_render_pass.reset();
+  swapchain.reset();
 
-  for (size_t i = 0; i < frames_in_flight; ++i) {
-    vk_device.destroySemaphore(vk_image_available_semaphores[i]);
-    vk_device.destroySemaphore(vk_rendering_finished_semaphores[i]);
-    vk_device.destroyFence(vk_in_flight_fences[i]);
-  }
-
-  cleanupSwapchain();
+  cleanupCommandBuffers();
 
   vmaDestroyAllocator(vma_allocator);
   vma_allocator = nullptr;
@@ -483,38 +328,18 @@ void VulkanEngine::VulkanManager::cleanup() {
   vk_instance.destroyDebugUtilsMessengerEXT(vk_debug_utils_messenger, nullptr,
                                             vk_dispatch_loader_dynamic);
 #endif
-  vk_instance.destroySurfaceKHR(vk_surface);
-  vk_instance.destroy();
-
   window.reset();
-  vk_swapchain_images.clear();
-  vk_image_views.clear();
+  vk_instance.destroy();
   vk_command_buffers.clear();
-  vk_swapchain_framebuffers.clear();
-  vk_image_available_semaphores.clear();
-  vk_rendering_finished_semaphores.clear();
-  vk_in_flight_fences.clear();
+  swapchain.reset();
 
   initialized = false;
 }
 
-void VulkanEngine::VulkanManager::cleanupSwapchain() {
+void VulkanEngine::VulkanManager::cleanupCommandBuffers() {
   vk_device.freeCommandBuffers(vk_command_pool, vk_command_buffers);
   vk_device.destroyCommandPool(vk_command_pool);
   vk_command_buffers.clear();
-
-  for (size_t i = 0; i < vk_swapchain_framebuffers.size(); ++i) {
-    vk_device.destroyFramebuffer(vk_swapchain_framebuffers[i]);
-  }
-  vk_swapchain_framebuffers.clear();
-
-  for (size_t i = 0; i < vk_image_views.size(); ++i) {
-    vk_device.destroyImageView(vk_image_views[i]);
-  }
-  vk_image_views.clear();
-
-  vk_device.destroySwapchainKHR(vk_swapchain);
-  vk_swapchain = nullptr;
 }
 
 #ifdef ENABLE_VULKAN_VALIDATION

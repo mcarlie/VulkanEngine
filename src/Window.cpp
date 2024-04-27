@@ -1,3 +1,4 @@
+#include <VulkanEngine/VulkanManager.h>
 #include <VulkanEngine/Window.h>
 
 #include <iostream>

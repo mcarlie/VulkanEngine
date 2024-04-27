@@ -34,6 +34,8 @@ template <vk::Format format, vk::ImageType image_type, vk::ImageTiling tiling,
           vk::SampleCountFlagBits sample_count_flags>
 class Image;
 class RenderPass;
+class Framebuffer;
+class Swapchain;
 
 /// TODO this class is a work in progress. The current goal is to modulerize
 /// this more and place functionality in seperate classes.
@@ -85,6 +87,10 @@ public:
   /// \return The manager's vk::Device instance.
   const vk::Device &getVkDevice() const;
 
+  vk::Instance getVkInstance() const {
+    return vk_instance;
+  }
+
   /// \return The manager's vk::PhysicalDevice instance.
   const vk::PhysicalDevice &getVKPhysicalDevice() const;
 
@@ -110,14 +116,8 @@ public:
 private:
   void createCommandPool();
 
-  void createSwapchain();
-  void createImageViews();
-
-  void createSwapchainFramebuffers();
-  void createSyncObjects();
-
   void cleanup();
-  void cleanupSwapchain();
+  void cleanupCommandBuffers();
 
   /// The window instance used with the manager.
   std::shared_ptr<Window> window;
@@ -125,10 +125,7 @@ private:
   /// The main Vulkan instance
   vk::Instance vk_instance;
 
-  /// The Vulkan surface object used with the windowing system.
-  vk::SurfaceKHR vk_surface;
-
-  vk::SwapchainKHR vk_swapchain;
+  std::shared_ptr<Swapchain> swapchain;
 
   /// The physical device used for rendering.
   vk::PhysicalDevice vk_physical_device;
@@ -142,28 +139,17 @@ private:
 
   uint32_t graphics_queue_family_index;
 
-  std::vector<vk::Image> vk_swapchain_images;
-
-  std::vector<vk::ImageView> vk_image_views;
-
   vk::CommandPool vk_command_pool;
 
   std::vector<vk::CommandBuffer> vk_command_buffers;
 
-  std::vector<vk::Framebuffer> vk_swapchain_framebuffers;
-
   size_t frames_in_flight;
   size_t current_frame;
-
-  std::vector<vk::Semaphore> vk_image_available_semaphores;
-  std::vector<vk::Semaphore> vk_rendering_finished_semaphores;
-  std::vector<vk::Fence> vk_in_flight_fences;
 
   /// Class which allows for dynamic loading of certain functions within Vulkan
   /// classes.
   vk::DispatchLoaderDynamic vk_dispatch_loader_dynamic;
 
-  /// TODO make part of the scene.
   std::shared_ptr<RenderPass> default_render_pass;
 
   bool initialized;

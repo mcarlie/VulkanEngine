@@ -36,7 +36,7 @@ public:
   /// Create and return a vk::SurfaceKHR instance.
   /// \param instance The vk::Instance to create the surface for.
   /// \return The created vk::SurfaceKHR.
-  virtual vk::SurfaceKHR createVkSurface(const vk::Instance &instance) = 0;
+  virtual vk::SurfaceKHR getVkSurface() = 0;
 
   /// Get a MouseInfo instance which retrieves values from this Window instance
   virtual std::shared_ptr<MouseInput> getMouseInput() const;

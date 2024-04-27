@@ -1,7 +1,7 @@
 #ifndef RENDERPASS_H
 #define RENDERPASS_H
 
-#include "VulkanManager.h"
+#include <VulkanEngine/Image.h>
 #include <VulkanEngine/VulkanManager.h>
 
 #include <cstdint>
