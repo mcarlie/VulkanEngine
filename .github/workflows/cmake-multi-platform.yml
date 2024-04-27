@@ -90,7 +90,7 @@ jobs:
     - name: Install dependencies (Windows)
       if: runner.os == 'Windows'
       run: |
-        ${VCPKG_INSTALLATION_ROOT}\vcpkg install glfw3 eigen3 glslang vulkan
+        "${VCPKG_INSTALLATION_ROOT}\vcpkg" install glfw3 eigen3 glslang vulkan
         echo "VULKAN_SDK=${VCPKG_INSTALLATION_ROOT}\installed\x64-windows" >> $GITHUB_ENV
 
     - name: Configure CMake for Windows
