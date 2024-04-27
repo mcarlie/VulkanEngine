@@ -43,6 +43,9 @@ private:
   /// Private so that an instance may only be created from getInstance().
   VulkanManager();
 
+  /// Used for internal singleton handling.
+  static std::unique_ptr<VulkanManager>& getInstanceInternal();
+
 public:
   /// Destructor.
   ~VulkanManager();
@@ -56,16 +59,17 @@ public:
   /// Get the singleton instance of the VulkanManager.
   /// Creates the instance when first called.
   /// \return The singleton VulkanManager instance.
-  static std::shared_ptr<VulkanManager> &getInstance();
+  static VulkanManager& getInstance();
 
-  /// Get the singleton instance of the VulkanManager.
-  /// Creates the instance when first called.
-  /// \return The singleton VulkanManager instance.
+  /// Reset the singleton instance.
+  static void resetInstance();
+
+  /// Destroy the singleton instance of the VulkanManager.
   static void destroyInstance();
 
   /// Initialize the VulkanManager.
   /// \param _window The Window instance to use with the manager.
-  bool initialize(const std::shared_ptr<Window> &_window);
+  bool initialize(const std::shared_ptr<Window> _window);
 
   void createCommandBuffers();
 
@@ -95,7 +99,7 @@ public:
   /// memory allocator.
   const VmaAllocator &getVmaAllocator() const;
 
-  const std::shared_ptr<RenderPass> &getDefaultRenderPass() const {
+  const std::shared_ptr<RenderPass> getDefaultRenderPass() const {
     return default_render_pass;
   }
 
@@ -161,6 +165,8 @@ private:
 
   /// TODO make part of the scene.
   std::shared_ptr<RenderPass> default_render_pass;
+
+  bool initialized;
 
 #ifdef ENABLE_VULKAN_VALIDATION
   vk::DebugUtilsMessengerEXT vk_debug_utils_messenger;

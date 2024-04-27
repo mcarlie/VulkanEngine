@@ -10,7 +10,7 @@ VulkanEngine::Buffer::Buffer(size_t _data_size,
 }
 
 VulkanEngine::Buffer::~Buffer() {
-  vmaDestroyBuffer(VulkanManager::getInstance()->getVmaAllocator(),
+  vmaDestroyBuffer(VulkanManager::getInstance().getVmaAllocator(),
                    static_cast<VkBuffer>(vk_buffer), vma_allocation);
 }
 
@@ -20,7 +20,7 @@ void VulkanEngine::Buffer::createBuffer(
     vk::BufferUsageFlags usage_flags,
     vk::MemoryPropertyFlags memory_property_flags,
     VmaMemoryUsage vma_memory_usage) {
-  auto vulkan_manager = VulkanManager::getInstance();
+  auto& vulkan_manager = VulkanManager::getInstance();
 
   auto buffer_info = vk::BufferCreateInfo()
                          .setSize(data_size)
@@ -37,7 +37,7 @@ void VulkanEngine::Buffer::createBuffer(
       static_cast<VkBufferCreateInfo>(buffer_info);
 
   auto result = vmaCreateBuffer(
-      vulkan_manager->getVmaAllocator(), &buffer_create_info_c_handle,
+      vulkan_manager.getVmaAllocator(), &buffer_create_info_c_handle,
       &vma_allocation_create_info, reinterpret_cast<VkBuffer *>(&buffer),
       &vma_allocation, nullptr);
 

@@ -24,6 +24,10 @@ void VulkanEngine::Window::setWidth(uint32_t _width) { width = _width; }
 
 void VulkanEngine::Window::setHeight(uint32_t _height) { height = _height; }
 
+void VulkanEngine::Window::setTitle(const std::string &new_title) {
+  title = new_title;
+};
+
 uint32_t VulkanEngine::Window::getWidth() const { return width; }
 
 uint32_t VulkanEngine::Window::getHeight() const { return height; }

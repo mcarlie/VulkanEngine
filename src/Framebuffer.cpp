@@ -21,11 +21,11 @@ VulkanEngine::Framebuffer::Framebuffer(
           .setLayers(layers);
 
   vk_framebuffer =
-      VulkanManager::getInstance()->getVkDevice().createFramebuffer(
+      VulkanManager::getInstance().getVkDevice().createFramebuffer(
           framebuffer_info);
 }
 
 VulkanEngine::Framebuffer::~Framebuffer() {
-  VulkanManager::getInstance()->getVkDevice().destroyFramebuffer(
+  VulkanManager::getInstance().getVkDevice().destroyFramebuffer(
       vk_framebuffer);
 }

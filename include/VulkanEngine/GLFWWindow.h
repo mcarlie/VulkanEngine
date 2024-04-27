@@ -49,6 +49,10 @@ public:
   /// \param _height The height value to set.
   virtual void setHeight(uint32_t _height);
 
+  /// Set window title.
+  /// \param new_title The new window title.
+  virtual void setTitle(const std::string& new_title);
+
 private:
   /// Internal instance of the glfw window.
   GLFWwindow *glfw_window;

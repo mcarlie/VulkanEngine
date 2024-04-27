@@ -207,7 +207,7 @@ void VulkanEngine::OBJMesh::update(SceneState &scene_state) {
     ub->updateBuffer(&ubo_data, sizeof(ubo_data));
   }
 
-  auto vulkan_manager = VulkanManager::getInstance();
+  auto& vulkan_manager = VulkanManager::getInstance();
 
   const auto window = scene_state.getScene().getActiveWindow();
   if (window.get() != nullptr) {
@@ -227,7 +227,7 @@ void VulkanEngine::OBJMesh::update(SceneState &scene_state) {
 
     bindPipeline();
 
-    auto current_command_buffer = vulkan_manager->getCurrentCommandBuffer();
+    auto current_command_buffer = vulkan_manager.getCurrentCommandBuffer();
 
     for (auto &mesh : meshes) {
       mesh->bindVertexBuffers(current_command_buffer);
@@ -235,7 +235,7 @@ void VulkanEngine::OBJMesh::update(SceneState &scene_state) {
       if (shader.get()) {
         shader->bindDescriptorSet(
             current_command_buffer,
-            static_cast<uint32_t>(vulkan_manager->getCurrentFrame()));
+            static_cast<uint32_t>(vulkan_manager.getCurrentFrame()));
       }
 
       mesh->draw(current_command_buffer);
@@ -300,7 +300,7 @@ void VulkanEngine::OBJMesh::loadOBJ(const char *obj_path,
     }
   }
 
-  mvp_buffers.resize(VulkanManager::getInstance()->getFramesInFlight());
+  mvp_buffers.resize(VulkanManager::getInstance().getFramesInFlight());
   for (auto &ub : mvp_buffers) {
     ub.reset(new VulkanEngine::UniformBuffer<MvpUbo>(0));
   }
@@ -359,7 +359,7 @@ void VulkanEngine::OBJMesh::loadOBJ(const char *obj_path,
   }
 
   std::vector<std::vector<std::shared_ptr<Descriptor>>> descriptors;
-  for (size_t i = 0; i < VulkanManager::getInstance()->getFramesInFlight();
+  for (size_t i = 0; i < VulkanManager::getInstance().getFramesInFlight();
        ++i) {
     std::vector<std::shared_ptr<Descriptor>> frame_descriptors;
     for (const auto &t : textures) {

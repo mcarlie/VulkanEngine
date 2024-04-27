@@ -12,10 +12,12 @@ void VulkanEngine::SceneObject::preUpdate(SceneState &scene_state) {
 
 void VulkanEngine::SceneObject::update(SceneState &scene_state) {
   /// Update all children
-  for (const auto &c : children) {
-    c->preUpdate(scene_state);
-    c->update(scene_state);
-    c->postUpdate(scene_state);
+  for (const auto &child : children) {
+    if (child.get() != nullptr) {
+      child->preUpdate(scene_state);
+      child->update(scene_state);
+      child->postUpdate(scene_state);
+    }
   }
 }
 
@@ -36,6 +38,7 @@ const Eigen::Matrix4f VulkanEngine::SceneObject::getTransform() const {
   return transform;
 }
 
-void VulkanEngine::SceneObject::setTranform(const Eigen::Matrix4f &_transform) {
+void VulkanEngine::SceneObject::setTransform(
+    const Eigen::Matrix4f &_transform) {
   transform = _transform;
 }

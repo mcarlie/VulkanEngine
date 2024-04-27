@@ -66,8 +66,11 @@ public:
   /// Get vk::SampleCountFlagBits.
   const vk::SampleCountFlagBits getVkSampleCountFlags() const;
 
+  /// Get the interal vulkan image.
+  virtual vk::Image getVkImage() const;
+
   /// Get the vk::ImageView.
-  const vk::ImageView getVkImageView() const;
+  virtual vk::ImageView getVkImageView() const;
 
 protected:
   /// Overridden to handle tranferring data from a StagedBuffer to this Image.
@@ -109,6 +112,9 @@ protected:
 
   /// The current vk::ImageLayout. \see transitionImageLayout().
   vk::ImageLayout vk_image_layout;
+
+  /// Internal vk_image.
+  vk::Image vk_image;
 
   /// The vk::ImageView created in createImageView().
   vk::ImageView vk_image_view;

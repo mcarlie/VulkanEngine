@@ -2,7 +2,7 @@
 #include <VulkanEngine/VulkanManager.h>
 #include <memory>
 
-VulkanEngine::Scene::Scene(const std::vector<std::shared_ptr<Window>> &_windows)
+VulkanEngine::Scene::Scene(const std::vector<std::shared_ptr<Window>> _windows)
     : windows(_windows) {}
 
 VulkanEngine::Scene::~Scene() {}
@@ -17,9 +17,9 @@ void VulkanEngine::Scene::update() {
       window->update();
     }
   }
-  VulkanManager::getInstance()->beginRenderPass();
+  VulkanManager::getInstance().beginRenderPass();
   SceneObject::update(*state_instance.get());
-  VulkanManager::getInstance()->endRenderPass();
+  VulkanManager::getInstance().endRenderPass();
 }
 
 const std::shared_ptr<VulkanEngine::Window>

@@ -14,7 +14,7 @@ VulkanEngine::Shader::Shader(
 }
 
 VulkanEngine::Shader::~Shader() {
-  const auto &vk_device = VulkanManager::getInstance()->getVkDevice();
+  const auto &vk_device = VulkanManager::getInstance().getVkDevice();
   vk_device.destroyDescriptorPool(vk_descriptor_pool);
   vk_device.destroyPipelineLayout(vk_pipeline_layout);
   for (const auto &dsl : vk_descriptor_set_layouts) {
@@ -24,7 +24,7 @@ VulkanEngine::Shader::~Shader() {
 
 void VulkanEngine::Shader::setDescriptors(
     const std::vector<std::vector<std::shared_ptr<Descriptor>>> &_descriptors) {
-  const auto &vk_device = VulkanManager::getInstance()->getVkDevice();
+  const auto &vk_device = VulkanManager::getInstance().getVkDevice();
 
   // Causes the pipeline layout to be recreated and include changes to
   // descriptors
@@ -116,7 +116,7 @@ const vk::PipelineLayout VulkanEngine::Shader::createVkPipelineLayout() {
             .setPushConstantRangeCount(0)
             .setPPushConstantRanges(nullptr);
     vk_pipeline_layout =
-        VulkanManager::getInstance()->getVkDevice().createPipelineLayout(
+        VulkanManager::getInstance().getVkDevice().createPipelineLayout(
             pipeline_layout_info);
   }
 

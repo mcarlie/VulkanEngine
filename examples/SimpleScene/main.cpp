@@ -7,6 +7,7 @@
 #include <VulkanEngine/UniformBuffer.h>
 #include <VulkanEngine/Utilities.h>
 
+#include <chrono>
 #include <cxxopts.hpp>
 #include <filesystem>
 #include <iostream>
@@ -16,17 +17,19 @@
 cxxopts::ParseResult setupProgramOptions(int argc, char **argv) {
   cxxopts::Options options("SimpleScene",
                            "Load an OBJ file and render using VulkanEngine");
-  options.add_options()("o,obj", "Path to OBJ file",
-                        cxxopts::value<std::string>())(
-      "m,mtl", "Path where associated mtl file is",
-      cxxopts::value<std::string>());
+  options.add_options()
+      ("o,obj", "Path to OBJ file", cxxopts::value<std::string>())
+      ("m,mtl", "Path where associated mtl file is", cxxopts::value<std::string>())
+      ("w,width", "Window width in pixels", cxxopts::value<unsigned>())
+      ("h,height", "Window height in pixels", cxxopts::value<unsigned>());
 
   return options.parse(argc, argv);
 }
 
 void moveCamera(std::shared_ptr<VulkanEngine::KeyboardInput> keyboard_input, std::shared_ptr<VulkanEngine::Camera> camera, float speed = 0.03) {
-    // WASD keys move the camera in x, z directions, Z and X keys move the
-    // camera in y direction.
+    // A and D keys move the camera to the left and right
+    // W and S keys move the camera forwards and backwards. 
+    // Z and X keys move the camera up and down..
     const auto key_w = keyboard_input->getLastKeyStatus(GLFW_KEY_W);
     const auto key_a = keyboard_input->getLastKeyStatus(GLFW_KEY_A);
 
@@ -69,7 +72,7 @@ void moveCamera(std::shared_ptr<VulkanEngine::KeyboardInput> keyboard_input, std
     }
 
     camera->setLookAt(camera->getLookAt() + camera_movement);
-    camera->setTranform(
+    camera->setTransform(
         Eigen::Affine3f(Eigen::Translation3f(camera_movement) *
                         Eigen::Affine3f(camera->getTransform()))
             .matrix());
@@ -78,67 +81,99 @@ void moveCamera(std::shared_ptr<VulkanEngine::KeyboardInput> keyboard_input, std
 int main(int argc, char **argv) {
   auto option_result = setupProgramOptions(argc, argv);
 
-  // Create the GLFW window.
-  std::shared_ptr<VulkanEngine::Window> window(
-      new VulkanEngine::GLFWWindow(1280, 800, "SimpleScene", false));
-  window->initialize();
+  unsigned window_width = 1280;
+  unsigned window_height = 800;
+  if (option_result.count("width")) {
+    window_width = option_result["width"].as<unsigned>();
+  }
+  if (option_result.count("height")) {
+    window_height = option_result["height"].as<unsigned>();
+  }
 
-  // Create the engine instance.
-  auto vulkan_manager = VulkanEngine::VulkanManager::getInstance();
-  if (!vulkan_manager->initialize(window)) {
+  std::string title = "SimpleScene";
+
+  // Create the GLFW window.
+  auto window = std::make_shared<VulkanEngine::GLFWWindow>(window_width, window_height, title, false);
+  if (!window->initialize()) {
+    return 1;
+  }
+
+  // Create the engine singleton.
+  auto& vulkan_manager = VulkanEngine::VulkanManager::getInstance();
+  if (!vulkan_manager.initialize(window)) {
     return 1;
   }
 
   // Create a new scene.
-  std::shared_ptr<VulkanEngine::Scene> scene(
-      new VulkanEngine::Scene({window}));
+  auto windows = std::vector<std::shared_ptr<VulkanEngine::Window>>({window});
+  auto scene = std::make_shared<VulkanEngine::Scene>(windows);
 
   // Define a camera to view renderable objects.
-  std::shared_ptr<VulkanEngine::Camera> camera(
-    new VulkanEngine::Camera(
-      {0.0f, 0.0f, 0.1f}, {0.0f, 1.0f, 0.0f}, 0.1f, 1000.0f, 45.0f,
-      window->getFramebufferWidth(), window->getFramebufferHeight()));
+  auto camera = std::make_shared<VulkanEngine::Camera>(
+    Eigen::Vector3f(0.0f, 0.0f, 0.1f), // look at
+    Eigen::Vector3f(0.0f, 1.0f, 0.0f), // up vector
+    0.1f,                              // z-near
+    10.0f,                             // z-far
+    45.0f,                             // fov
+    window->getFramebufferWidth(),     // width 
+    window->getFramebufferHeight()     // height
+    );
 
   // Set initial camera transform.
-  camera->setTranform(
-      Eigen::Affine3f(Eigen::Translation3f(0.0f, 0.0f, 5.0f)).matrix());
+  camera->setTransform(
+      Eigen::Affine3f(Eigen::Translation3f(0.0f, 0.0f, 3.0f)).matrix());
 
   // Load an OBJ mesh and MTL file if configured.
+  // Without an OBJ file we still render an empty scene.
   std::shared_ptr<VulkanEngine::OBJMesh> obj_mesh;
-
-  if (option_result["obj"].count()) {
+  if (option_result["obj"].count() > 0) {
     std::string obj_path = option_result["obj"].as<std::string>();
     std::string mtl_path;
-    if (option_result["mtl"].count()) {
+    if (option_result["mtl"].count() > 0) {
       mtl_path = option_result["mtl"].as<std::string>();
     }
 
     try {
+      auto obj_file_system_path = std::filesystem::path(obj_path);
       obj_mesh.reset(new VulkanEngine::OBJMesh(
-          std::filesystem::path(obj_path), std::filesystem::path(mtl_path)));
+          obj_file_system_path, std::filesystem::path(mtl_path)));
+      title += " (" + obj_file_system_path.filename().string() + ")";
     } catch (const std::exception &e) {
       std::cerr << "Failed to load obj mesh: " << e.what() << std::endl;
+      return 1;
     } catch (...) {
       std::cerr << "An unknown exception occurred when loading obj mesh."
                 << std::endl;
+      return 1;
     }
 
-    Eigen::Affine3f transform(Eigen::Translation3f(0.0f, 0.0f, 0.0f));
-    transform *= Eigen::Scaling(0.5f);
-    obj_mesh->setTranform(transform.matrix());
+    // Set initial transform at center and scale based on bounding box.
+    auto transform = Eigen::Affine3f::Identity();
+    auto bounding_box = obj_mesh->getBoundingBox();
+    auto bbox_size = bounding_box.max - bounding_box.min;
+    auto center = (bounding_box.max + bounding_box.min) * 0.5f;
+    auto scale = 1.0 / std::max({bbox_size(0), bbox_size(1), bbox_size(2)});
+    transform.scale(scale);
+    transform.translation() -= center * scale;
+    std::cout << bounding_box.max.y() << std::endl;
+    obj_mesh->setTransform(transform.matrix());
 
   } else {
     std::cout << "No OBJ file specified. Running empty scene."
               << std::endl;
+    title += " (Empty scene)";
   }
 
+  // Add the Camera and OBJMesh to the scene.
   scene->addChildren({{camera}, obj_mesh});
 
   const auto keyboard_input = window->getKeyboardInput();
 
   auto start_time = std::chrono::steady_clock::now();
+  auto frame_rate_start_time = start_time;
 
   // Main scene loop.
+  unsigned frame_count = 0;
   while (!window->shouldClose()) {
     if (keyboard_input.get()) {
       Eigen::Affine3f camera_transform =
@@ -151,25 +186,36 @@ int main(int argc, char **argv) {
 
         start_time = std::chrono::steady_clock::now();
 
+        std::chrono::duration<double> frame_rate_elapsed_time = current_time - frame_rate_start_time;
+        if (frame_rate_elapsed_time >= std::chrono::seconds(1)) {
+          double frame_rate = static_cast<double>(frame_count) / frame_rate_elapsed_time.count();
+          window->setTitle(title + " " + std::to_string(static_cast<int>(frame_rate)) + " fps");
+          frame_count = 0;
+          frame_rate_start_time = std::chrono::steady_clock::now();;
+        }
+
         auto matrix = obj_mesh->getTransform();
         Eigen::Transform<float, 3, Eigen::Affine> transform(matrix);
 
-        // Rotate the object around its Y-axis.
+        // Continuously rotate the object around its Y-axis.
         Eigen::AngleAxis<float> rotation(
             (VulkanEngine::Constants::pi<float>() / 4.0f) *
                 elapsed_seconds.count(),
             Eigen::Vector3f::UnitY());
         transform.rotate(rotation);
 
-        obj_mesh->setTranform(transform.matrix());
+        obj_mesh->setTransform(transform.matrix());
 
         moveCamera(keyboard_input, camera);
       }
     }
 
     scene->update();
-    vulkan_manager->drawImage();
+    vulkan_manager.drawImage();
+    ++frame_count;
   }
+
+  vulkan_manager.resetInstance();
 
   return 0;
 }

@@ -1,6 +1,7 @@
 #include <VulkanEngine/Image.h>
 #include <VulkanEngine/RenderPass.h>
 #include <VulkanEngine/VulkanManager.h>
+#include <memory>
 
 #include "vulkan/vulkan_core.h"
 
@@ -15,32 +16,34 @@
 #endif
 
 VulkanEngine::VulkanManager::VulkanManager()
-    : frames_in_flight(3), current_frame(0) {}
+    : frames_in_flight(3), current_frame(0), window(nullptr), initialized(false) {}
 
 VulkanEngine::VulkanManager::~VulkanManager() {
-  vk_device.waitIdle();
   cleanup();
 }
 
-std::shared_ptr<VulkanEngine::VulkanManager> &
-VulkanEngine::VulkanManager::getInstance() {
-  static std::shared_ptr<VulkanEngine::VulkanManager>
-      singleton_vulkan_manager_instance(new VulkanManager());
-  return singleton_vulkan_manager_instance;
+std::unique_ptr<VulkanEngine::VulkanManager>& VulkanEngine::VulkanManager::getInstanceInternal() {
+  static std::unique_ptr<VulkanManager> instance(new VulkanManager());
+  return instance;
 }
 
-void VulkanEngine::VulkanManager::destroyInstance() {
-  static std::shared_ptr<VulkanEngine::VulkanManager>
-      singleton_vulkan_manager_instance;
-  singleton_vulkan_manager_instance.reset();
+VulkanEngine::VulkanManager&
+VulkanEngine::VulkanManager::getInstance() {
+  return *(getInstanceInternal().get());
+}
+
+void VulkanEngine::VulkanManager::resetInstance() {
+  getInstance().cleanup();
+  getInstanceInternal().reset();
 }
 
 bool VulkanEngine::VulkanManager::initialize(
-    const std::shared_ptr<Window> &_window) {
+    const std::shared_ptr<Window> _window) {
+  initialized = true;
+
   window = _window;
 
   try {
-
     std::vector<const char *> instance_extensions(
         window->getRequiredVulkanInstanceExtensions());
 
@@ -295,7 +298,6 @@ void VulkanEngine::VulkanManager::drawImage() {
 
       // If the window size has changed or the image view is out of date
       // according to Vulkan then recreate the pipeline from the swapchain stage
-
       if (result == vk::Result::eErrorOutOfDateKHR ||
           window->sizeHasChanged()) {
         vk_device.waitIdle();
@@ -485,17 +487,23 @@ void VulkanEngine::VulkanManager::createSyncObjects() {
 }
 
 void VulkanEngine::VulkanManager::cleanup() {
+  if (!initialized) {
+    return;
+  }
+  
+  vk_device.waitIdle();
+  default_render_pass.reset();
+
   for (size_t i = 0; i < frames_in_flight; ++i) {
     vk_device.destroySemaphore(vk_image_available_semaphores[i]);
     vk_device.destroySemaphore(vk_rendering_finished_semaphores[i]);
     vk_device.destroyFence(vk_in_flight_fences[i]);
   }
 
-  default_render_pass.reset();
-
   cleanupSwapchain();
 
   vmaDestroyAllocator(vma_allocator);
+  vma_allocator = nullptr;
 
   vk_device.destroy();
 #ifdef ENABLE_VULKAN_VALIDATION
@@ -504,6 +512,17 @@ void VulkanEngine::VulkanManager::cleanup() {
 #endif
   vk_instance.destroySurfaceKHR(vk_surface);
   vk_instance.destroy();
+
+  window.reset();
+  vk_swapchain_images.clear();
+  vk_image_views.clear();
+  vk_command_buffers.clear();
+  vk_swapchain_framebuffers.clear();
+  vk_image_available_semaphores.clear();
+  vk_rendering_finished_semaphores.clear();
+  vk_in_flight_fences.clear();
+
+  initialized = false;
 }
 
 void VulkanEngine::VulkanManager::cleanupSwapchain() {

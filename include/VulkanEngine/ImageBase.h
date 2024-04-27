@@ -12,20 +12,13 @@ public:
   ImageBase();
 
   /// Destructor.
-  ~ImageBase();
+  virtual ~ImageBase();
 
   /// Get the interal vulkan image.
-  const vk::Image getVkImage() const;
+  virtual vk::Image getVkImage() const = 0;
 
   /// Get the internal vulkan image view.
-  const vk::ImageView getVkImageView() const;
-
-protected:
-  /// The internal vulkan image.
-  vk::Image vk_image;
-
-  /// The internal vulkan image view.
-  vk::ImageView vk_image_view;
+  virtual vk::ImageView getVkImageView() const = 0;
 };
 
 } // namespace VulkanEngine

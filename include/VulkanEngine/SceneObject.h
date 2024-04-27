@@ -24,7 +24,7 @@ public:
 
   /// Set the current local transformation matrix.
   /// \param _transform The desired local transformation matrix.
-  void setTranform(const Eigen::Matrix4f &_transform);
+  void setTransform(const Eigen::Matrix4f &_transform);
 
 protected:
   /// Update this scene object.

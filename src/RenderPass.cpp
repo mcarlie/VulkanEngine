@@ -99,12 +99,16 @@ VulkanEngine::RenderPass::RenderPass(uint32_t width, uint32_t height) {
                               .setDependencyCount(1)
                               .setPDependencies(&dependency);
 
-  vk_render_pass = VulkanManager::getInstance()->getVkDevice().createRenderPass(
+  vk_render_pass = VulkanManager::getInstance().getVkDevice().createRenderPass(
       render_pass_info);
 }
 
 VulkanEngine::RenderPass::~RenderPass() {
-  VulkanManager::getInstance()->getVkDevice().destroyRenderPass(vk_render_pass);
+  depth_stencil_attachment.reset();
+  color_attachment.reset();
+  auto i = depth_stencil_attachment.use_count();
+  auto j = color_attachment.use_count();
+  VulkanManager::getInstance().getVkDevice().destroyRenderPass(vk_render_pass);
   vk_render_pass = nullptr;
 }
 

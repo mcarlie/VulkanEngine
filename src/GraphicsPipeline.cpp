@@ -8,15 +8,15 @@ VulkanEngine::GraphicsPipeline::GraphicsPipeline() {}
 
 VulkanEngine::GraphicsPipeline::~GraphicsPipeline() {
   if (vk_graphics_pipeline) {
-    VulkanManager::getInstance()->getVkDevice().destroyPipeline(
+    VulkanManager::getInstance().getVkDevice().destroyPipeline(
         vk_graphics_pipeline);
   }
 }
 
 void VulkanEngine::GraphicsPipeline::bindPipeline() {
-  auto &vulkan_manager = VulkanManager::getInstance();
+  auto& vulkan_manager = VulkanManager::getInstance();
   vk::CommandBuffer current_command_buffer =
-      vulkan_manager->getCurrentCommandBuffer();
+      vulkan_manager.getCurrentCommandBuffer();
   current_command_buffer.bindPipeline(vk::PipelineBindPoint::eGraphics,
                                       vk_graphics_pipeline);
 }
@@ -45,7 +45,7 @@ void VulkanEngine::GraphicsPipeline::createGraphicsPipeline(
     const std::shared_ptr<MeshBase> mesh,
     const std::shared_ptr<Shader> shader) {
   if (vk_graphics_pipeline) {
-    VulkanManager::getInstance()->getVkDevice().destroyPipeline(
+    VulkanManager::getInstance().getVkDevice().destroyPipeline(
         vk_graphics_pipeline);
   }
 
@@ -112,13 +112,13 @@ void VulkanEngine::GraphicsPipeline::createGraphicsPipeline(
           .setPDynamicState(nullptr)
           .setLayout(shader->createVkPipelineLayout())
           .setRenderPass(VulkanManager::getInstance()
-                             ->getDefaultRenderPass()
+                             .getDefaultRenderPass()
                              ->getVkRenderPass())
           .setSubpass(0);
 
   vk_graphics_pipeline =
       VulkanManager::getInstance()
-          ->getVkDevice()
+          .getVkDevice()
           .createGraphicsPipeline(nullptr, graphics_pipeline_info)
           .value;
 }

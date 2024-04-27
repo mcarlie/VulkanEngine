@@ -34,7 +34,7 @@ VulkanEngine::ShaderModule::ShaderModule(
                                 .setCodeSize(bytecode.size());
 
   vk_shader_module =
-      VulkanManager::getInstance()->getVkDevice().createShaderModule(
+      VulkanManager::getInstance().getVkDevice().createShaderModule(
           shader_module_info);
   if (!vk_shader_module) {
     throw std::runtime_error("Could not create ShaderModule!");
@@ -42,7 +42,7 @@ VulkanEngine::ShaderModule::ShaderModule(
 }
 
 VulkanEngine::ShaderModule::~ShaderModule() {
-  VulkanManager::getInstance()->getVkDevice().destroyShaderModule(
+  VulkanManager::getInstance().getVkDevice().destroyShaderModule(
       vk_shader_module);
 }
 

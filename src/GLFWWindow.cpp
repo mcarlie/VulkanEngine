@@ -107,6 +107,11 @@ void VulkanEngine::GLFWWindow::setHeight(uint32_t _height) {
   }
 }
 
+void VulkanEngine::GLFWWindow::setTitle(const std::string &new_title) {
+  VulkanEngine::Window::setTitle(new_title);
+  glfwSetWindowTitle(glfw_window, new_title.c_str());
+}
+
 void VulkanEngine::GLFWWindow::errorCallback(int error,
                                              const char *description) {
   std::cerr << "GLFW error: " << description << " error code:" << error

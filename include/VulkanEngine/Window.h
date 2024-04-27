@@ -58,6 +58,10 @@ public:
   /// \param _height The desired height.
   virtual void setHeight(uint32_t _height);
 
+  /// Set window title.
+  /// \param new_title The new window title.
+  virtual void setTitle(const std::string& new_title);
+
   /// \return The width of the window.
   uint32_t getWidth() const;
 
