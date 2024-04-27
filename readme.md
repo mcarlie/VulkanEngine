@@ -11,6 +11,7 @@ Current short term goals are:
     * Create a CommandBuffer class
     * Create a Device class
     * Create a Framebuffer class
+* Support MTL material properties (current only the texture is considered)
 * Flesh out unit tests
 * Test on different hardware
 * Come up with a better name
