@@ -165,7 +165,7 @@ int main(int argc, char **argv) {
   }
 
   // Add the Camera and OBJMesh to the scene.
-  scene->addChildren({{camera}, obj_mesh});
+  scene->addChildren({camera, obj_mesh});
 
   const auto keyboard_input = window->getKeyboardInput();
 
@@ -214,8 +214,6 @@ int main(int argc, char **argv) {
     vulkan_manager.drawImage();
     ++frame_count;
   }
-
-  vulkan_manager.resetInstance();
 
   return 0;
 }

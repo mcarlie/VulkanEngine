@@ -22,8 +22,11 @@ VulkanEngine::VulkanManager::~VulkanManager() {
   cleanup();
 }
 
-std::unique_ptr<VulkanEngine::VulkanManager>& VulkanEngine::VulkanManager::getInstanceInternal() {
-  static std::unique_ptr<VulkanManager> instance(new VulkanManager());
+std::shared_ptr<VulkanEngine::VulkanManager>& VulkanEngine::VulkanManager::getInstanceInternal() {
+  static std::shared_ptr<VulkanManager> instance;
+  if (instance.get() == nullptr) {
+    instance.reset(new VulkanManager());
+  }
   return instance;
 }
 

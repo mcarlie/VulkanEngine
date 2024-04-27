@@ -211,25 +211,24 @@ void VulkanEngine::OBJMesh::update(SceneState &scene_state) {
 
   const auto window = scene_state.getScene().getActiveWindow();
   if (window.get() != nullptr) {
-    if (graphics_pipeline_updated) {
-      graphics_pipeline_updated = !window->sizeHasChanged();
-    }
-
-    if (!graphics_pipeline_updated) {
-      int32_t width = window->getFramebufferWidth();
-      int32_t height = window->getFramebufferHeight();
-      setViewPort(0, 0, static_cast<float>(width), static_cast<float>(height),
-                  0.0f, 1.0f);
-      setScissor(0, 0, width, height);
-      createGraphicsPipeline(meshes[0], shader);
-      graphics_pipeline_updated = true;
-    }
-
-    bindPipeline();
-
-    auto current_command_buffer = vulkan_manager.getCurrentCommandBuffer();
-
     for (auto &mesh : meshes) {
+      if (graphics_pipeline_updated) {
+        graphics_pipeline_updated = !window->sizeHasChanged();
+      }
+
+      if (!graphics_pipeline_updated) {
+        int32_t width = window->getFramebufferWidth();
+        int32_t height = window->getFramebufferHeight();
+        setViewPort(0, 0, static_cast<float>(width), static_cast<float>(height),
+                    0.0f, 1.0f);
+        setScissor(0, 0, width, height);
+        createGraphicsPipeline(mesh, shader);
+      }
+
+      bindPipeline();
+
+      auto current_command_buffer = vulkan_manager.getCurrentCommandBuffer();
+
       mesh->bindVertexBuffers(current_command_buffer);
       mesh->bindIndexBuffer(current_command_buffer);
       if (shader.get()) {
@@ -241,6 +240,8 @@ void VulkanEngine::OBJMesh::update(SceneState &scene_state) {
       mesh->draw(current_command_buffer);
     }
   }
+
+  graphics_pipeline_updated = true;
 
   SceneObject::update(scene_state);
 }

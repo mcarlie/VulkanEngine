@@ -44,7 +44,7 @@ private:
   VulkanManager();
 
   /// Used for internal singleton handling.
-  static std::unique_ptr<VulkanManager>& getInstanceInternal();
+  static std::shared_ptr<VulkanManager>& getInstanceInternal();
 
 public:
   /// Destructor.
