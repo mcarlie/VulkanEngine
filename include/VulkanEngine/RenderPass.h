@@ -1,6 +1,7 @@
 #ifndef RENDERPASS_H
 #define RENDERPASS_H
 
+#include "VulkanManager.h"
 #include <VulkanEngine/VulkanManager.h>
 
 #include <cstdint>
@@ -23,7 +24,7 @@ public:
             vk::ImageTiling::eOptimal, vk::SampleCountFlagBits::e4>;
 
 public:
-  RenderPass(uint32_t width, uint32_t height);
+  RenderPass(uint32_t _width, uint32_t _height);
 
   ~RenderPass();
 
@@ -38,12 +39,21 @@ public:
     return color_attachment;
   }
 
+  /// Begin the RenderPass.
+  void begin();
+
+  /// End the RenderPass.
+  void end();
+
 private:
   std::shared_ptr<DepthStencilImageAttachment> depth_stencil_attachment;
 
   std::shared_ptr<ColorAttachment> color_attachment;
 
   vk::RenderPass vk_render_pass;
+
+  uint32_t width;
+  uint32_t height;
 };
 
 } // namespace VulkanEngine

@@ -207,7 +207,7 @@ void VulkanEngine::OBJMesh::update(SceneState &scene_state) {
     ub->updateBuffer(&ubo_data, sizeof(ubo_data));
   }
 
-  auto& vulkan_manager = VulkanManager::getInstance();
+  auto &vulkan_manager = VulkanManager::getInstance();
 
   const auto window = scene_state.getScene().getActiveWindow();
   if (window.get() != nullptr) {

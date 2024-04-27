@@ -16,13 +16,13 @@
 #endif
 
 VulkanEngine::VulkanManager::VulkanManager()
-    : frames_in_flight(3), current_frame(0), window(nullptr), initialized(false) {}
+    : frames_in_flight(3), current_frame(0), window(nullptr),
+      initialized(false) {}
 
-VulkanEngine::VulkanManager::~VulkanManager() {
-  cleanup();
-}
+VulkanEngine::VulkanManager::~VulkanManager() { cleanup(); }
 
-std::shared_ptr<VulkanEngine::VulkanManager>& VulkanEngine::VulkanManager::getInstanceInternal() {
+std::shared_ptr<VulkanEngine::VulkanManager> &
+VulkanEngine::VulkanManager::getInstanceInternal() {
   static std::shared_ptr<VulkanManager> instance;
   if (instance.get() == nullptr) {
     instance.reset(new VulkanManager());
@@ -30,8 +30,7 @@ std::shared_ptr<VulkanEngine::VulkanManager>& VulkanEngine::VulkanManager::getIn
   return instance;
 }
 
-VulkanEngine::VulkanManager&
-VulkanEngine::VulkanManager::getInstance() {
+VulkanEngine::VulkanManager &VulkanEngine::VulkanManager::getInstance() {
   return *(getInstanceInternal().get());
 }
 
@@ -243,50 +242,21 @@ bool VulkanEngine::VulkanManager::initialize(
   return true;
 }
 
-void VulkanEngine::VulkanManager::beginRenderPass() {
-  const std::array<float, 4> clear_color_array = {0.0f, 0.0f, 0.0f, 1.0f};
-  auto clear_color =
-      vk::ClearValue().setColor(vk::ClearColorValue(clear_color_array));
-  auto clear_depth_stencil =
-      vk::ClearValue().setDepthStencil(vk::ClearDepthStencilValue(1.0f, 0));
+vk::CommandBuffer VulkanEngine::VulkanManager::getCurrentCommandBuffer() {
+  return vk_command_buffers[current_frame];
+}
 
-  std::array<vk::ClearValue, 3> clear_values = {
-      clear_color, clear_depth_stencil, clear_color};
+vk::Framebuffer VulkanEngine::VulkanManager::getCurrentSwapchainFramebuffer() {
+  return vk_swapchain_framebuffers[current_frame];
+}
 
-  auto begin_info =
-      vk::CommandBufferBeginInfo()
-          .setFlags(vk::CommandBufferUsageFlagBits::eSimultaneousUse)
-          .setPInheritanceInfo(nullptr);
-
-  auto fence_result =
-      vk_device.waitForFences(vk_in_flight_fences[current_frame], VK_TRUE,
-                              std::numeric_limits<uint32_t>::max());
+void VulkanEngine::VulkanManager::waitForFence() {
+  auto fence_result = VulkanManager::getVkDevice().waitForFences(
+      vk_in_flight_fences[current_frame], VK_TRUE,
+      std::numeric_limits<uint32_t>::max());
   if (fence_result != vk::Result::eSuccess) {
     throw std::runtime_error("Error waiting for fences");
   }
-
-  vk_command_buffers[current_frame].begin(begin_info);
-
-  auto render_pass_info =
-      vk::RenderPassBeginInfo()
-          .setRenderPass(default_render_pass->getVkRenderPass())
-          .setFramebuffer(vk_swapchain_framebuffers[current_frame])
-          .setRenderArea(vk::Rect2D({0, 0}, {window->getFramebufferWidth(),
-                                             window->getFramebufferHeight()}))
-          .setClearValueCount(static_cast<uint32_t>(clear_values.size()))
-          .setPClearValues(clear_values.data());
-
-  vk_command_buffers[current_frame].beginRenderPass(
-      render_pass_info, vk::SubpassContents::eInline);
-}
-
-void VulkanEngine::VulkanManager::endRenderPass() {
-  vk_command_buffers[current_frame].endRenderPass();
-  vk_command_buffers[current_frame].end();
-}
-
-vk::CommandBuffer VulkanEngine::VulkanManager::getCurrentCommandBuffer() {
-  return vk_command_buffers[current_frame];
 }
 
 void VulkanEngine::VulkanManager::drawImage() {
@@ -493,7 +463,7 @@ void VulkanEngine::VulkanManager::cleanup() {
   if (!initialized) {
     return;
   }
-  
+
   vk_device.waitIdle();
   default_render_pass.reset();
 

@@ -14,7 +14,7 @@ VulkanEngine::GraphicsPipeline::~GraphicsPipeline() {
 }
 
 void VulkanEngine::GraphicsPipeline::bindPipeline() {
-  auto& vulkan_manager = VulkanManager::getInstance();
+  auto &vulkan_manager = VulkanManager::getInstance();
   vk::CommandBuffer current_command_buffer =
       vulkan_manager.getCurrentCommandBuffer();
   current_command_buffer.bindPipeline(vk::PipelineBindPoint::eGraphics,

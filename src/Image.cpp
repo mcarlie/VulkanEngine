@@ -165,17 +165,15 @@ VulkanEngine::Image<format, image_type, tiling,
 
 template <vk::Format format, vk::ImageType image_type, vk::ImageTiling tiling,
           vk::SampleCountFlagBits sample_count_flags>
-vk::Image
-VulkanEngine::Image<format, image_type, tiling,
-                    sample_count_flags>::getVkImage() const {
+vk::Image VulkanEngine::Image<format, image_type, tiling,
+                              sample_count_flags>::getVkImage() const {
   return vk_image;
 }
 
 template <vk::Format format, vk::ImageType image_type, vk::ImageTiling tiling,
           vk::SampleCountFlagBits sample_count_flags>
-vk::ImageView
-VulkanEngine::Image<format, image_type, tiling,
-                    sample_count_flags>::getVkImageView() const {
+vk::ImageView VulkanEngine::Image<format, image_type, tiling,
+                                  sample_count_flags>::getVkImageView() const {
   return vk_image_view;
 }
 
@@ -244,8 +242,8 @@ void VulkanEngine::Image<format, image_type, tiling, sample_count_flags>::
           .setSharingMode(vk::SharingMode::eExclusive)
           .setSamples(sample_count_flags));
 
-  vk_image = VulkanManager::getInstance().getVkDevice().createImage(
-      image_create_info);
+  vk_image =
+      VulkanManager::getInstance().getVkDevice().createImage(image_create_info);
   if (!vk_image) {
     throw std::runtime_error("Could not create image!");
   }

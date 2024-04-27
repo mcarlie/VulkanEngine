@@ -20,7 +20,7 @@ void VulkanEngine::Buffer::createBuffer(
     vk::BufferUsageFlags usage_flags,
     vk::MemoryPropertyFlags memory_property_flags,
     VmaMemoryUsage vma_memory_usage) {
-  auto& vulkan_manager = VulkanManager::getInstance();
+  auto &vulkan_manager = VulkanManager::getInstance();
 
   auto buffer_info = vk::BufferCreateInfo()
                          .setSize(data_size)

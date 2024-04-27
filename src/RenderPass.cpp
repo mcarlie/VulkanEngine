@@ -3,7 +3,8 @@
 
 #include "VulkanEngine/VulkanManager.h"
 
-VulkanEngine::RenderPass::RenderPass(uint32_t width, uint32_t height) {
+VulkanEngine::RenderPass::RenderPass(uint32_t _width, uint32_t _height)
+    : width(_width), height(_height) {
   depth_stencil_attachment.reset(new DepthStencilImageAttachment(
       vk::ImageLayout::eUndefined,
       vk::ImageUsageFlagBits::eDepthStencilAttachment,
@@ -106,12 +107,51 @@ VulkanEngine::RenderPass::RenderPass(uint32_t width, uint32_t height) {
 VulkanEngine::RenderPass::~RenderPass() {
   depth_stencil_attachment.reset();
   color_attachment.reset();
-  auto i = depth_stencil_attachment.use_count();
-  auto j = color_attachment.use_count();
   VulkanManager::getInstance().getVkDevice().destroyRenderPass(vk_render_pass);
   vk_render_pass = nullptr;
 }
 
 const vk::RenderPass &VulkanEngine::RenderPass::getVkRenderPass() const {
   return vk_render_pass;
+}
+
+void VulkanEngine::RenderPass::begin() {
+  const std::array<float, 4> clear_color_array = {0.0f, 0.0f, 0.0f, 1.0f};
+  auto clear_color =
+      vk::ClearValue().setColor(vk::ClearColorValue(clear_color_array));
+  auto clear_depth_stencil =
+      vk::ClearValue().setDepthStencil(vk::ClearDepthStencilValue(1.0f, 0));
+
+  std::array<vk::ClearValue, 3> clear_values = {
+      clear_color, clear_depth_stencil, clear_color};
+
+  auto begin_info =
+      vk::CommandBufferBeginInfo()
+          .setFlags(vk::CommandBufferUsageFlagBits::eSimultaneousUse)
+          .setPInheritanceInfo(nullptr);
+
+  auto &vulkan_manager = VulkanManager::getInstance();
+
+  vulkan_manager.waitForFence();
+
+  auto command_buffer = vulkan_manager.getCurrentCommandBuffer();
+
+  command_buffer.begin(begin_info);
+
+  auto render_pass_info =
+      vk::RenderPassBeginInfo()
+          .setRenderPass(vk_render_pass)
+          .setFramebuffer(vulkan_manager.getCurrentSwapchainFramebuffer())
+          .setRenderArea(vk::Rect2D({0, 0}, {width, height}))
+          .setClearValueCount(static_cast<uint32_t>(clear_values.size()))
+          .setPClearValues(clear_values.data());
+
+  command_buffer.beginRenderPass(render_pass_info,
+                                 vk::SubpassContents::eInline);
+}
+
+void VulkanEngine::RenderPass::end() {
+  auto command_buffer = VulkanManager::getInstance().getCurrentCommandBuffer();
+  command_buffer.endRenderPass();
+  command_buffer.end();
 }

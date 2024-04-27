@@ -73,11 +73,11 @@ public:
 
   void createCommandBuffers();
 
-  void beginRenderPass();
-
-  void endRenderPass();
-
   vk::CommandBuffer getCurrentCommandBuffer();
+
+  void waitForFence();
+
+  vk::Framebuffer getCurrentSwapchainFramebuffer();
 
   /// Executes all command buffers and swaps buffers.
   void drawImage();
