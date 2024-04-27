@@ -66,10 +66,6 @@ jobs:
       run: |
         sudo apt-get update
         sudo apt-get install -y \
-            build-essential \
-            cmake \
-            git \
-            gdb \
             libglfw3 \
             libglfw3-dev \
             libeigen3-dev \
@@ -90,8 +86,11 @@ jobs:
     - name: Install dependencies (Windows)
       if: runner.os == 'Windows'
       run: |
-        & "${VCPKG_INSTALLATION_ROOT}\vcpkg" install glfw3 eigen3 glslang vulkan
-        echo "VULKAN_SDK=${VCPKG_INSTALLATION_ROOT}\installed\x64-windows" >> $GITHUB_ENV
+        git clone https://github.com/microsoft/vcpkg.git
+        .\vcpkg\bootstrap-vcpkg.bat
+        .\vcpkg\vcpkg integrate install
+        .\vcpkg\vcpkg install glfw3 eigen3 glslang vulkan
+        echo "VULKAN_SDK=${{ github.workspace }}/vcpkg/installed/x64-windows" >> $GITHUB_ENV
 
     - name: Configure CMake for Windows
       if: runner.os == 'Windows'
