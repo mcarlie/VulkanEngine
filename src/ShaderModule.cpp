@@ -1,5 +1,6 @@
 #include <VulkanEngine/ShaderModule.h>
 #include <VulkanEngine/VulkanManager.h>
+#include <VulkanEngine/Device.h>
 #include <glslang/Public/ResourceLimits.h>
 #include <glslang/Public/ShaderLang.h>
 #include <glslang/SPIRV/GlslangToSpv.h>
@@ -34,7 +35,7 @@ VulkanEngine::ShaderModule::ShaderModule(
                                 .setCodeSize(bytecode.size());
 
   vk_shader_module =
-      VulkanManager::getInstance().getVkDevice().createShaderModule(
+      VulkanManager::getInstance().getDevice()->getVkDevice().createShaderModule(
           shader_module_info);
   if (!vk_shader_module) {
     throw std::runtime_error("Could not create ShaderModule!");
@@ -42,7 +43,7 @@ VulkanEngine::ShaderModule::ShaderModule(
 }
 
 VulkanEngine::ShaderModule::~ShaderModule() {
-  VulkanManager::getInstance().getVkDevice().destroyShaderModule(
+  VulkanManager::getInstance().getDevice()->getVkDevice().destroyShaderModule(
       vk_shader_module);
 }
 

@@ -25,7 +25,7 @@ VulkanEngine::Swapchain::Swapchain(uint32_t number_of_images,
           .setClipped(VK_TRUE)
           .setOldSwapchain(nullptr);
 
-  auto vk_device = vulkan_manager.getVkDevice();
+  auto vk_device = vulkan_manager.getDevice()->getVkDevice();
 
   vk_swapchain = vk_device.createSwapchainKHR(swapchain_info);
   vk_swapchain_images = vk_device.getSwapchainImagesKHR(vk_swapchain);
@@ -87,7 +87,7 @@ VulkanEngine::Swapchain::Swapchain(uint32_t number_of_images,
 };
 
 VulkanEngine::Swapchain::~Swapchain() {
-  auto vk_device = VulkanManager::getInstance().getVkDevice();
+  auto vk_device = VulkanManager::getInstance().getDevice()->getVkDevice();
   for (size_t i = 0; i < vk_swapchain_framebuffers.size(); ++i) {
     vk_device.destroyFramebuffer(vk_swapchain_framebuffers[i]);
   }
@@ -111,7 +111,7 @@ VulkanEngine::Swapchain::~Swapchain() {
 bool VulkanEngine::Swapchain::present() {
   uint32_t image_index;
   auto &vulkan_manager = VulkanManager::getInstance();
-  auto vk_device = vulkan_manager.getVkDevice();
+  auto vk_device = vulkan_manager.getDevice()->getVkDevice();
   // Acquire the next available swapchain image that we can write to
   vk::Result result = vk_device.acquireNextImageKHR(
       vk_swapchain, std::numeric_limits<uint32_t>::max(),
@@ -148,7 +148,7 @@ bool VulkanEngine::Swapchain::present() {
 
   vk_device.resetFences(vk_in_flight_fences[image_index]);
 
-  auto vk_graphics_queue = vulkan_manager.getVkGraphicsQueue();
+  auto vk_graphics_queue = vulkan_manager.getDevice()->getVkGraphicsQueue();
   vk_graphics_queue.submit(submit_info, vk_in_flight_fences[image_index]);
 
   vk::SwapchainKHR swapchains[] = {vk_swapchain};
@@ -176,7 +176,7 @@ vk::SwapchainKHR VulkanEngine::Swapchain::getVkSwapChain() {
 
 void VulkanEngine::Swapchain::waitForFence() {
   auto &vulkan_manager = VulkanManager::getInstance();
-  auto fence_result = vulkan_manager.getVkDevice().waitForFences(
+  auto fence_result = vulkan_manager.getDevice()->getVkDevice().waitForFences(
       vk_in_flight_fences[vulkan_manager.getCurrentFrame()], VK_TRUE,
       std::numeric_limits<uint32_t>::max());
   if (fence_result != vk::Result::eSuccess) {

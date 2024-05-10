@@ -20,10 +20,10 @@ VulkanEngine::Framebuffer::Framebuffer(
           .setHeight(height)
           .setLayers(layers);
 
-  vk_framebuffer = VulkanManager::getInstance().getVkDevice().createFramebuffer(
+  vk_framebuffer = VulkanManager::getInstance().getDevice()->getVkDevice().createFramebuffer(
       framebuffer_info);
 }
 
 VulkanEngine::Framebuffer::~Framebuffer() {
-  VulkanManager::getInstance().getVkDevice().destroyFramebuffer(vk_framebuffer);
+  VulkanManager::getInstance().getDevice()->getVkDevice().destroyFramebuffer(vk_framebuffer);
 }

@@ -8,6 +8,7 @@
 #include <VulkanEngine/UniformBuffer.h>
 #include <VulkanEngine/VertexAttribute.h>
 #include <VulkanEngine/Window.h>
+#include <VulkanEngine/Device.h>
 
 // Support latest vk_mem_alloc with older Vulkan SDK headers.
 #ifndef VK_API_VERSION_MAJOR
@@ -73,8 +74,6 @@ public:
   /// \param _window The Window instance to use with the manager.
   bool initialize(const std::shared_ptr<Window> _window);
 
-  void createCommandBuffers();
-
   vk::CommandBuffer getCurrentCommandBuffer();
 
   void waitForFence();
@@ -84,26 +83,13 @@ public:
   /// Executes all command buffers and swaps buffers.
   void drawImage();
 
-  /// \return The manager's vk::Device instance.
-  const vk::Device &getVkDevice() const;
+  std::shared_ptr<Device> getDevice() {
+    return device;
+  }
 
   vk::Instance getVkInstance() const {
     return vk_instance;
   }
-
-  /// \return The manager's vk::PhysicalDevice instance.
-  const vk::PhysicalDevice &getVKPhysicalDevice() const;
-
-  /// \return The manager's vk::CommandPool for allocating command buffers.
-  const vk::CommandPool &getVkCommandPool() const;
-
-  /// \return The manager's vk::Queue for submitting graphics related command
-  /// buffers.
-  const vk::Queue &getVkGraphicsQueue() const;
-
-  /// \return The VmaAllocator instance for performing allocations with Vulkan
-  /// memory allocator.
-  const VmaAllocator &getVmaAllocator() const;
 
   const std::shared_ptr<RenderPass> getDefaultRenderPass() const {
     return default_render_pass;
@@ -114,34 +100,18 @@ public:
   const size_t getFramesInFlight() const { return frames_in_flight; }
 
 private:
-  void createCommandPool();
 
   void cleanup();
-  void cleanupCommandBuffers();
-
-  /// The window instance used with the manager.
-  std::shared_ptr<Window> window;
 
   /// The main Vulkan instance
   vk::Instance vk_instance;
 
+  /// The window instance used with the manager.
+  std::shared_ptr<Window> window;
+
+  std::shared_ptr<Device> device;
   std::shared_ptr<Swapchain> swapchain;
-
-  /// The physical device used for rendering.
-  vk::PhysicalDevice vk_physical_device;
-
-  /// The logical device used to interface with the physice_device.
-  vk::Device vk_device;
-
-  VmaAllocator vma_allocator;
-
-  vk::Queue vk_graphics_queue;
-
-  uint32_t graphics_queue_family_index;
-
-  vk::CommandPool vk_command_pool;
-
-  std::vector<vk::CommandBuffer> vk_command_buffers;
+  std::shared_ptr<RenderPass> default_render_pass;
 
   size_t frames_in_flight;
   size_t current_frame;
@@ -149,8 +119,6 @@ private:
   /// Class which allows for dynamic loading of certain functions within Vulkan
   /// classes.
   vk::DispatchLoaderDynamic vk_dispatch_loader_dynamic;
-
-  std::shared_ptr<RenderPass> default_render_pass;
 
   bool initialized;
 

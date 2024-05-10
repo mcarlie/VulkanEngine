@@ -23,7 +23,7 @@ template <vk::Format format, vk::ImageType image_type, vk::ImageTiling tiling,
           vk::SampleCountFlagBits sample_count_flags>
 VulkanEngine::ShaderImage<format, image_type, tiling,
                           sample_count_flags>::~ShaderImage() {
-  VulkanManager::getInstance().getVkDevice().destroySampler(vk_sampler);
+  VulkanManager::getInstance().getDevice()->getVkDevice().destroySampler(vk_sampler);
 }
 
 template <vk::Format format, vk::ImageType image_type, vk::ImageTiling tiling,
@@ -48,7 +48,7 @@ void VulkanEngine::ShaderImage<format, image_type, tiling,
           .setMinLod(0.0f)
           .setMaxLod(static_cast<float>(this->mipmap_levels));
 
-  vk_sampler = VulkanManager::getInstance().getVkDevice().createSampler(
+  vk_sampler = VulkanManager::getInstance().getDevice()->getVkDevice().createSampler(
       sampler_create_info);
   if (!vk_sampler) {
     throw std::runtime_error("Could not create sampler for image");

@@ -8,7 +8,7 @@ VulkanEngine::GraphicsPipeline::GraphicsPipeline() {}
 
 VulkanEngine::GraphicsPipeline::~GraphicsPipeline() {
   if (vk_graphics_pipeline) {
-    VulkanManager::getInstance().getVkDevice().destroyPipeline(
+    VulkanManager::getInstance().getDevice()->getVkDevice().destroyPipeline(
         vk_graphics_pipeline);
   }
 }
@@ -45,7 +45,7 @@ void VulkanEngine::GraphicsPipeline::createGraphicsPipeline(
     const std::shared_ptr<MeshBase> mesh,
     const std::shared_ptr<Shader> shader) {
   if (vk_graphics_pipeline) {
-    VulkanManager::getInstance().getVkDevice().destroyPipeline(
+    VulkanManager::getInstance().getDevice()->getVkDevice().destroyPipeline(
         vk_graphics_pipeline);
   }
 
@@ -118,7 +118,8 @@ void VulkanEngine::GraphicsPipeline::createGraphicsPipeline(
 
   vk_graphics_pipeline =
       VulkanManager::getInstance()
-          .getVkDevice()
+          .getDevice()
+          ->getVkDevice()
           .createGraphicsPipeline(nullptr, graphics_pipeline_info)
           .value;
 }

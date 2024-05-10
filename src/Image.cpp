@@ -3,6 +3,7 @@
 
 #include <VulkanEngine/Image.h>
 #include <VulkanEngine/VulkanManager.h>
+#include <VulkanEngine/Device.h>
 
 template <vk::Format format, vk::ImageType image_type, vk::ImageTiling tiling,
           vk::SampleCountFlagBits sample_count_flags>
@@ -23,8 +24,8 @@ VulkanEngine::Image<format, image_type, tiling, sample_count_flags>::Image(
 template <vk::Format format, vk::ImageType image_type, vk::ImageTiling tiling,
           vk::SampleCountFlagBits sample_count_flags>
 VulkanEngine::Image<format, image_type, tiling, sample_count_flags>::~Image() {
-  VulkanManager::getInstance().getVkDevice().destroyImageView(vk_image_view);
-  vmaDestroyImage(VulkanManager::getInstance().getVmaAllocator(), vk_image,
+  VulkanManager::getInstance().getDevice()->getVkDevice().destroyImageView(vk_image_view);
+  vmaDestroyImage(VulkanManager::getInstance().getDevice()->getVmaAllocator(), vk_image,
                   vma_allocation);
 }
 
@@ -53,7 +54,7 @@ void VulkanEngine::Image<format, image_type, tiling, sample_count_flags>::
                                     .setViewType(image_view_type)
                                     .setSubresourceRange(subresource_range);
 
-  vk_image_view = VulkanManager::getInstance().getVkDevice().createImageView(
+  vk_image_view = VulkanManager::getInstance().getDevice()->getVkDevice().createImageView(
       image_view_create_info);
   if (!vk_image_view) {
     throw std::runtime_error("Could not create image view for image!");
@@ -243,7 +244,7 @@ void VulkanEngine::Image<format, image_type, tiling, sample_count_flags>::
           .setSamples(sample_count_flags));
 
   vk_image =
-      VulkanManager::getInstance().getVkDevice().createImage(image_create_info);
+      VulkanManager::getInstance().getDevice()->getVkDevice().createImage(image_create_info);
   if (!vk_image) {
     throw std::runtime_error("Could not create image!");
   }
@@ -253,7 +254,7 @@ void VulkanEngine::Image<format, image_type, tiling, sample_count_flags>::
 
   VkImage c_image_handle;
   auto allocation_result = vmaCreateImage(
-      VulkanManager::getInstance().getVmaAllocator(), &image_create_info,
+      VulkanManager::getInstance().getDevice()->getVmaAllocator(), &image_create_info,
       &allocate_info, &c_image_handle, &vma_allocation, nullptr);
   if (allocation_result != VK_SUCCESS) {
     throw std::runtime_error("Could not allocate Image memory!");
