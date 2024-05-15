@@ -32,9 +32,9 @@ void VulkanEngine::ShaderImage<format, image_type, tiling,
                                sample_count_flags>::createSampler() {
   auto sampler_create_info =
       vk::SamplerCreateInfo()
-          .setAddressModeU(vk::SamplerAddressMode::eClampToEdge)
-          .setAddressModeV(vk::SamplerAddressMode::eClampToEdge)
-          .setAddressModeW(vk::SamplerAddressMode::eClampToEdge)
+          .setAddressModeU(vk::SamplerAddressMode::eRepeat)
+          .setAddressModeV(vk::SamplerAddressMode::eRepeat)
+          .setAddressModeW(vk::SamplerAddressMode::eRepeat)
           .setAnisotropyEnable(VK_TRUE)
           .setMaxAnisotropy(16.0f)
           .setBorderColor(vk::BorderColor::eIntOpaqueBlack)

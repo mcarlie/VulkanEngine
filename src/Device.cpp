@@ -2,6 +2,9 @@
   #include <VulkanEngine/VulkanManager.h>
   
 VulkanEngine::Device::Device(): graphics_queue_family_index(0) {
+
+    auto& vulkan_manager = VulkanManager::getInstance();
+    auto vk_instance = vulkan_manager.getVkInstance();
     
 #ifdef ENABLE_VULKAN_VALIDATION
     vk::DebugUtilsMessengerCreateInfoEXT debug_message_create_info;
@@ -27,8 +30,6 @@ VulkanEngine::Device::Device(): graphics_queue_family_index(0) {
 #endif
 
     // TODO Check suitability and handle case where there is no device
-    auto& vulkan_manager = VulkanManager::getInstance();
-    auto vk_instance = vulkan_manager.getVkInstance();
     std::vector<vk::PhysicalDevice> physical_devices =
         vk_instance.enumeratePhysicalDevices();
     auto vk_physical_device = physical_devices[0];
@@ -152,6 +153,10 @@ VulkanEngine::Device::~Device() {
   vmaDestroyAllocator(vma_allocator);
   vma_allocator = nullptr;
   vk_device.destroy();
+#ifdef ENABLE_VULKAN_VALIDATION
+  VulkanManager::getInstance().getVkInstance().destroyDebugUtilsMessengerEXT(
+    vk_debug_utils_messenger, nullptr, vk_dispatch_loader_dynamic);
+#endif
 }
 
 const vk::Device& VulkanEngine::Device::getVkDevice() const {
@@ -230,3 +235,14 @@ void VulkanEngine::Device::endSingleUsageCommandBuffer() {
       vk_command_pool,
       single_use_command_buffer);
 }
+
+#ifdef ENABLE_VULKAN_VALIDATION
+VKAPI_ATTR VkBool32 VKAPI_CALL VulkanEngine::Device::debugCallback(
+    VkDebugUtilsMessageSeverityFlagBitsEXT message_severity,
+    VkDebugUtilsMessageTypeFlagsEXT message_type,
+    const VkDebugUtilsMessengerCallbackDataEXT *callback_data,
+    void *user_data) {
+  std::cerr << "validation layer: " << callback_data->pMessage << std::endl;
+  return VK_FALSE;
+}
+#endif

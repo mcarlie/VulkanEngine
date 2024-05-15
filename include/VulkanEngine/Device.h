@@ -57,6 +57,10 @@ private:
   std::vector<vk::CommandBuffer> vk_command_buffers;
   vk::CommandBuffer single_use_command_buffer;
 
+  /// Class which allows for dynamic loading of certain functions within Vulkan
+  /// classes.
+  vk::DispatchLoaderDynamic vk_dispatch_loader_dynamic;
+
 #ifdef ENABLE_VULKAN_VALIDATION
   vk::DebugUtilsMessengerEXT vk_debug_utils_messenger;
 

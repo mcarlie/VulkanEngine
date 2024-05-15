@@ -19,7 +19,7 @@ namespace OBJMeshInternal {
 
 template <typename IndexType>
 std::shared_ptr<VulkanEngine::MeshBase>
-getShape(const tinyobj::shape_t &shape, const tinyobj::attrib_t &attrib) {
+getShape(const tinyobj::shape_t &shape, const tinyobj::attrib_t &attrib, bool& has_tex_coord, bool& has_normals) {
   using Vertex = std::tuple<const Eigen::Vector3f &, const Eigen::Vector3f &,
                             const Eigen::Vector2f &>;
   std::unordered_map<Vertex, size_t> unique_vertices;
@@ -28,9 +28,6 @@ getShape(const tinyobj::shape_t &shape, const tinyobj::attrib_t &attrib) {
   const auto default_texcoord = Eigen::Vector2f(0.0f, 0.0f);
 
   std::vector<Eigen::Vector3f> positions;
-  // Important to reserve these since we are using references to elements to
-  // keep track of unique vertices. If not reserved the vector might be
-  // relocated in memory which invalidates the references.
   positions.reserve(shape.mesh.indices.size());
 
   std::vector<IndexType> indices;
@@ -77,14 +74,18 @@ getShape(const tinyobj::shape_t &shape, const tinyobj::attrib_t &attrib) {
       min_position.z() = position.z();
     }
 
+    has_normals = false;
     if (shape.mesh.indices[i].normal_index > -1) {
+      has_normals = true;
       normals.emplace_back(
           attrib.normals[3 * shape.mesh.indices[i].normal_index + 0],
           attrib.normals[3 * shape.mesh.indices[i].normal_index + 1],
           attrib.normals[3 * shape.mesh.indices[i].normal_index + 2]);
     }
 
+    has_tex_coord = false;
     if (shape.mesh.indices[i].texcoord_index > -1) {
+      has_tex_coord = true;
       texcoords.emplace_back(
           attrib.texcoords[2 * shape.mesh.indices[i].texcoord_index + 0],
           1.0f -
@@ -154,8 +155,8 @@ getShape(const tinyobj::shape_t &shape, const tinyobj::attrib_t &attrib) {
 
 VulkanEngine::OBJMesh::OBJMesh(std::filesystem::path obj_file,
                                std::filesystem::path mtl_path,
-                               const std::shared_ptr<Shader> _shader)
-    : SceneObject(), GraphicsPipeline(), shader(_shader),
+                               const std::shared_ptr<Shader> _shader) //TODO support custom shader.
+    : SceneObject(),
       graphics_pipeline_updated(false), bounding_box() {
   std::error_code obj_file_error;
   if (!std::filesystem::exists(obj_file, obj_file_error)) {
@@ -210,34 +211,36 @@ void VulkanEngine::OBJMesh::update(SceneState &scene_state) {
   auto &vulkan_manager = VulkanManager::getInstance();
 
   const auto window = scene_state.getScene().getActiveWindow();
+  if (graphics_pipeline_updated) {
+    graphics_pipeline_updated = !window->sizeHasChanged();
+  }
+
+  if (!graphics_pipeline_updated) {
+    graphics_pipelines.clear();
+    for (size_t i = 0; i < meshes.size(); ++i) {
+      int32_t width = window->getFramebufferWidth();
+      int32_t height = window->getFramebufferHeight();
+      graphics_pipelines.push_back(std::shared_ptr<GraphicsPipeline>(new GraphicsPipeline()));
+      graphics_pipelines.back()->setViewPort(0, 0, static_cast<float>(width), static_cast<float>(height),
+                  0.0f, 1.0f);
+      graphics_pipelines.back()->setScissor(0, 0, width, height);
+      graphics_pipelines.back()->createGraphicsPipeline(meshes[i], shaders[i]);
+    }
+  }
   if (window.get() != nullptr) {
-    for (auto &mesh : meshes) {
-      if (graphics_pipeline_updated) {
-        graphics_pipeline_updated = !window->sizeHasChanged();
-      }
+    for (size_t i = 0; i < meshes.size(); ++i) {
 
-      if (!graphics_pipeline_updated) {
-        int32_t width = window->getFramebufferWidth();
-        int32_t height = window->getFramebufferHeight();
-        setViewPort(0, 0, static_cast<float>(width), static_cast<float>(height),
-                    0.0f, 1.0f);
-        setScissor(0, 0, width, height);
-        createGraphicsPipeline(mesh, shader);
-      }
-
-      bindPipeline();
+      graphics_pipelines[i]->bindPipeline();
 
       auto current_command_buffer = vulkan_manager.getCurrentCommandBuffer();
 
-      mesh->bindVertexBuffers(current_command_buffer);
-      mesh->bindIndexBuffer(current_command_buffer);
-      if (shader.get()) {
-        shader->bindDescriptorSet(
-            current_command_buffer,
-            static_cast<uint32_t>(vulkan_manager.getCurrentFrame()));
-      }
+      meshes[i]->bindVertexBuffers(current_command_buffer);
+      meshes[i]->bindIndexBuffer(current_command_buffer);
+      shaders[i]->bindDescriptorSet(
+          current_command_buffer,
+          static_cast<uint32_t>(vulkan_manager.getCurrentFrame()));
 
-      mesh->draw(current_command_buffer);
+      meshes[i]->draw(current_command_buffer);
     }
   }
 
@@ -269,13 +272,22 @@ void VulkanEngine::OBJMesh::loadOBJ(const char *obj_path,
                       std::numeric_limits<float>::max(),
                       std::numeric_limits<float>::max()};
 
-  for (const auto &shape : shapes) {
+  mvp_buffers.resize(VulkanManager::getInstance().getFramesInFlight());
+  for (auto &ub : mvp_buffers) {
+    ub.reset(new VulkanEngine::UniformBuffer<MvpUbo>(0));
+  }
+
+  material_buffers.resize(VulkanManager::getInstance().getFramesInFlight());
+
+  for (size_t i = 0; i < shapes.size(); ++i) {
+    bool has_tex_coord = false;
+    bool has_normals = false;
     // We represent the indices using uint16_t unless that is not sufficient
     // given the number of indices
-    if (shape.mesh.indices.size() > std::numeric_limits<uint16_t>::max()) {
-      meshes.push_back(OBJMeshInternal::getShape<uint32_t>(shape, attrib));
+    if (shapes[i].mesh.indices.size() > std::numeric_limits<uint16_t>::max()) {
+      meshes.push_back(OBJMeshInternal::getShape<uint32_t>(shapes[i], attrib, has_tex_coord, has_normals));
     } else {
-      meshes.push_back(OBJMeshInternal::getShape<uint16_t>(shape, attrib));
+      meshes.push_back(OBJMeshInternal::getShape<uint16_t>(shapes[i], attrib, has_tex_coord, has_normals));
     }
 
     // Calculate the bbox for the whole OBJ
@@ -299,29 +311,38 @@ void VulkanEngine::OBJMesh::loadOBJ(const char *obj_path,
     if (mesh_bbox.min.z() < bounding_box.min.z()) {
       bounding_box.min.z() = mesh_bbox.min.z();
     }
-  }
 
-  mvp_buffers.resize(VulkanManager::getInstance().getFramesInFlight());
-  for (auto &ub : mvp_buffers) {
-    ub.reset(new VulkanEngine::UniformBuffer<MvpUbo>(0));
-  }
+    int material_id = shapes[i].mesh.material_ids[0]; // TODO support per face materials.
+    if (material_id == -1) {
+      material_id = 0;
+    }
 
-  for (const auto &material : materials) {
-    if (material.diffuse_texname != "") {
+    for (auto &material_buffer_list : material_buffers) {
+      auto material_buffer = std::shared_ptr<UniformBuffer<Material>>(new VulkanEngine::UniformBuffer<Material>(2));
+      Material material_data;
+      material_data.ambient = {materials[material_id].ambient[0], materials[material_id].ambient[1], materials[material_id].ambient[2]};
+      material_data.diffuse = {materials[material_id].diffuse[0], materials[material_id].diffuse[1], materials[material_id].diffuse[2]};
+      material_data.specular = {materials[material_id].specular[0], materials[material_id].specular[1], materials[material_id].specular[2]};
+      material_buffer->updateBuffer(&material_data, sizeof(material_data));
+      material_buffer_list.push_back(material_buffer);
+    }
+
+    using RGBATexture2D1S =
+        VulkanEngine::StagedBuffer<VulkanEngine::ShaderImage<
+            vk::Format::eR8G8B8A8Unorm, vk::ImageType::e2D,
+            vk::ImageTiling::eOptimal, vk::SampleCountFlagBits::e1>>;
+
+    std::shared_ptr<RGBATexture2D1S> texture;
+
+    if (materials[material_id].diffuse_texname != "") {
       int texture_width;
       int texture_height;
       int channels_in_file;
       unsigned char *image_data =
-          stbi_load((std::string(mtl_path) + material.diffuse_texname).c_str(),
+          stbi_load((std::string(mtl_path) + materials[material_id].diffuse_texname).c_str(),
                     &texture_width, &texture_height, &channels_in_file, 4);
-
+      
       if (image_data) {
-        using RGBATexture2D1S =
-            VulkanEngine::StagedBuffer<VulkanEngine::ShaderImage<
-                vk::Format::eR8G8B8A8Unorm, vk::ImageType::e2D,
-                vk::ImageTiling::eOptimal, vk::SampleCountFlagBits::e1>>;
-
-        std::shared_ptr<RGBATexture2D1S> texture;
         texture.reset(new RGBATexture2D1S(
             vk::ImageLayout::eUndefined,
             vk::ImageUsageFlagBits::eTransferDst |
@@ -339,38 +360,37 @@ void VulkanEngine::OBJMesh::loadOBJ(const char *obj_path,
                                  vk::ImageAspectFlagBits::eColor);
         texture->createSampler();
         texture->transferBuffer();
-        textures[material.diffuse_texname] = texture;
+        textures.push_back(texture);
 
       } else {
-        std::cerr << "OBJMesh texture: " << material.diffuse_texname
+        std::cerr << "OBJMesh texture: " << materials[i].diffuse_texname
                   << " could not be loaded" << std::endl;
       }
     }
-  }
 
-  // Create a shader if one isn't provided
-  if (!shader.get()) {
+    std::shared_ptr<Shader> shader;
     std::shared_ptr<ShaderModule> vertex_shader(
-        new ShaderModule(getVertexShaderString(!textures.empty()), false,
-                         vk::ShaderStageFlagBits::eVertex));
+        new ShaderModule(getVertexShaderString(has_tex_coord, has_normals), false,
+                        vk::ShaderStageFlagBits::eVertex));
     std::shared_ptr<ShaderModule> fragment_shader(
-        new ShaderModule(getFragmentShaderString(!textures.empty()), false,
-                         vk::ShaderStageFlagBits::eFragment));
+        new ShaderModule(getFragmentShaderString(texture.get() != nullptr, has_tex_coord, has_normals), false,
+                        vk::ShaderStageFlagBits::eFragment));
     shader.reset(new Shader({fragment_shader, vertex_shader}));
-  }
 
-  std::vector<std::vector<std::shared_ptr<Descriptor>>> descriptors;
-  for (size_t i = 0; i < VulkanManager::getInstance().getFramesInFlight();
-       ++i) {
-    std::vector<std::shared_ptr<Descriptor>> frame_descriptors;
-    for (const auto &t : textures) {
-      frame_descriptors.push_back(t.second);
+    std::vector<std::vector<std::shared_ptr<Descriptor>>> descriptors;
+    for (size_t j = 0; j < VulkanManager::getInstance().getFramesInFlight(); ++j) {
+      std::vector<std::shared_ptr<Descriptor>> frame_descriptors;
+      if (texture.get() != nullptr) {
+        frame_descriptors.push_back(texture);
+      }
+      frame_descriptors.push_back(mvp_buffers[j]);
+      frame_descriptors.push_back(material_buffers[j].back());
+      descriptors.push_back(frame_descriptors);
     }
-    frame_descriptors.push_back(mvp_buffers[i]);
-    descriptors.push_back(frame_descriptors);
-  }
 
-  shader->setDescriptors(descriptors);
+    shader->setDescriptors(descriptors);
+    shaders.push_back(shader); 
+  }
 
   auto time = std::chrono::duration_cast<std::chrono::milliseconds>(
                   std::chrono::system_clock::now() - begin)
@@ -379,72 +399,91 @@ void VulkanEngine::OBJMesh::loadOBJ(const char *obj_path,
 }
 
 const std::string
-VulkanEngine::OBJMesh::getVertexShaderString(bool has_tex_coords) const {
+VulkanEngine::OBJMesh::getVertexShaderString(bool has_tex_coords, bool has_normals) const {
   std::stringstream return_string;
 
-  return_string << std::endl
-                << "#version 450" << std::endl
-                << "#extension GL_ARB_separate_shader_objects : enable"
-                << std::endl
-
-                << "layout(binding = 0) uniform UniformBufferObject {"
-                << std::endl
-                << "  mat4 model;" << std::endl
-                << "  mat4 view;" << std::endl
-                << "  mat4 proj;" << std::endl
-                << "} ubo;" << std::endl
-
-                << "layout(location = 0) in vec3 inPosition;" << std::endl;
-
+  return_string 
+  << "#version 450\n"
+  << "#extension GL_ARB_separate_shader_objects : enable\n"
+  << "layout(binding = 0) uniform UniformBufferObject {\n"
+  << "  mat4 model;\n"
+  << "  mat4 view;\n"
+  << "  mat4 proj;\n"
+  << "} ubo;\n"
+  << "layout(location = 0) in vec3 inPosition;\n";
+  if (has_normals) {
+    return_string
+      << "layout(location = 1) in vec3 inNormal;\n"
+      << "layout(location = 1) out vec3 outNormal;\n";
+  }
   if (has_tex_coords) {
-    return_string << "layout(location = 2) in vec2 inTexcoords;" << std::endl
-                  << "layout(location = 2) out vec2 outTexcoords;" << std::endl;
+    return_string 
+      << "layout(location = 2) in vec2 inTexcoords;\n"
+      << "layout(location = 2) out vec2 outTexcoords;\n";
   }
 
-  return_string << "out gl_PerVertex {" << std::endl
-                << "  vec4 gl_Position;" << std::endl
-                << "};" << std::endl
-
-                << "void main() {" << std::endl
-                << "  gl_Position = ubo.proj * ubo.view * ubo.model * "
-                   "vec4(inPosition, 1.0);"
-                << std::endl;
-  if (has_tex_coords) {
-    return_string << "  outTexcoords = inTexcoords;" << std::endl;
+  return_string 
+    << "out gl_PerVertex {\n"
+    << "  vec4 gl_Position;\n"
+    << "};\n"
+    << "void main() {\n"
+    << "  gl_Position = ubo.proj * ubo.view * ubo.model * vec4(inPosition, 1.0);\n";
+  if (has_normals) {
+    return_string
+      << "  outNormal = mat3(transpose(inverse(ubo.model))) * inNormal;\n";
   }
-  return_string << "}" << std::endl;
+  if (has_tex_coords) {
+    return_string 
+      << "  outTexcoords = inTexcoords;\n";
+  }
+  return_string 
+    << "}\n";
 
   return return_string.str();
 }
 
 const std::string
-VulkanEngine::OBJMesh::getFragmentShaderString(bool has_tex_coords) const {
+VulkanEngine::OBJMesh::getFragmentShaderString(bool has_texture, bool has_tex_coords, bool has_normals) const {
   std::stringstream return_string;
 
-  return_string << "#version 450" << std::endl
-                << "#extension GL_ARB_separate_shader_objects : enable"
-                << std::endl;
+  return_string 
+    << "#version 450\n"
+    << "#extension GL_ARB_separate_shader_objects : enable\n";
 
+  if (has_normals) {
+    return_string
+      << "layout(location = 1) in vec3 inNormal;\n";
+  }
   if (has_tex_coords) {
-    return_string << "layout(location = 2) in vec2 inTexcoords;" << std::endl;
+    return_string 
+      << "layout(location = 2) in vec2 inTexcoords;\n";
   }
 
-  return_string << "layout(location = 0) out vec4 outColor;" << std::endl;
+  return_string << "layout(location = 0) out vec4 outColor;\n";
 
-  // TODO should be if there is a texture
-  if (has_tex_coords) {
-    return_string << "layout(binding = 1) uniform sampler2D texSampler;"
-                  << std::endl;
+  if (has_texture) {
+    return_string 
+      << "layout(binding = 1) uniform sampler2D texSampler;\n";
   }
 
-  return_string << "void main() {" << std::endl;
-  if (has_tex_coords) {
-    return_string << "  outColor = texture( texSampler, inTexcoords );"
-                  << std::endl;
+  // TODO support materials
+  return_string 
+    << "layout(set = 0, binding = 2) uniform Material {\n"
+    << "  vec3 ambient;\n"
+    << "  vec3 diffuse;\n"
+    << "  vec3 specular;\n"
+    << "} material;\n";
+
+  return_string 
+    << "void main() {\n";
+  if (has_tex_coords && has_texture) {
+    return_string << "  vec4 texColor = texture(texSampler, inTexcoords);\n";
   } else {
-    return_string << "  outColor = vec4(1.0);" << std::endl;
+    return_string << "  vec4 texColor = vec4(1.0);\n";
   }
-  return_string << "}" << std::endl;
+  return_string
+    << "  outColor = vec4(1.0) * texColor;\n"
+    << "}\n";
 
   return return_string.str();
 }

@@ -41,7 +41,6 @@ public:
   void setScissor(int32_t offset_x, int32_t offset_y, int32_t width,
                   int32_t height);
 
-protected:
   /// Create the graphics pipeline.
   /// \param mesh The mesh to render.
   /// \param shader The shader to render the mesh with.

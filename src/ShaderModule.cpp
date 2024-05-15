@@ -7,6 +7,7 @@
 
 #include <fstream>
 #include <iostream>
+#include <stdexcept>
 
 bool VulkanEngine::ShaderModule::glslang_initialized = false;
 
@@ -171,6 +172,7 @@ void VulkanEngine::ShaderModule::glslToSPIRV(const std::string &name,
     std::cout << "Preprocessing failed for shader " + name << std::endl;
     std::cout << tshader.getInfoLog() << std::endl;
     std::cout << tshader.getInfoDebugLog() << std::endl;
+    throw std::runtime_error("Failed to preprocess shader.");
   }
 
   const char *preprocessed_glsl_c_str = preprocessed_glsl.c_str();
@@ -181,6 +183,7 @@ void VulkanEngine::ShaderModule::glslToSPIRV(const std::string &name,
     std::cout << "Parsing failed for shader " + name << std::endl;
     std::cout << tshader.getInfoLog() << std::endl;
     std::cout << tshader.getInfoDebugLog() << std::endl;
+    throw std::runtime_error("Failed to parse shader.");
   }
 
   glslang::TProgram tprogram;
@@ -190,6 +193,7 @@ void VulkanEngine::ShaderModule::glslToSPIRV(const std::string &name,
     std::cout << "Linking failed for shader " + name << std::endl;
     std::cout << tprogram.getInfoLog() << std::endl;
     std::cout << tprogram.getInfoDebugLog() << std::endl;
+    throw std::runtime_error("Failed to link shader.");
   }
 
   std::vector<uint32_t> spirv_data;

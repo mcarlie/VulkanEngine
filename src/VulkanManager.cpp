@@ -95,130 +95,6 @@ bool VulkanEngine::VulkanManager::initialize(
 
     vk_instance = vk::createInstance(inst_info);
 
-#ifdef ENABLE_VULKAN_VALIDATION
-    vk::DebugUtilsMessengerCreateInfoEXT debug_message_create_info;
-    debug_message_create_info.messageSeverity =
-        vk::DebugUtilsMessageSeverityFlagBitsEXT::eError |
-        vk::DebugUtilsMessageSeverityFlagBitsEXT::eWarning;
-    debug_message_create_info.messageType =
-        vk::DebugUtilsMessageTypeFlagBitsEXT::eGeneral |
-        vk::DebugUtilsMessageTypeFlagBitsEXT::ePerformance |
-        vk::DebugUtilsMessageTypeFlagBitsEXT::eValidation;
-    debug_message_create_info.pfnUserCallback = debugCallback;
-    debug_message_create_info.pUserData = nullptr;
-
-    vk_dispatch_loader_dynamic.init(vk_instance, vkGetInstanceProcAddr,
-                                    vk_device, vkGetDeviceProcAddr);
-    vk_debug_utils_messenger = vk_instance.createDebugUtilsMessengerEXT(
-        debug_message_create_info, nullptr, vk_dispatch_loader_dynamic);
-
-    if (!vk_debug_utils_messenger) {
-      throw std::runtime_error(
-          "Could not initialize debug reporting for vulkan!");
-    }
-#endif
-
-//     // TODO Check suitability and handle case where there is no device
-//     std::vector<vk::PhysicalDevice> physical_devices =
-//         vk_instance.enumeratePhysicalDevices();
-//     vk_physical_device = physical_devices[0];
-//     std::vector<vk::ExtensionProperties> physical_device_extensions =
-//         vk_physical_device.enumerateDeviceExtensionProperties();
-
-//     std::vector<const char *> physical_device_extension_names;
-//     for (const auto &ext : physical_device_extensions) {
-//       physical_device_extension_names.push_back(ext.extensionName);
-//     }
-
-// #ifdef __APPLE__
-//     physical_device_extension_names.push_back(
-//         VK_EXT_SWAPCHAIN_MAINTENANCE_1_EXTENSION_NAME);
-//     physical_device_extension_names.push_back(
-//         VK_EXT_BUFFER_DEVICE_ADDRESS_EXTENSION_NAME);
-// #endif
-
-//     bool found_VK_KHR_maintenance1 = false;
-//     bool found_VK_AMD_negative_viewport_height = false;
-//     for (auto it = physical_device_extension_names.begin();
-//          it != physical_device_extension_names.end(); ++it) {
-//       if (!(found_VK_KHR_maintenance1 &&
-//             found_VK_AMD_negative_viewport_height)) {
-//         if (std::string(*it) == "VK_KHR_maintenance1") {
-//           found_VK_KHR_maintenance1 = true;
-//         } else if (std::string(*it) == "VK_AMD_negative_viewport_height") {
-//           found_VK_AMD_negative_viewport_height = true;
-//         }
-//       }
-
-//       if (found_VK_KHR_maintenance1 && found_VK_AMD_negative_viewport_height) {
-//         std::cout << "Both VK_KHR_maintenance1 and "
-//                      "VK_AMD_negative_viewport_height were found in the "
-//                   << "list of physical device extensions. Removed "
-//                      "VK_AMD_negative_viewport_height since enabling "
-//                   << "both is not allowed by the Vulkan specification."
-//                   << std::endl;
-//         physical_device_extension_names.erase(it);
-//         break;
-//       }
-//     }
-
-//     // Find queue family with graphics support
-//     std::vector<vk::QueueFamilyProperties> queue_family_properties =
-//         vk_physical_device.getQueueFamilyProperties();
-//     graphics_queue_family_index = 0;
-//     for (auto &q : queue_family_properties) {
-//       if (q.queueFlags & vk::QueueFlagBits::eGraphics) {
-//         break;
-//       }
-//       ++graphics_queue_family_index;
-//     }
-
-//     float queue_priorities[] = {1.0f};
-//     auto queue_info = vk::DeviceQueueCreateInfo()
-//                           .setPQueuePriorities(queue_priorities)
-//                           .setQueueCount(1)
-//                           .setQueueFamilyIndex(graphics_queue_family_index);
-
-//     auto physical_device_features = vk::PhysicalDeviceFeatures()
-//                                         .setSamplerAnisotropy(VK_TRUE)
-//                                         .setFragmentStoresAndAtomics(VK_TRUE)
-//                                         .setSampleRateShading(VK_TRUE);
-
-//     auto device_info =
-//         vk::DeviceCreateInfo()
-//             .setEnabledLayerCount(static_cast<uint32_t>(layers.size()))
-//             .setPpEnabledLayerNames(layers.data())
-//             .setPQueueCreateInfos(&queue_info)
-//             .setQueueCreateInfoCount(1)
-//             .setPEnabledFeatures(&physical_device_features)
-//             .setPpEnabledExtensionNames(physical_device_extension_names.data())
-//             .setEnabledExtensionCount(
-//                 static_cast<uint32_t>(physical_device_extension_names.size()));
-
-//     /// TODO Device class which holds queue, allocator and device info
-//     vk_device = vk_physical_device.createDevice(device_info);
-
-//     VmaAllocatorCreateInfo vma_allocator_create_info = {};
-//     vma_allocator_create_info.device = vk_device;
-//     vma_allocator_create_info.physicalDevice = vk_physical_device;
-//     vma_allocator_create_info.instance = vk_instance;
-
-//     if (vmaCreateAllocator(&vma_allocator_create_info, &vma_allocator) !=
-//         VK_SUCCESS) {
-//       throw std::runtime_error("Failed to create VmaAllocator!");
-//     }
-
-//     vk_graphics_queue = vk_device.getQueue(graphics_queue_family_index, 0);
-
-//     // TODO Use these
-//     // auto surface_formats =
-//     // vk_physical_device.getSurfaceFormatsKHR(vk_surface); auto present_modes =
-//     //     vk_physical_device.getSurfacePresentModesKHR(vk_surface);
-//     // auto surface_support = vk_physical_device.getSurfaceSupportKHR(
-//     //     graphics_queue_family_index, vk_surface);
-
-//     createCommandPool();
-
     device.reset(new Device());
 
     default_render_pass.reset(new RenderPass(window->getFramebufferWidth(),
@@ -277,24 +153,9 @@ void VulkanEngine::VulkanManager::cleanup() {
   swapchain.reset();
 
   device.reset();
-#ifdef ENABLE_VULKAN_VALIDATION
-  vk_instance.destroyDebugUtilsMessengerEXT(vk_debug_utils_messenger, nullptr,
-                                            vk_dispatch_loader_dynamic);
-#endif
   window.reset();
   vk_instance.destroy();
   swapchain.reset();
 
   initialized = false;
 }
-
-#ifdef ENABLE_VULKAN_VALIDATION
-VKAPI_ATTR VkBool32 VKAPI_CALL VulkanEngine::VulkanManager::debugCallback(
-    VkDebugUtilsMessageSeverityFlagBitsEXT message_severity,
-    VkDebugUtilsMessageTypeFlagsEXT message_type,
-    const VkDebugUtilsMessengerCallbackDataEXT *callback_data,
-    void *user_data) {
-  std::cerr << "validation layer: " << callback_data->pMessage << std::endl;
-  return VK_FALSE;
-}
-#endif
