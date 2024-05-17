@@ -2,6 +2,8 @@
 
 This is a scene-graph graphics engine based on Vulkan.
 
+**Note:** This project is in active development.
+
 This project was started while I was working on creating an engine at a previous job and I wanted to get some insight into how modern graphics APIs work to prepare the engine for it.
 
 The goal is to have a custom engine to use as a base for further personal projects in graphics.
