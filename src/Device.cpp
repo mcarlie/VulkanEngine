@@ -32,7 +32,14 @@ VulkanEngine::Device::Device(): graphics_queue_family_index(0) {
     // TODO Check suitability and handle case where there is no device
     std::vector<vk::PhysicalDevice> physical_devices =
         vk_instance.enumeratePhysicalDevices();
+
+    if (physical_devices.empty()) {
+      throw std::runtime_error("Could not find a valid physical device for rendering.");
+    }
     auto vk_physical_device = physical_devices[0];
+    vk::PhysicalDeviceProperties device_properties = vk_physical_device.getProperties();
+    std::cout << "Chosen device: " << device_properties.deviceName << std::endl;
+
     std::vector<vk::ExtensionProperties> physical_device_extensions =
         vk_physical_device.enumerateDeviceExtensionProperties();
 

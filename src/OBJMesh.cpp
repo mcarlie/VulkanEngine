@@ -314,17 +314,25 @@ void VulkanEngine::OBJMesh::loadOBJ(const char *obj_path,
 
     int material_id = shapes[i].mesh.material_ids[0]; // TODO support per face materials.
     if (material_id == -1) {
-      material_id = 0;
-    }
-
-    for (auto &material_buffer_list : material_buffers) {
-      auto material_buffer = std::shared_ptr<UniformBuffer<Material>>(new VulkanEngine::UniformBuffer<Material>(2));
-      Material material_data;
-      material_data.ambient = {materials[material_id].ambient[0], materials[material_id].ambient[1], materials[material_id].ambient[2]};
-      material_data.diffuse = {materials[material_id].diffuse[0], materials[material_id].diffuse[1], materials[material_id].diffuse[2]};
-      material_data.specular = {materials[material_id].specular[0], materials[material_id].specular[1], materials[material_id].specular[2]};
-      material_buffer->updateBuffer(&material_data, sizeof(material_data));
-      material_buffer_list.push_back(material_buffer);
+      for (auto& material_buffer_list : material_buffers) {
+        auto material_buffer = std::shared_ptr<UniformBuffer<Material>>(new VulkanEngine::UniformBuffer<Material>(2));
+        Material material_data;
+        material_data.ambient = { 1.0, 1.0, 1.0 };
+        material_data.diffuse = { 1.0, 1.0, 1.0 };
+        material_data.specular = { 1.0, 1.0, 1.0 };
+        material_buffer->updateBuffer(&material_data, sizeof(material_data));
+        material_buffer_list.push_back(material_buffer);
+      }
+    } else {
+      for (auto& material_buffer_list : material_buffers) {
+        auto material_buffer = std::shared_ptr<UniformBuffer<Material>>(new VulkanEngine::UniformBuffer<Material>(2));
+        Material material_data;
+        material_data.ambient = { materials[material_id].ambient[0], materials[material_id].ambient[1], materials[material_id].ambient[2] };
+        material_data.diffuse = { materials[material_id].diffuse[0], materials[material_id].diffuse[1], materials[material_id].diffuse[2] };
+        material_data.specular = { materials[material_id].specular[0], materials[material_id].specular[1], materials[material_id].specular[2] };
+        material_buffer->updateBuffer(&material_data, sizeof(material_data));
+        material_buffer_list.push_back(material_buffer);
+      }
     }
 
     using RGBATexture2D1S =
@@ -334,7 +342,7 @@ void VulkanEngine::OBJMesh::loadOBJ(const char *obj_path,
 
     std::shared_ptr<RGBATexture2D1S> texture;
 
-    if (materials[material_id].diffuse_texname != "") {
+    if (material_id != -1 && materials[material_id].diffuse_texname != "") {
       int texture_width;
       int texture_height;
       int channels_in_file;
