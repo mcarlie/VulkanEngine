@@ -102,8 +102,6 @@ bool VulkanEngine::VulkanManager::initialize(
     swapchain.reset(
         new Swapchain(frames_in_flight, window, default_render_pass));
 
-//     createCommandBuffers();
-
   } catch (const std::exception &e) {
     std::cerr << "Exception during engine initialization: " << e.what()
               << std::endl;
