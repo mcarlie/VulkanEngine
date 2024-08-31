@@ -4,7 +4,7 @@ This is a scene-graph graphics engine based on Vulkan.
 
 **Note:** This project is in active development.
 
-This project was started while I was working on creating an engine at a previous job and I wanted to get some insight into how modern graphics APIs work to prepare the engine for it.
+This project was started to get some insight into how modern graphics APIs work.
 
 The goal is to have a custom engine to use as a base for further personal projects in graphics.
 
@@ -13,12 +13,9 @@ Current short term goals are:
     * Create a CommandBuffer class
     * Create a Device class
     * Create a Framebuffer class
-* Support MTL material properties (currently only the texture is considered)
-* Flesh out unit tests
-* Test on different hardware
-* Come up with a better name
+* Support MTL material properties
 
-The engine has been tested on MacOS 14 Sonoma, Ubuntu 22.04 and Windows 11. However I do not have access to a Windows 11 machine with Vulkan support so only know that it builds.
+The engine has been tested on MacOS 14 Sonoma, Ubuntu 22.04 and Windows 11.
 
 ## Build
 
@@ -52,7 +49,6 @@ sudo apt-get install -y \
     libvulkan-dev \
     glslang-dev \
     glslang-tools \
-    vulkan-validationlayers-dev
 mkdir build
 cmake -S . -B build
 cmake --build build
