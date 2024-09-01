@@ -6,15 +6,6 @@ This is a scene-graph graphics engine based on Vulkan.
 
 This project was started to get some insight into how modern graphics APIs work.
 
-The goal is to have a custom engine to use as a base for further personal projects in graphics.
-
-Current short term goals are:
-* Fully modulerize the backend
-    * Create a CommandBuffer class
-    * Create a Device class
-    * Create a Framebuffer class
-* Support MTL material properties
-
 The engine has been tested on MacOS 14 Sonoma, Ubuntu 22.04 and Windows 11.
 
 ## Build
