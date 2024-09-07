@@ -115,7 +115,7 @@ protected:
 
   /// Internal vk_image.
   vk::Image vk_image;
-
+  
   /// The vk::ImageView created in createImageView().
   vk::ImageView vk_image_view;
 

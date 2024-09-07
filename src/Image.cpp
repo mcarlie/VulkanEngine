@@ -243,12 +243,6 @@ void VulkanEngine::Image<format, image_type, tiling, sample_count_flags>::
           .setSharingMode(vk::SharingMode::eExclusive)
           .setSamples(sample_count_flags));
 
-  vk_image =
-      VulkanManager::getInstance().getDevice()->getVkDevice().createImage(image_create_info);
-  if (!vk_image) {
-    throw std::runtime_error("Could not create image!");
-  }
-
   VmaAllocationCreateInfo allocate_info = {};
   allocate_info.usage = vma_usage;
 

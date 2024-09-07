@@ -154,7 +154,6 @@ void VulkanEngine::VulkanManager::cleanup() {
   device.reset();
   window.reset();
   vk_instance.destroy();
-  swapchain.reset();
 
   initialized = false;
 }
