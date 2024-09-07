@@ -4,3 +4,5 @@ build/*
 .devcontainer/*
 .DS_Store
 doc/*
+out/*
+.vs/*

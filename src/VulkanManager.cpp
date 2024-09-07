@@ -129,9 +129,10 @@ void VulkanEngine::VulkanManager::drawImage() {
   // Submit commands to the queue
   if (!swapchain->present()) {
     device->waitIdle();
-    device.reset(new Device());
+    default_render_pass.reset();
     default_render_pass.reset(new RenderPass(window->getFramebufferWidth(),
                                               window->getFramebufferHeight()));
+    swapchain.reset();
     swapchain.reset(
         new Swapchain(frames_in_flight, window, default_render_pass));
     current_frame = 0;

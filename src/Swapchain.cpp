@@ -112,10 +112,13 @@ bool VulkanEngine::Swapchain::present() {
   uint32_t image_index;
   auto &vulkan_manager = VulkanManager::getInstance();
   auto vk_device = vulkan_manager.getDevice()->getVkDevice();
+
+  const uint64_t current_frame = vulkan_manager.getCurrentFrame();
+
   // Acquire the next available swapchain image that we can write to
   vk::Result result = vk_device.acquireNextImageKHR(
       vk_swapchain, std::numeric_limits<uint32_t>::max(),
-      vk_image_available_semaphores[vulkan_manager.getCurrentFrame()], nullptr,
+      vk_image_available_semaphores[current_frame], nullptr,
       &image_index);
 
   // If the window size has changed or the image view is out of date
@@ -128,11 +131,11 @@ bool VulkanEngine::Swapchain::present() {
   }
 
   vk::Semaphore signal_semaphores[] = {
-      vk_rendering_finished_semaphores[image_index]};
+      vk_rendering_finished_semaphores[current_frame]};
   uint32_t signal_semaphores_count = 1;
 
   vk::Semaphore wait_semaphores[] = {
-      vk_image_available_semaphores[image_index]};
+      vk_image_available_semaphores[current_frame]};
   vk::PipelineStageFlags wait_stages[] = {
       vk::PipelineStageFlagBits::eColorAttachmentOutput};
 
@@ -146,10 +149,20 @@ bool VulkanEngine::Swapchain::present() {
                          .setSignalSemaphoreCount(signal_semaphores_count)
                          .setPSignalSemaphores(signal_semaphores);
 
-  vk_device.resetFences(vk_in_flight_fences[image_index]);
+  auto fence_wait_result = vk_device.waitForFences(1, &vk_in_flight_fences[current_frame], VK_TRUE, std::numeric_limits<uint64_t>::max());
+
+  if (fence_wait_result != vk::Result::eSuccess) {
+      if (fence_wait_result == vk::Result::eTimeout) {
+          throw std::runtime_error("Timeout while waiting for fence!");
+      } else {
+          throw std::runtime_error("Failed to wait for fence!");
+      }
+  }
+
+  vk_device.resetFences(vk_in_flight_fences[current_frame]);
 
   auto vk_graphics_queue = vulkan_manager.getDevice()->getVkGraphicsQueue();
-  vk_graphics_queue.submit(submit_info, vk_in_flight_fences[image_index]);
+  vk_graphics_queue.submit(submit_info, vk_in_flight_fences[current_frame]);
 
   vk::SwapchainKHR swapchains[] = {vk_swapchain};
   auto present_info = vk::PresentInfoKHR()

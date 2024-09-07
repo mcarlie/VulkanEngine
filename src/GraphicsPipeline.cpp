@@ -7,9 +7,10 @@
 VulkanEngine::GraphicsPipeline::GraphicsPipeline() {}
 
 VulkanEngine::GraphicsPipeline::~GraphicsPipeline() {
+  auto device = VulkanManager::getInstance().getDevice();
+  device->waitIdle();
   if (vk_graphics_pipeline) {
-    VulkanManager::getInstance().getDevice()->getVkDevice().destroyPipeline(
-        vk_graphics_pipeline);
+    device->getVkDevice().destroyPipeline(vk_graphics_pipeline);
   }
 }
 
