@@ -123,6 +123,8 @@ private:
   vk::PipelineVertexInputStateCreateInfo pipeline_vertex_input_state_info;
 
   vk::PipelineInputAssemblyStateCreateInfo pipeline_input_assembly_state_info;
+
+  bool pipeline_input_state_info_initialized;
 };
 
 } // namespace VulkanEngine

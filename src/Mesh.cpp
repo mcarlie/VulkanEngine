@@ -8,7 +8,7 @@
 template <typename PositionType, typename IndexType,
           class... AdditionalAttributeTypes>
 VulkanEngine::Mesh<PositionType, IndexType,
-                   AdditionalAttributeTypes...>::Mesh() {
+                   AdditionalAttributeTypes...>::Mesh() : pipeline_input_state_info_initialized(false) {
   bounding_box.reset(new BoundingBox<PositionType>());
 }
 
@@ -65,6 +65,11 @@ template <typename PositionType, typename IndexType,
 const vk::PipelineVertexInputStateCreateInfo &
 VulkanEngine::Mesh<PositionType, IndexType, AdditionalAttributeTypes...>::
     createVkPipelineVertexInputStateCreateInfo() {
+
+  if (pipeline_input_state_info_initialized) {
+    return pipeline_vertex_input_state_info;
+  }
+
   uint32_t binding_index = 0;
 
   binding_descriptions.push_back(
@@ -95,6 +100,7 @@ VulkanEngine::Mesh<PositionType, IndexType, AdditionalAttributeTypes...>::
           .setVertexAttributeDescriptionCount(
               static_cast<uint32_t>(attribute_descriptions.size()));
 
+  pipeline_input_state_info_initialized = true;
   return pipeline_vertex_input_state_info;
 }
 
