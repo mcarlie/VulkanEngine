@@ -15,7 +15,7 @@ VulkanEngine::ShaderImage<format, image_type, tiling, sample_count_flags>::
                 vk::ShaderStageFlags shader_stage_flags)
     : Image<format, image_type, tiling, sample_count_flags>(
           initial_layout, usage_flags, vma_memory_usage, width, height, depth,
-          pixel_size),
+          pixel_size, true),
       Descriptor(binding, decriptor_count, descriptor_type,
                  shader_stage_flags) {}
 

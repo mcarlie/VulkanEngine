@@ -36,8 +36,7 @@ public:
   Image(vk::ImageLayout initial_layout, vk::ImageUsageFlags usage_flags,
         VmaMemoryUsage vma_memory_usage, uint32_t _width, uint32_t _height,
         uint32_t _depth, size_t pixel_size,
-        bool generate_mip_maps =
-            false); // TODO validation errors when generating mip maps
+        bool generate_mip_maps);
 
   /// Destructor.
   virtual ~Image();

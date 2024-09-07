@@ -261,6 +261,7 @@ template <vk::Format format, vk::ImageType image_type, vk::ImageTiling tiling,
           vk::SampleCountFlagBits sample_count_flags>
 void VulkanEngine::Image<format, image_type, tiling, sample_count_flags>::
     generateMipmaps(const vk::CommandBuffer &command_buffer) {
+
   auto subresource_range = vk::ImageSubresourceRange()
                                .setAspectMask(vk::ImageAspectFlagBits::eColor)
                                .setLevelCount(1)
@@ -276,6 +277,8 @@ void VulkanEngine::Image<format, image_type, tiling, sample_count_flags>::
   uint32_t mip_width = width;
   uint32_t mip_height = height;
 
+  // Blit the base image to the first mip map level.
+  // Then do the same for each level after that.
   for (uint32_t i = 1; i < mipmap_levels; ++i) {
     subresource_range.setBaseMipLevel(i - 1);
 
@@ -285,12 +288,9 @@ void VulkanEngine::Image<format, image_type, tiling, sample_count_flags>::
         .setSrcAccessMask(vk::AccessFlagBits::eTransferWrite)
         .setDstAccessMask(vk::AccessFlagBits::eTransferRead);
 
-    image_memory_barrier.setSubresourceRange(subresource_range);
-
-    command_buffer.pipelineBarrier(vk::PipelineStageFlagBits::eTransfer,
-                                   vk::PipelineStageFlagBits::eTransfer,
-                                   vk::DependencyFlags(), 0, 0,
-                                   image_memory_barrier);
+    command_buffer.pipelineBarrier(
+        vk::PipelineStageFlagBits::eTransfer, vk::PipelineStageFlagBits::eTransfer,
+        vk::DependencyFlags(), 0, nullptr, 0, nullptr, 1, &image_memory_barrier);
 
     auto blit_src_subresource =
         vk::ImageSubresourceLayers()
@@ -314,7 +314,7 @@ void VulkanEngine::Image<format, image_type, tiling, sample_count_flags>::
                      mip_height > 1 ? mip_height / 2 : 1, 1)};
     auto image_blit =
         vk::ImageBlit()
-            .setSrcOffsets(blit_src_offsets) /// TODO Support higher depth level
+            .setSrcOffsets(blit_src_offsets)
             .setSrcSubresource(blit_src_subresource)
             .setDstOffsets(blit_dst_offsets)
             .setDstSubresource(blit_dst_subresource);
@@ -322,29 +322,40 @@ void VulkanEngine::Image<format, image_type, tiling, sample_count_flags>::
     command_buffer.blitImage(
         vk_image, vk::ImageLayout::eTransferSrcOptimal, vk_image,
         vk::ImageLayout::eTransferDstOptimal, 1, &image_blit,
-        vk::Filter::eLinear); // TODO: Make filtering optional as template
-                              // parameter
+        vk::Filter::eLinear);
 
-    if (mip_width > 1) {
-      mip_width /= 2;
-    }
-
-    if (mip_height > 1) {
-      mip_height /= 2;
-    }
+    // Scale next mip map level.
+    if (mip_width > 1) mip_width /= 2;
+    if (mip_height > 1) mip_height /= 2;
   }
 
+  // Transition all mip levels to eShaderReadOnlyOptimal
+  subresource_range.setBaseMipLevel(0);
+  subresource_range.setLevelCount(mipmap_levels - 1);
+  image_memory_barrier.setSubresourceRange(subresource_range)
+      .setOldLayout(vk::ImageLayout::eTransferSrcOptimal)
+      .setNewLayout(vk::ImageLayout::eShaderReadOnlyOptimal)
+      .setSrcAccessMask(vk::AccessFlagBits::eTransferWrite)
+      .setDstAccessMask(vk::AccessFlagBits::eShaderRead);
+
+  command_buffer.pipelineBarrier(
+      vk::PipelineStageFlagBits::eTransfer, vk::PipelineStageFlagBits::eFragmentShader,
+      vk::DependencyFlags(), 0, nullptr, 0, nullptr, 1, &image_memory_barrier);
+
+  // The last mip map level was never set to eTransferSrcOptimal
   subresource_range.setBaseMipLevel(mipmap_levels - 1);
+  subresource_range.setLevelCount(1);
   image_memory_barrier.setSubresourceRange(subresource_range)
       .setOldLayout(vk::ImageLayout::eTransferDstOptimal)
       .setNewLayout(vk::ImageLayout::eShaderReadOnlyOptimal)
       .setSrcAccessMask(vk::AccessFlagBits::eTransferWrite)
-      .setDstAccessMask(vk::AccessFlagBits::eShaderWrite);
+      .setDstAccessMask(vk::AccessFlagBits::eShaderRead);
 
-  command_buffer.pipelineBarrier(vk::PipelineStageFlagBits::eTransfer,
-                                 vk::PipelineStageFlagBits::eFragmentShader,
-                                 vk::DependencyFlags(), 0, nullptr, 0, nullptr,
-                                 1, &image_memory_barrier);
+  command_buffer.pipelineBarrier(
+      vk::PipelineStageFlagBits::eTransfer, vk::PipelineStageFlagBits::eFragmentShader,
+      vk::DependencyFlags(), 0, nullptr, 0, nullptr, 1, &image_memory_barrier);
+
+  vk_image_layout = vk::ImageLayout::eShaderReadOnlyOptimal;
 }
 
 #endif /* IMAGE_CPP */
