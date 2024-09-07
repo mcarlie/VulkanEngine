@@ -199,7 +199,7 @@ int main(int argc, char **argv) {
 
         // Continuously rotate the object around its Y-axis.
         Eigen::AngleAxis<float> rotation(
-            (VulkanEngine::Constants::pi<float>() / 4.0f) *
+            (VulkanEngine::Constants::pi<float>() / 10.0f) *
                 elapsed_seconds.count(),
             Eigen::Vector3f::UnitY());
         transform.rotate(rotation);

@@ -111,6 +111,34 @@ getShape(const tinyobj::shape_t &shape, const tinyobj::attrib_t &attrib, bool& h
     indices.push_back(static_cast<IndexType>(unique_vertices[vertex]));
   }
 
+  if (!has_normals) {
+    normals = std::vector<Eigen::Vector3f>(positions.size(), Eigen::Vector3f(0.0f, 0.0f, 0.0f));
+    for (size_t i = 0; i < indices.size(); i += 3) {
+        IndexType index0 = indices[i];
+        IndexType index1 = indices[i + 1];
+        IndexType index2 = indices[i + 2];
+
+        const Eigen::Vector3f &v0 = positions[index0];
+        const Eigen::Vector3f &v1 = positions[index1];
+        const Eigen::Vector3f &v2 = positions[index2];
+
+        Eigen::Vector3f edge1 = v1 - v0;
+        Eigen::Vector3f edge2 = v2 - v0;
+
+        Eigen::Vector3f face_normal = edge1.cross(edge2).normalized();
+
+        normals[index0] += face_normal;
+        normals[index1] += face_normal;
+        normals[index2] += face_normal;
+    }
+
+    // Normalize all vertex normals
+    for (auto &normal : normals) {
+        normal.normalize();
+    }
+    has_normals = true;
+  }
+
   using MeshType = VulkanEngine::Mesh<Eigen::Vector3f, IndexType,
                                       Eigen::Vector3f, Eigen::Vector2f>;
 
@@ -317,9 +345,6 @@ void VulkanEngine::OBJMesh::loadOBJ(const char *obj_path,
       for (auto& material_buffer_list : material_buffers) {
         auto material_buffer = std::shared_ptr<UniformBuffer<Material>>(new VulkanEngine::UniformBuffer<Material>(2));
         Material material_data;
-        material_data.ambient = { 1.0, 1.0, 1.0 };
-        material_data.diffuse = { 1.0, 1.0, 1.0 };
-        material_data.specular = { 1.0, 1.0, 1.0 };
         material_buffer->updateBuffer(&material_data, sizeof(material_data));
         material_buffer_list.push_back(material_buffer);
       }
@@ -327,9 +352,9 @@ void VulkanEngine::OBJMesh::loadOBJ(const char *obj_path,
       for (auto& material_buffer_list : material_buffers) {
         auto material_buffer = std::shared_ptr<UniformBuffer<Material>>(new VulkanEngine::UniformBuffer<Material>(2));
         Material material_data;
-        material_data.ambient = { materials[material_id].ambient[0], materials[material_id].ambient[1], materials[material_id].ambient[2] };
-        material_data.diffuse = { materials[material_id].diffuse[0], materials[material_id].diffuse[1], materials[material_id].diffuse[2] };
-        material_data.specular = { materials[material_id].specular[0], materials[material_id].specular[1], materials[material_id].specular[2] };
+        material_data.ambient = { materials[material_id].ambient[0], materials[material_id].ambient[1], materials[material_id].ambient[2], 0.0 };
+        material_data.diffuse = { materials[material_id].diffuse[0], materials[material_id].diffuse[1], materials[material_id].diffuse[2], 0.0 };
+        material_data.specular = { materials[material_id].specular[0], materials[material_id].specular[1], materials[material_id].specular[2], 0.0 };
         material_buffer->updateBuffer(&material_data, sizeof(material_data));
         material_buffer_list.push_back(material_buffer);
       }
@@ -418,16 +443,18 @@ VulkanEngine::OBJMesh::getVertexShaderString(bool has_tex_coords, bool has_norma
   << "  mat4 view;\n"
   << "  mat4 proj;\n"
   << "} ubo;\n"
-  << "layout(location = 0) in vec3 inPosition;\n";
+  << "layout(location = 0) in vec3 inPosition;\n"
+  << "layout(location = 0) out vec3 outCameraPosition;\n"
+  << "layout(location = 1) out vec3 outFragWorldPosition;\n";
   if (has_normals) {
     return_string
       << "layout(location = 1) in vec3 inNormal;\n"
-      << "layout(location = 1) out vec3 outNormal;\n";
+      << "layout(location = 2) out vec3 outNormal;\n";
   }
   if (has_tex_coords) {
     return_string 
       << "layout(location = 2) in vec2 inTexcoords;\n"
-      << "layout(location = 2) out vec2 outTexcoords;\n";
+      << "layout(location = 3) out vec2 outTexcoords;\n";
   }
 
   return_string 
@@ -435,7 +462,9 @@ VulkanEngine::OBJMesh::getVertexShaderString(bool has_tex_coords, bool has_norma
     << "  vec4 gl_Position;\n"
     << "};\n"
     << "void main() {\n"
-    << "  gl_Position = ubo.proj * ubo.view * ubo.model * vec4(inPosition, 1.0);\n";
+    << "  gl_Position = ubo.proj * ubo.view * ubo.model * vec4(inPosition, 1.0);\n"
+    << "  outCameraPosition = vec3(inverse(ubo.view)[3]);\n"
+    << "  outFragWorldPosition = vec3(ubo.model * vec4(inPosition, 1.0));\n";
   if (has_normals) {
     return_string
       << "  outNormal = mat3(transpose(inverse(ubo.model))) * inNormal;\n";
@@ -456,15 +485,18 @@ VulkanEngine::OBJMesh::getFragmentShaderString(bool has_texture, bool has_tex_co
 
   return_string 
     << "#version 450\n"
-    << "#extension GL_ARB_separate_shader_objects : enable\n";
+    << "#extension GL_ARB_separate_shader_objects : enable\n"
+
+    << "layout(location = 0) in vec3 inCameraPosition;\n"
+    << "layout(location = 1) in vec3 inFragWorldPosition;\n";
 
   if (has_normals) {
     return_string
-      << "layout(location = 1) in vec3 inNormal;\n";
+      << "layout(location = 2) in vec3 inNormal;\n";
   }
   if (has_tex_coords) {
     return_string 
-      << "layout(location = 2) in vec2 inTexcoords;\n";
+      << "layout(location = 3) in vec2 inTexcoords;\n";
   }
 
   return_string << "layout(location = 0) out vec4 outColor;\n";
@@ -476,10 +508,10 @@ VulkanEngine::OBJMesh::getFragmentShaderString(bool has_texture, bool has_tex_co
 
   // TODO support materials
   return_string 
-    << "layout(set = 0, binding = 2) uniform Material {\n"
-    << "  vec3 ambient;\n"
-    << "  vec3 diffuse;\n"
-    << "  vec3 specular;\n"
+    << "layout(std140, set = 0, binding = 2) uniform Material {\n"
+    << "  vec4 ambient;\n"
+    << "  vec4 diffuse;\n"
+    << "  vec4 specular;\n"
     << "} material;\n";
 
   return_string 
@@ -490,7 +522,14 @@ VulkanEngine::OBJMesh::getFragmentShaderString(bool has_texture, bool has_tex_co
     return_string << "  vec4 texColor = vec4(1.0);\n";
   }
   return_string
-    << "  outColor = vec4(1.0) * texColor;\n"
+    << "  vec3 lightDir = normalize(vec3(1.0, 1.0, 1.0));\n"
+    << "  float diff = max(dot(inNormal, lightDir), 0.0); // Lambertian reflection\n"
+    << "  vec4 diffuse = material.diffuse * diff;\n"
+    << "  vec3 reflectDir = reflect(-lightDir, inNormal);\n"
+    << "  vec3 viewDir = normalize(inCameraPosition - inFragWorldPosition);"
+    << "  float spec = pow(max(dot(viewDir, reflectDir), 0.0), 16);\n"
+    << "  vec4 specular = material.specular * spec;\n"
+    << "  outColor = clamp(specular + diffuse + material.ambient, 0.0, 1.0) * texColor;\n"
     << "}\n";
 
   return return_string.str();

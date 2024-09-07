@@ -38,9 +38,9 @@ private:
   };
 
   struct Material {
-    Eigen::Vector3f ambient = Eigen::Vector3f(0.0, 0.0, 0.0);
-    Eigen::Vector3f diffuse = Eigen::Vector3f(0.0, 0.0, 0.0);
-    Eigen::Vector3f specular = Eigen::Vector3f(1.0, 0.0, 0.0);
+    Eigen::Vector4f ambient = Eigen::Vector4f(0.8, 0.8, 0.8, 0.0);
+    Eigen::Vector4f diffuse = Eigen::Vector4f(1.0, 1.0, 1.0, 0.0);
+    Eigen::Vector4f specular = Eigen::Vector4f(1.0, 1.0, 1.0, 0.0);
   };
 #pragma pack(pop)
 
