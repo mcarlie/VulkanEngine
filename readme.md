@@ -6,6 +6,8 @@ This project was started to get some insight into how modern graphics APIs work.
 
 The engine has been tested on MacOS 14 Sonoma, Ubuntu 22.04 and Windows 11.
 
+![Screenshot 2024-09-07 233550](https://github.com/user-attachments/assets/f33099f1-d741-430c-a44b-0980b3e26e47)
+
 ## Build
 
 CMake is required for building.
