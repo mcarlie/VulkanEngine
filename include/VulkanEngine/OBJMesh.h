@@ -38,9 +38,9 @@ private:
   };
 
   struct Material {
-    Eigen::Vector4f ambient = Eigen::Vector4f(0.8, 0.8, 0.8, 0.0);
-    Eigen::Vector4f diffuse = Eigen::Vector4f(1.0, 1.0, 1.0, 0.0);
-    Eigen::Vector4f specular = Eigen::Vector4f(1.0, 1.0, 1.0, 0.0);
+    float ambient[4] = {0.8, 0.8, 0.8, 0.0};
+    float diffuse[4] = {1.0, 1.0, 1.0, 0.0};
+    float specular[4] = {1.0, 1.0, 1.0, 0.0};
   };
 #pragma pack(pop)
 
@@ -75,7 +75,7 @@ private:
   std::vector<std::vector<std::shared_ptr<UniformBuffer<Material>>>> material_buffers;
 
   /// Textures belonging to this mesh.
-  std::vector<std::shared_ptr<Descriptor>> textures;
+  std::unordered_map<std::string, std::shared_ptr<Descriptor>> textures;
 
   /// True if the graphics pipeline has been updated.
   bool graphics_pipeline_updated;

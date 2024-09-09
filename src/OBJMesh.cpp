@@ -1,11 +1,17 @@
+#include "VulkanEngine/MeshBase.h"
+#include "VulkanEngine/SingleUsageCommandBuffer.h"
 #include <VulkanEngine/Mesh.h>
 #include <VulkanEngine/OBJMesh.h>
 #include <VulkanEngine/Scene.h>
 #include <VulkanEngine/ShaderImage.h>
 #include <VulkanEngine/Utilities.h>
 #include <VulkanEngine/VulkanManager.h>
+#include <functional>
 #include <limits>
 #include <memory>
+#include <thread>
+#include <future>
+#include <mutex>
 
 #define TINYOBJLOADER_IMPLEMENTATION
 #include <tiny_obj_loader.h>
@@ -18,8 +24,12 @@
 namespace OBJMeshInternal {
 
 template <typename IndexType>
-std::shared_ptr<VulkanEngine::MeshBase>
-getShape(const tinyobj::shape_t &shape, const tinyobj::attrib_t &attrib, bool& has_tex_coord, bool& has_normals) {
+void getShape(
+  const tinyobj::shape_t &shape,
+  const tinyobj::attrib_t &attrib,
+  std::vector<std::shared_ptr<VulkanEngine::MeshBase>>& meshes,
+  const size_t index) {
+    
   using Vertex = std::tuple<const Eigen::Vector3f &, const Eigen::Vector3f &,
                             const Eigen::Vector2f &>;
   std::unordered_map<Vertex, size_t> unique_vertices;
@@ -46,6 +56,7 @@ getShape(const tinyobj::shape_t &shape, const tinyobj::attrib_t &attrib, bool& h
                                   std::numeric_limits<float>::max(),
                                   std::numeric_limits<float>::max()};
 
+  bool has_normals = false;
   for (size_t i = 0; i < shape.mesh.indices.size(); ++i) {
     positions.emplace_back(
         attrib.vertices[3 * shape.mesh.indices[i].vertex_index + 0],
@@ -74,7 +85,6 @@ getShape(const tinyobj::shape_t &shape, const tinyobj::attrib_t &attrib, bool& h
       min_position.z() = position.z();
     }
 
-    has_normals = false;
     if (shape.mesh.indices[i].normal_index > -1) {
       has_normals = true;
       normals.emplace_back(
@@ -83,9 +93,7 @@ getShape(const tinyobj::shape_t &shape, const tinyobj::attrib_t &attrib, bool& h
           attrib.normals[3 * shape.mesh.indices[i].normal_index + 2]);
     }
 
-    has_tex_coord = false;
     if (shape.mesh.indices[i].texcoord_index > -1) {
-      has_tex_coord = true;
       texcoords.emplace_back(
           attrib.texcoords[2 * shape.mesh.indices[i].texcoord_index + 0],
           1.0f -
@@ -171,12 +179,12 @@ getShape(const tinyobj::shape_t &shape, const tinyobj::attrib_t &attrib, bool& h
              typename MeshType::template AttributeContainer<Eigen::Vector2f>>
       additional_attributes(normal_attribute, texcoord_attribute);
 
-  MeshType *mesh = new MeshType();
+  auto mesh = std::make_shared<MeshType>();
   mesh->setPositions(position_attribute);
   mesh->setIndices(index_attribute);
   mesh->setAttributes(additional_attributes);
   mesh->setBoundingBox(max_position, min_position);
-  return std::shared_ptr<VulkanEngine::MeshBase>(mesh);
+  meshes[index] = mesh;
 }
 
 } // namespace OBJMeshInternal
@@ -214,9 +222,12 @@ VulkanEngine::OBJMesh::OBJMesh(std::filesystem::path obj_file,
   loadOBJ(obj_file.string().c_str(), mtl_path.string().c_str());
 
   // Transfer mesh vertex data to GPU
+  VulkanEngine::SingleUsageCommandBuffer command_buffer;
+  command_buffer.beginSingleUsageCommandBuffer();
   for (const auto &m : meshes) {
-    m->transferBuffers();
+    m->transferBuffers(command_buffer.single_use_command_buffer);
   }
+  command_buffer.endSingleUsageCommandBuffer();
 }
 
 VulkanEngine::OBJMesh::~OBJMesh() {}
@@ -277,49 +288,34 @@ void VulkanEngine::OBJMesh::update(SceneState &scene_state) {
   SceneObject::update(scene_state);
 }
 
-void VulkanEngine::OBJMesh::loadOBJ(const char *obj_path,
-                                    const char *mtl_path) {
-  auto begin = std::chrono::system_clock::now();
+void processShapeChunk(
+  int start,
+  int end,
+  const std::vector<tinyobj::shape_t>& shapes,
+  const tinyobj::attrib_t& attrib,
+  std::vector<std::shared_ptr<VulkanEngine::MeshBase>>& meshes,
+  std::mutex& log_shapes_processsing, 
+  size_t& processed_shapes) {
 
-  tinyobj::attrib_t attrib;
-  std::vector<tinyobj::shape_t> shapes;
-  std::vector<tinyobj::material_t> materials;
-  std::string err;
-
-  // TODO Get rid of need to triangulate using primitive restart
-  if (!tinyobj::LoadObj(&attrib, &shapes, &materials, &err, obj_path, mtl_path,
-                        true)) {
-    throw std::runtime_error(
-        "Could not load obj file: " + std::string(obj_path) + ", " + err);
-  }
-
-  bounding_box.max = {std::numeric_limits<float>::min(),
-                      std::numeric_limits<float>::min(),
-                      std::numeric_limits<float>::min()};
-  bounding_box.min = {std::numeric_limits<float>::max(),
-                      std::numeric_limits<float>::max(),
-                      std::numeric_limits<float>::max()};
-
-  mvp_buffers.resize(VulkanManager::getInstance().getFramesInFlight());
-  for (auto &ub : mvp_buffers) {
-    ub.reset(new VulkanEngine::UniformBuffer<MvpUbo>(0));
-  }
-
-  material_buffers.resize(VulkanManager::getInstance().getFramesInFlight());
-
-  for (size_t i = 0; i < shapes.size(); ++i) {
-    bool has_tex_coord = false;
-    bool has_normals = false;
+  for (size_t i = start; i < end; ++i) {
     // We represent the indices using uint16_t unless that is not sufficient
     // given the number of indices
     if (shapes[i].mesh.indices.size() > std::numeric_limits<uint16_t>::max()) {
-      meshes.push_back(OBJMeshInternal::getShape<uint32_t>(shapes[i], attrib, has_tex_coord, has_normals));
+      OBJMeshInternal::getShape<uint32_t>(shapes[i], attrib, meshes, i);
     } else {
-      meshes.push_back(OBJMeshInternal::getShape<uint16_t>(shapes[i], attrib, has_tex_coord, has_normals));
+      OBJMeshInternal::getShape<uint16_t>(shapes[i], attrib, meshes, i);
     }
+  }
+  std::lock_guard<std::mutex> lock(log_shapes_processsing);
+  processed_shapes += end - start;
+  std::cout << "\rProcessing shapes: " << processed_shapes << "/" << shapes.size() << std::flush;
 
+}
+
+void computeBoundingBox(const std::vector<std::shared_ptr<VulkanEngine::MeshBase>>& meshes, BoundingBox<Eigen::Vector3f>& bounding_box) {
+  for (const auto& mesh : meshes) {
     // Calculate the bbox for the whole OBJ
-    const auto &mesh_bbox = meshes.back()->getBoundingBox<Eigen::Vector3f>();
+    const auto &mesh_bbox = mesh->getBoundingBox<Eigen::Vector3f>();
     if (mesh_bbox.max.x() > bounding_box.max.x()) {
       bounding_box.max.x() = mesh_bbox.max.x();
     }
@@ -339,7 +335,88 @@ void VulkanEngine::OBJMesh::loadOBJ(const char *obj_path,
     if (mesh_bbox.min.z() < bounding_box.min.z()) {
       bounding_box.min.z() = mesh_bbox.min.z();
     }
+  }
+}
 
+void VulkanEngine::OBJMesh::loadOBJ(const char *obj_path,
+                                    const char *mtl_path) {
+  auto begin = std::chrono::system_clock::now();
+
+  tinyobj::attrib_t attrib;
+  std::vector<tinyobj::shape_t> shapes;
+  std::vector<tinyobj::material_t> materials;
+  std::string err;
+
+  // TODO Get rid of need to triangulate using primitive restart
+  if (!tinyobj::LoadObj(&attrib, &shapes, &materials, &err, obj_path, mtl_path,
+                        true)) {
+    throw std::runtime_error(
+        "Could not load obj file: " + std::string(obj_path) + ", " + err);
+  }
+
+  auto time = std::chrono::duration_cast<std::chrono::milliseconds>(
+                  std::chrono::system_clock::now() - begin)
+                  .count();
+  std::cout << "Load obj time: " << time << "(ms)" << std::endl;
+
+  bounding_box.max = {std::numeric_limits<float>::min(),
+                      std::numeric_limits<float>::min(),
+                      std::numeric_limits<float>::min()};
+  bounding_box.min = {std::numeric_limits<float>::max(),
+                      std::numeric_limits<float>::max(),
+                      std::numeric_limits<float>::max()};
+
+  mvp_buffers.resize(VulkanManager::getInstance().getFramesInFlight());
+  for (auto &ub : mvp_buffers) {
+    ub.reset(new VulkanEngine::UniformBuffer<MvpUbo>(0));
+  }
+
+  material_buffers.resize(VulkanManager::getInstance().getFramesInFlight());
+
+  bool has_normals = true; // auto generated
+  bool has_tex_coord = !shapes.empty() 
+  && !shapes[0].mesh.indices.empty() 
+  && shapes[0].mesh.indices[0].texcoord_index > -1;
+
+  meshes.resize(shapes.size());
+
+  int num_threads = std::min(std::thread::hardware_concurrency() * 6, static_cast<unsigned int>(meshes.size()));
+  int chunk_size = meshes.size() / num_threads;
+  std::vector<std::future<void>> futures;
+
+  std::mutex log_shapes_processing;
+  size_t processed_shapes = 0;
+
+  for (int i = 0; i < num_threads; ++i) {
+      int start = i * chunk_size;
+      int end = (i == num_threads - 1) ? meshes.size() : start + chunk_size;
+
+      futures.push_back(
+        std::async(
+          std::launch::async, 
+          processShapeChunk,
+          start, 
+          end, 
+          std::ref(shapes),
+          std::ref(attrib),
+          std::ref(meshes),
+          std::ref(log_shapes_processing),
+          std::ref(processed_shapes)
+          )
+      );
+  }
+
+  // Wait for all threads to finish
+  for (auto& f : futures) {
+      f.get();
+  }
+  std::cout << std::endl;
+
+  std::thread compute_bbox_thread(computeBoundingBox, std::ref(meshes), std::ref(bounding_box));
+
+  std::cout << "Processing materials..." << std::endl;
+  
+  for (auto i = 0; i < shapes.size(); ++i) {
     int material_id = shapes[i].mesh.material_ids[0]; // TODO support per face materials.
     if (material_id == -1) {
       for (auto& material_buffer_list : material_buffers) {
@@ -352,9 +429,15 @@ void VulkanEngine::OBJMesh::loadOBJ(const char *obj_path,
       for (auto& material_buffer_list : material_buffers) {
         auto material_buffer = std::shared_ptr<UniformBuffer<Material>>(new VulkanEngine::UniformBuffer<Material>(2));
         Material material_data;
-        material_data.ambient = { materials[material_id].ambient[0], materials[material_id].ambient[1], materials[material_id].ambient[2], 0.0 };
-        material_data.diffuse = { materials[material_id].diffuse[0], materials[material_id].diffuse[1], materials[material_id].diffuse[2], 0.0 };
-        material_data.specular = { materials[material_id].specular[0], materials[material_id].specular[1], materials[material_id].specular[2], 0.0 };
+        material_data.ambient[0] = materials[material_id].ambient[0];
+        material_data.ambient[1] = materials[material_id].ambient[1];
+        material_data.ambient[2] = materials[material_id].ambient[2];
+        material_data.diffuse[0] = materials[material_id].diffuse[0];
+        material_data.diffuse[1] = materials[material_id].diffuse[1];
+        material_data.diffuse[2] = materials[material_id].diffuse[2];
+        material_data.specular[0] = materials[material_id].specular[0];
+        material_data.specular[1] = materials[material_id].specular[1];
+        material_data.specular[2] = materials[material_id].specular[2];
         material_buffer->updateBuffer(&material_data, sizeof(material_data));
         material_buffer_list.push_back(material_buffer);
       }
@@ -367,39 +450,47 @@ void VulkanEngine::OBJMesh::loadOBJ(const char *obj_path,
 
     std::shared_ptr<RGBATexture2D1S> texture;
 
+    VulkanEngine::SingleUsageCommandBuffer command_buffer;
+    command_buffer.beginSingleUsageCommandBuffer();
     if (material_id != -1 && materials[material_id].diffuse_texname != "") {
-      int texture_width;
-      int texture_height;
-      int channels_in_file;
-      unsigned char *image_data =
-          stbi_load((std::string(mtl_path) + materials[material_id].diffuse_texname).c_str(),
-                    &texture_width, &texture_height, &channels_in_file, 4);
-      
-      if (image_data) {
-        texture.reset(new RGBATexture2D1S(
-            vk::ImageLayout::eUndefined,
-            vk::ImageUsageFlagBits::eTransferDst |
-                vk::ImageUsageFlagBits::eTransferSrc |
-                vk::ImageUsageFlagBits::eSampled,
-            VMA_MEMORY_USAGE_GPU_ONLY, static_cast<uint32_t>(texture_width),
-            static_cast<uint32_t>(texture_height), 1, sizeof(unsigned char) * 4,
-            1,
-            1, // TODO
-            vk::DescriptorType::eCombinedImageSampler,
-            vk::ShaderStageFlagBits::eFragment));
+      if (textures.count(materials[material_id].diffuse_texname) == 0) {
+        int texture_width;
+        int texture_height;
+        int channels_in_file;
+        unsigned char *image_data =
+            stbi_load((std::string(mtl_path) + materials[material_id].diffuse_texname).c_str(),
+                      &texture_width, &texture_height, &channels_in_file, 4);
+        
+        if (image_data) {
+          texture.reset(new RGBATexture2D1S(
+              vk::ImageLayout::eUndefined,
+              vk::ImageUsageFlagBits::eTransferDst |
+                  vk::ImageUsageFlagBits::eTransferSrc |
+                  vk::ImageUsageFlagBits::eSampled,
+              VMA_MEMORY_USAGE_GPU_ONLY, static_cast<uint32_t>(texture_width),
+              static_cast<uint32_t>(texture_height), 1, sizeof(unsigned char) * 4,
+              1,
+              1, // TODO
+              vk::DescriptorType::eCombinedImageSampler,
+              vk::ShaderStageFlagBits::eFragment));
 
-        texture->setImageData(image_data);
-        texture->createImageView(vk::ImageViewType::e2D,
-                                 vk::ImageAspectFlagBits::eColor);
-        texture->createSampler();
-        texture->transferBuffer();
-        textures.push_back(texture);
+          texture->setImageData(image_data);
+          texture->createImageView(vk::ImageViewType::e2D,
+                                  vk::ImageAspectFlagBits::eColor);
+          texture->createSampler();
+          texture->transferBuffer(command_buffer.single_use_command_buffer);
+          textures[materials[material_id].diffuse_texname] = texture;
+          std::cout << "Loaded texture: " << materials[material_id].diffuse_texname << std::endl;
 
+        } else {
+          std::cerr << "OBJMesh texture: " << materials[i].diffuse_texname
+                    << " could not be loaded" << std::endl;
+        }
       } else {
-        std::cerr << "OBJMesh texture: " << materials[i].diffuse_texname
-                  << " could not be loaded" << std::endl;
+        texture = std::static_pointer_cast<RGBATexture2D1S>(textures[materials[material_id].diffuse_texname]);
       }
     }
+    command_buffer.endSingleUsageCommandBuffer();
 
     std::shared_ptr<Shader> shader;
     std::shared_ptr<ShaderModule> vertex_shader(
@@ -425,10 +516,12 @@ void VulkanEngine::OBJMesh::loadOBJ(const char *obj_path,
     shaders.push_back(shader); 
   }
 
-  auto time = std::chrono::duration_cast<std::chrono::milliseconds>(
+  compute_bbox_thread.join();
+
+  time = std::chrono::duration_cast<std::chrono::milliseconds>(
                   std::chrono::system_clock::now() - begin)
                   .count();
-  std::cout << "Mesh loading time: " << time << "(ms)" << std::endl;
+  std::cout << "OBJ load time: " << time << "(ms)" << std::endl;
 }
 
 const std::string
@@ -522,14 +615,14 @@ VulkanEngine::OBJMesh::getFragmentShaderString(bool has_texture, bool has_tex_co
     return_string << "  vec4 texColor = vec4(1.0);\n";
   }
   return_string
-    << "  vec3 lightDir = normalize(vec3(1.0, 1.0, 1.0));\n"
-    << "  float diff = max(dot(inNormal, lightDir), 0.0); // Lambertian reflection\n"
+    << "  vec3 lightDir = normalize(vec3(0.0, 1.0, 1.0));\n"
+    << "  float diff = clamp(max(dot(inNormal, lightDir), 0.0), 0.0, 1.0); // Lambertian reflection\n"
     << "  vec4 diffuse = material.diffuse * diff;\n"
-    << "  vec3 reflectDir = reflect(-lightDir, inNormal);\n"
+    << "  vec3 reflectDir = normalize(reflect(-lightDir, inNormal));\n"
     << "  vec3 viewDir = normalize(inCameraPosition - inFragWorldPosition);"
-    << "  float spec = pow(max(dot(viewDir, reflectDir), 0.0), 16);\n"
+    << "  float spec = pow(max(dot(viewDir, reflectDir), 0.0), 64);\n"
     << "  vec4 specular = material.specular * spec;\n"
-    << "  outColor = clamp(specular + diffuse + material.ambient, 0.0, 1.0) * texColor;\n"
+    << "  outColor = (material.ambient + diffuse + specular) * texColor;\n"
     << "}\n";
 
   return return_string.str();

@@ -152,10 +152,9 @@ int main(int argc, char **argv) {
     auto bounding_box = obj_mesh->getBoundingBox();
     auto bbox_size = bounding_box.max - bounding_box.min;
     auto center = (bounding_box.max + bounding_box.min) * 0.5f;
-    auto scale = 1.0 / std::max({bbox_size(0), bbox_size(1), bbox_size(2)});
+    auto scale = 1.5 / std::max({bbox_size(0), bbox_size(1), bbox_size(2)});
     transform.scale(scale);
     transform.translation() -= center * scale;
-    std::cout << bounding_box.max.y() << std::endl;
     obj_mesh->setTransform(transform.matrix());
 
   } else {

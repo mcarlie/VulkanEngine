@@ -55,31 +55,6 @@ VulkanEngine::Device::Device(): graphics_queue_family_index(0) {
         VK_EXT_BUFFER_DEVICE_ADDRESS_EXTENSION_NAME);
 #endif
 
-    bool found_VK_KHR_maintenance1 = false;
-    bool found_VK_AMD_negative_viewport_height = false;
-    for (auto it = physical_device_extension_names.begin();
-         it != physical_device_extension_names.end(); ++it) {
-      if (!(found_VK_KHR_maintenance1 &&
-            found_VK_AMD_negative_viewport_height)) {
-        if (std::string(*it) == "VK_KHR_maintenance1") {
-          found_VK_KHR_maintenance1 = true;
-        } else if (std::string(*it) == "VK_AMD_negative_viewport_height") {
-          found_VK_AMD_negative_viewport_height = true;
-        }
-      }
-
-      if (found_VK_KHR_maintenance1 && found_VK_AMD_negative_viewport_height) {
-        std::cout << "Both VK_KHR_maintenance1 and "
-                     "VK_AMD_negative_viewport_height were found in the "
-                  << "list of physical device extensions. Removed "
-                     "VK_AMD_negative_viewport_height since enabling "
-                  << "both is not allowed by the Vulkan specification."
-                  << std::endl;
-        physical_device_extension_names.erase(it);
-        break;
-      }
-    }
-
     // Find queue family with graphics support
     std::vector<vk::QueueFamilyProperties> queue_family_properties =
         vk_physical_device.getQueueFamilyProperties();
