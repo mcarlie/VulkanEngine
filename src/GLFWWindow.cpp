@@ -22,6 +22,7 @@ VulkanEngine::GLFWWindow::~GLFWWindow() {
 
 void VulkanEngine::GLFWWindow::update() {
   size_changed = false;
+  mouseScrollCallback(0.0, 0.0);
   glfwPollEvents();
 }
 
@@ -55,6 +56,7 @@ bool VulkanEngine::GLFWWindow::initialize(bool invisible) {
   glfwSetFramebufferSizeCallback(glfw_window, &framebufferResizeCallback);
 
   glfwSetCursorPosCallback(glfw_window, &cursorPositionCallback);
+  glfwSetScrollCallback(glfw_window, &scrollCallback);
   glfwSetMouseButtonCallback(glfw_window, &mouseButtonCallback);
   glfwSetKeyCallback(glfw_window, &keyCallback);
 
@@ -142,6 +144,14 @@ void VulkanEngine::GLFWWindow::cursorPositionCallback(GLFWwindow *_glfw_window,
   GLFWWindow *window =
       static_cast<GLFWWindow *>(glfwGetWindowUserPointer(_glfw_window));
   window->mousePositionCallback(xpos, ypos);
+}
+
+void VulkanEngine::GLFWWindow::scrollCallback(GLFWwindow *_glfw_window, 
+                                              double xoffset,
+                                              double yoffset) { 
+  GLFWWindow *window =
+      static_cast<GLFWWindow *>(glfwGetWindowUserPointer(_glfw_window));
+  window->mouseScrollCallback(xoffset, yoffset);
 }
 
 void VulkanEngine::GLFWWindow::mouseButtonCallback(GLFWwindow *_glfw_window,

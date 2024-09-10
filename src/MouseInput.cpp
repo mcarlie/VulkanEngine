@@ -1,4 +1,5 @@
 #include <VulkanEngine/MouseInput.h>
+#include <iostream>
 
 VulkanEngine::MouseInput::MouseInput()
     : xpos(0), ypos(0), previous_x_pos(0), previous_y_pos(0),
@@ -12,9 +13,9 @@ void VulkanEngine::MouseInput::getPosition(double &x, double &y) {
   y = ypos;
 }
 
-void VulkanEngine::MouseInput::getPreviousPosition(double &x, double &y) {
-  x = previous_x_pos;
-  y = previous_y_pos;
+void VulkanEngine::MouseInput::getScrollOffset(double &x, double &y) {
+  x = scroll_offset_x;
+  y = scroff_offset_y;
 }
 
 bool VulkanEngine::MouseInput::leftButtonPressed() {
@@ -22,11 +23,13 @@ bool VulkanEngine::MouseInput::leftButtonPressed() {
 }
 
 void VulkanEngine::MouseInput::setPosition(double _xpos, double _ypos) {
-  previous_x_pos = xpos;
-  previous_y_pos = ypos;
-
   xpos = _xpos;
   ypos = _ypos;
+}
+
+void VulkanEngine::MouseInput::setScrollOffset(double xoffset, double yoffset) {
+  scroll_offset_x = xoffset;
+  scroff_offset_y = yoffset;
 }
 
 void VulkanEngine::MouseInput::setButtons(bool left, bool right, bool middle) {

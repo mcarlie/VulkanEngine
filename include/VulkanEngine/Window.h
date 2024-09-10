@@ -84,10 +84,15 @@ public:
   bool sizeHasChanged() const;
 
 protected:
-  /// Callback which gets the current position of the mouse
+  /// Callback which sets the current position of the mouse
   /// \param xpos The x position of the mouse
   /// \param ypos The y position of the mouse
   void mousePositionCallback(double xpos, double ypos);
+
+  /// Callback which sets the current scroll offset of the mouse
+  /// \param xoffset The scroll offset along x
+  /// \param yoffset The scroll offset along y
+  void mouseScrollCallback(double xoffset, double yoffset);
 
   /// Callback which gets the current status of mouse buttons
   void mouseButtonPressedCallback(bool left_pressed, bool right_pressed,

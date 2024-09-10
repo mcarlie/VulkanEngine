@@ -86,6 +86,13 @@ private:
   static void cursorPositionCallback(GLFWwindow *_glfw_window, double xpos,
                                      double ypos);
 
+  /// Callback for storing scroll value.
+  /// \param _glfw_window The window which recieved the event.
+  /// \param xoffset The scroll offset along x.
+  /// \param yoffset The scroll offset along y.
+  static void scrollCallback(GLFWwindow *_glfw_window, double xoffset,
+                                     double yoffset);
+
   /// Callback which gives which buttons are currently clicked on the mouse.
   /// \param _glfw_window The window which recieved the event.
   /// \param button The button which has an event.

@@ -8,6 +8,7 @@
 #include <VulkanEngine/SceneObject.h>
 #include <VulkanEngine/UniformBuffer.h>
 
+#include <array>
 #include <filesystem>
 #include <unordered_map>
 
@@ -38,9 +39,9 @@ private:
   };
 
   struct Material {
-    float ambient[4] = {0.8, 0.8, 0.8, 0.0};
-    float diffuse[4] = {1.0, 1.0, 1.0, 0.0};
-    float specular[4] = {1.0, 1.0, 1.0, 0.0};
+    std::array<float, 4> ambient = {0.8, 0.8, 0.8, 0.0};
+    std::array<float, 4> diffuse = {1.0, 1.0, 1.0, 0.0};
+    std::array<float, 4> specular = {1.0, 1.0, 1.0, 0.0};
   };
 #pragma pack(pop)
 
@@ -55,11 +56,11 @@ private:
 
   /// \return Auto generated vertex shader for this OBJMesh.
   /// \param has_tex_coords Set to true if the obj has texture coordinates.
-  const std::string getVertexShaderString(bool has_tex_coords, bool has_normals) const;
+  const std::string getVertexShaderString() const;
 
   /// \return Auto generated fragment shader for this OBJMesh.
   /// \param has_tex_coords Set to true if the obj has texture coordinates.
-  const std::string getFragmentShaderString(bool has_texture, bool has_tex_coords, bool has_normals) const;
+  const std::string getFragmentShaderString(bool has_texture) const;
 
   /// Meshes composing this OBJMesh.
   std::vector<std::shared_ptr<MeshBase>> meshes;

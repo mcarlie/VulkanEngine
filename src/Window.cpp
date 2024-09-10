@@ -53,6 +53,12 @@ void VulkanEngine::Window::mousePositionCallback(double xpos, double ypos) {
   }
 }
 
+void VulkanEngine::Window::mouseScrollCallback(double xoffset, double yoffset) {
+  if (mouse_input.get()) {
+    mouse_input->setScrollOffset(xoffset, yoffset);
+  }
+}
+
 void VulkanEngine::Window::mouseButtonPressedCallback(bool left_pressed,
                                                       bool right_pressed,
                                                       bool middle_pressed) {

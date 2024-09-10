@@ -43,32 +43,32 @@ void moveCamera(std::shared_ptr<VulkanEngine::KeyboardInput> keyboard_input, std
 
     if (key_a == VulkanEngine::KeyboardInput::PRESSED ||
         key_a == VulkanEngine::KeyboardInput::REPEAT) {
-      camera_movement(0) += speed;
+      camera_movement(0) -= speed;
     }
 
     if (key_d == VulkanEngine::KeyboardInput::PRESSED ||
         key_d == VulkanEngine::KeyboardInput::REPEAT) {
-      camera_movement(0) -= speed;
+      camera_movement(0) += speed;
     }
 
     if (key_z == VulkanEngine::KeyboardInput::PRESSED ||
         key_z == VulkanEngine::KeyboardInput::REPEAT) {
-      camera_movement(1) += speed;
+      camera_movement(1) -= speed;
     }
 
     if (key_x == VulkanEngine::KeyboardInput::PRESSED ||
         key_x == VulkanEngine::KeyboardInput::REPEAT) {
-      camera_movement(1) -= speed;
+      camera_movement(1) += speed;
     }
 
     if (key_w == VulkanEngine::KeyboardInput::PRESSED ||
         key_w == VulkanEngine::KeyboardInput::REPEAT) {
-      camera_movement(2) += speed;
+      camera_movement(2) -= speed;
     }
 
     if (key_s == VulkanEngine::KeyboardInput::PRESSED ||
         key_s == VulkanEngine::KeyboardInput::REPEAT) {
-      camera_movement(2) -= speed;
+      camera_movement(2) += speed;
     }
 
     camera->setLookAt(camera->getLookAt() + camera_movement);
@@ -123,6 +123,8 @@ int main(int argc, char **argv) {
   camera->setTransform(
       Eigen::Affine3f(Eigen::Translation3f(0.0f, 0.0f, 3.0f)).matrix());
 
+  double mesh_scale = 1.0;
+
   // Load an OBJ mesh and MTL file if configured.
   // Without an OBJ file we still render an empty scene.
   std::shared_ptr<VulkanEngine::OBJMesh> obj_mesh;
@@ -152,9 +154,9 @@ int main(int argc, char **argv) {
     auto bounding_box = obj_mesh->getBoundingBox();
     auto bbox_size = bounding_box.max - bounding_box.min;
     auto center = (bounding_box.max + bounding_box.min) * 0.5f;
-    auto scale = 1.5 / std::max({bbox_size(0), bbox_size(1), bbox_size(2)});
-    transform.scale(scale);
-    transform.translation() -= center * scale;
+    auto mesh_scale = 1.5 / std::max({bbox_size(0), bbox_size(1), bbox_size(2)});
+    transform.scale(mesh_scale);
+    transform.translation() -= center * mesh_scale;
     obj_mesh->setTransform(transform.matrix());
 
   } else {
@@ -173,6 +175,7 @@ int main(int argc, char **argv) {
 
   // Main scene loop.
   unsigned frame_count = 0;
+  Eigen::Vector2d prev_mouse_position = {0.0, 0.0};
   while (!window->shouldClose()) {
     if (keyboard_input.get()) {
       Eigen::Affine3f camera_transform =
@@ -196,12 +199,33 @@ int main(int argc, char **argv) {
         auto matrix = obj_mesh->getTransform();
         Eigen::Transform<float, 3, Eigen::Affine> transform(matrix);
 
-        // Continuously rotate the object around its Y-axis.
-        Eigen::AngleAxis<float> rotation(
-            (VulkanEngine::Constants::pi<float>() / 10.0f) *
-                elapsed_seconds.count(),
-            Eigen::Vector3f::UnitY());
-        transform.rotate(rotation);
+        const auto& mouse_input = window->getMouseInput();
+        Eigen::Vector2d mouse_position; 
+        mouse_input->getPosition(mouse_position.x(), mouse_position.y());
+
+        if (mouse_input->leftButtonPressed()) {
+
+          auto mouse_movement = -(mouse_position - prev_mouse_position) * 0.01;
+
+          auto rotation_x = Eigen::AngleAxisf(mouse_movement.x(), Eigen::Vector3f::UnitY());
+          auto rotation_y = Eigen::AngleAxisf(mouse_movement.y(), Eigen::Vector3f::UnitX());
+          auto rotation = rotation_x * rotation_y;
+          transform = transform.inverse();
+          transform.rotate(rotation);
+          transform = transform.inverse();
+
+        }
+        prev_mouse_position = mouse_position;
+
+        Eigen::Vector3d scroll_offset = {0.0, 0.0, 0.0};
+        mouse_input->getScrollOffset(scroll_offset.x(), scroll_offset.y());
+        scroll_offset *= 0.1;
+        scroll_offset.x() *= -1;
+        camera->setLookAt(camera->getLookAt() + scroll_offset.cast<float>());
+        camera->setTransform(
+            Eigen::Affine3f(Eigen::Translation3f(scroll_offset.cast<float>()) *
+                            Eigen::Affine3f(camera->getTransform()))
+                .matrix());
 
         obj_mesh->setTransform(transform.matrix());
 

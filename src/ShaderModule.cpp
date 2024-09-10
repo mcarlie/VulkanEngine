@@ -169,9 +169,9 @@ void VulkanEngine::ShaderModule::glslToSPIRV(const std::string &name,
   /// TODO 100 is default glsl version
   if (!tshader.preprocess(resources, 450, ENoProfile, false, false, messages,
                           &preprocessed_glsl, includer)) {
-    std::cout << "Preprocessing failed for shader " + name << std::endl;
-    std::cout << tshader.getInfoLog() << std::endl;
-    std::cout << tshader.getInfoDebugLog() << std::endl;
+    std::cerr << "Preprocessing failed for shader " + name << std::endl;
+    std::cerr << tshader.getInfoLog() << std::endl;
+    std::cerr << tshader.getInfoDebugLog() << std::endl;
     throw std::runtime_error("Failed to preprocess shader.");
   }
 
@@ -180,9 +180,9 @@ void VulkanEngine::ShaderModule::glslToSPIRV(const std::string &name,
 
   /// TODO 100 is default glsl version
   if (!tshader.parse(resources, 450, false, messages)) {
-    std::cout << "Parsing failed for shader " + name << std::endl;
-    std::cout << tshader.getInfoLog() << std::endl;
-    std::cout << tshader.getInfoDebugLog() << std::endl;
+    std::cerr << "Parsing failed for shader " + name << std::endl;
+    std::cerr << tshader.getInfoLog() << std::endl;
+    std::cerr << tshader.getInfoDebugLog() << std::endl;
     throw std::runtime_error("Failed to parse shader.");
   }
 
@@ -190,9 +190,9 @@ void VulkanEngine::ShaderModule::glslToSPIRV(const std::string &name,
   tprogram.addShader(&tshader);
 
   if (!tprogram.link(messages)) {
-    std::cout << "Linking failed for shader " + name << std::endl;
-    std::cout << tprogram.getInfoLog() << std::endl;
-    std::cout << tprogram.getInfoDebugLog() << std::endl;
+    std::cerr << "Linking failed for shader " + name << std::endl;
+    std::cerr << tprogram.getInfoLog() << std::endl;
+    std::cerr << tprogram.getInfoDebugLog() << std::endl;
     throw std::runtime_error("Failed to link shader.");
   }
 
