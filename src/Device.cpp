@@ -121,7 +121,7 @@ VulkanEngine::Device::Device(): graphics_queue_family_index(0) {
 
     auto command_buffer_allocate_info =
         vk::CommandBufferAllocateInfo()
-            .setCommandBufferCount(3)
+            .setCommandBufferCount(vulkan_manager.getFramesInFlight())
             .setCommandPool(vk_command_pool)
             .setLevel(vk::CommandBufferLevel::ePrimary);
 
