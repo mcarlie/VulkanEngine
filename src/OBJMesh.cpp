@@ -98,6 +98,8 @@ void getShape(
           attrib.texcoords[2 * shape.mesh.indices[i].texcoord_index + 0],
           1.0f -
               attrib.texcoords[2 * shape.mesh.indices[i].texcoord_index + 1]);
+    } else {
+      texcoords.emplace_back(Eigen::Vector2f{0.0f,  0.0f});
     }
 
     Vertex vertex = std::forward_as_tuple(
@@ -298,8 +300,6 @@ void processShapeChunk(
   size_t& processed_shapes) {
 
   for (size_t i = start; i < end; ++i) {
-    // We represent the indices using uint16_t unless that is not sufficient
-    // given the number of indices
     if (shapes[i].mesh.indices.size() > std::numeric_limits<uint16_t>::max()) {
       OBJMeshInternal::getShape<uint32_t>(shapes[i], attrib, meshes, i);
     } else {
@@ -372,11 +372,6 @@ void VulkanEngine::OBJMesh::loadOBJ(const char *obj_path,
   }
 
   material_buffers.resize(VulkanManager::getInstance().getFramesInFlight());
-
-  bool has_normals = true; // auto generated
-  bool has_tex_coord = !shapes.empty() 
-  && !shapes[0].mesh.indices.empty() 
-  && shapes[0].mesh.indices[0].texcoord_index > -1;
 
   meshes.resize(shapes.size());
 
@@ -494,10 +489,10 @@ void VulkanEngine::OBJMesh::loadOBJ(const char *obj_path,
 
     std::shared_ptr<Shader> shader;
     std::shared_ptr<ShaderModule> vertex_shader(
-        new ShaderModule(getVertexShaderString(has_tex_coord, has_normals), false,
+        new ShaderModule(getVertexShaderString(), false,
                         vk::ShaderStageFlagBits::eVertex));
     std::shared_ptr<ShaderModule> fragment_shader(
-        new ShaderModule(getFragmentShaderString(texture.get() != nullptr, has_tex_coord, has_normals), false,
+        new ShaderModule(getFragmentShaderString(texture.get() != nullptr), false,
                         vk::ShaderStageFlagBits::eFragment));
     shader.reset(new Shader({fragment_shader, vertex_shader}));
 
@@ -525,55 +520,41 @@ void VulkanEngine::OBJMesh::loadOBJ(const char *obj_path,
 }
 
 const std::string
-VulkanEngine::OBJMesh::getVertexShaderString(bool has_tex_coords, bool has_normals) const {
+VulkanEngine::OBJMesh::getVertexShaderString() const {
   std::stringstream return_string;
 
   return_string 
-  << "#version 450\n"
-  << "#extension GL_ARB_separate_shader_objects : enable\n"
-  << "layout(binding = 0) uniform UniformBufferObject {\n"
-  << "  mat4 model;\n"
-  << "  mat4 view;\n"
-  << "  mat4 proj;\n"
-  << "} ubo;\n"
-  << "layout(location = 0) in vec3 inPosition;\n"
-  << "layout(location = 0) out vec3 outCameraPosition;\n"
-  << "layout(location = 1) out vec3 outFragWorldPosition;\n";
-  if (has_normals) {
-    return_string
-      << "layout(location = 1) in vec3 inNormal;\n"
-      << "layout(location = 2) out vec3 outNormal;\n";
-  }
-  if (has_tex_coords) {
-    return_string 
-      << "layout(location = 2) in vec2 inTexcoords;\n"
-      << "layout(location = 3) out vec2 outTexcoords;\n";
-  }
+    << "#version 450\n"
+    << "#extension GL_ARB_separate_shader_objects : enable\n"
+    << "layout(binding = 0) uniform UniformBufferObject {\n"
+    << "  mat4 model;\n"
+    << "  mat4 view;\n"
+    << "  mat4 proj;\n"
+    << "} ubo;\n"
+    << "layout(location = 0) in vec3 inPosition;\n"
+    << "layout(location = 0) out vec3 outCameraPosition;\n"
+    << "layout(location = 1) out vec3 outFragWorldPosition;\n"
+    << "layout(location = 1) in vec3 inNormal;\n"
+    << "layout(location = 2) out vec3 outNormal;\n"
+    << "layout(location = 2) in vec2 inTexcoords;\n"
+    << "layout(location = 3) out vec2 outTexcoords;\n"
 
-  return_string 
     << "out gl_PerVertex {\n"
     << "  vec4 gl_Position;\n"
     << "};\n"
     << "void main() {\n"
     << "  gl_Position = ubo.proj * ubo.view * ubo.model * vec4(inPosition, 1.0);\n"
     << "  outCameraPosition = vec3(inverse(ubo.view)[3]);\n"
-    << "  outFragWorldPosition = vec3(ubo.model * vec4(inPosition, 1.0));\n";
-  if (has_normals) {
-    return_string
-      << "  outNormal = mat3(transpose(inverse(ubo.model))) * inNormal;\n";
-  }
-  if (has_tex_coords) {
-    return_string 
-      << "  outTexcoords = inTexcoords;\n";
-  }
-  return_string 
+    << "  outFragWorldPosition = vec3(ubo.model * vec4(inPosition, 1.0));\n"
+    << "  outNormal = normalize(mat3(transpose(inverse(ubo.model))) * inNormal);\n"
+    << "  outTexcoords = inTexcoords;\n"
     << "}\n";
 
   return return_string.str();
 }
 
 const std::string
-VulkanEngine::OBJMesh::getFragmentShaderString(bool has_texture, bool has_tex_coords, bool has_normals) const {
+VulkanEngine::OBJMesh::getFragmentShaderString(bool has_texture) const {
   std::stringstream return_string;
 
   return_string 
@@ -581,25 +562,16 @@ VulkanEngine::OBJMesh::getFragmentShaderString(bool has_texture, bool has_tex_co
     << "#extension GL_ARB_separate_shader_objects : enable\n"
 
     << "layout(location = 0) in vec3 inCameraPosition;\n"
-    << "layout(location = 1) in vec3 inFragWorldPosition;\n";
-
-  if (has_normals) {
-    return_string
-      << "layout(location = 2) in vec3 inNormal;\n";
-  }
-  if (has_tex_coords) {
-    return_string 
-      << "layout(location = 3) in vec2 inTexcoords;\n";
-  }
-
-  return_string << "layout(location = 0) out vec4 outColor;\n";
+    << "layout(location = 1) in vec3 inFragWorldPosition;\n"
+    << "layout(location = 2) in vec3 inNormal;\n"
+    << "layout(location = 3) in vec2 inTexcoords;\n"
+    << "layout(location = 0) out vec4 outColor;\n";
 
   if (has_texture) {
     return_string 
       << "layout(binding = 1) uniform sampler2D texSampler;\n";
   }
 
-  // TODO support materials
   return_string 
     << "layout(std140, set = 0, binding = 2) uniform Material {\n"
     << "  vec4 ambient;\n"
@@ -609,14 +581,14 @@ VulkanEngine::OBJMesh::getFragmentShaderString(bool has_texture, bool has_tex_co
 
   return_string 
     << "void main() {\n";
-  if (has_tex_coords && has_texture) {
+  if (has_texture) {
     return_string << "  vec4 texColor = texture(texSampler, inTexcoords);\n";
   } else {
     return_string << "  vec4 texColor = vec4(1.0);\n";
   }
   return_string
     << "  vec3 lightDir = normalize(vec3(0.0, 1.0, 1.0));\n"
-    << "  float diff = clamp(max(dot(inNormal, lightDir), 0.0), 0.0, 1.0); // Lambertian reflection\n"
+    << "  float diff = max(dot(inNormal, lightDir), 0.05); // Lambertian reflection\n"
     << "  vec4 diffuse = material.diffuse * diff;\n"
     << "  vec3 reflectDir = normalize(reflect(-lightDir, inNormal));\n"
     << "  vec3 viewDir = normalize(inCameraPosition - inFragWorldPosition);"
