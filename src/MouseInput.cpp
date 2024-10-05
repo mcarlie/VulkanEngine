@@ -3,6 +3,7 @@
 
 VulkanEngine::MouseInput::MouseInput()
     : xpos(0), ypos(0), previous_x_pos(0), previous_y_pos(0),
+      scroll_offset_x(0.0), scroff_offset_y(0.0),
       left_button_pressed(false), right_button_pressed(false),
       middle_button_pressed(false) {}
 
