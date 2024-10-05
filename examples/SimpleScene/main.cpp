@@ -13,7 +13,6 @@
 #include <iostream>
 #include <memory>
 #include <vector>
-#include <cmath>
 
 cxxopts::ParseResult setupProgramOptions(int argc, char **argv) {
   cxxopts::Options options("SimpleScene",
