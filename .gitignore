@@ -3,6 +3,7 @@ build/*
 .vscode/*
 .devcontainer/*
 .DS_Store
-doc/*
+doc/html/*
+doc/latex/*
 out/*
 .vs/*
