@@ -17,7 +17,7 @@ namespace VulkanEngine {
 
 /// Provides an abstract interface for window implementations.
 class Window {
-public:
+ public:
   /// Contructor.
   /// \param _width The desired initial width of the window.
   /// \param _height The desired initial height of the window.
@@ -35,8 +35,8 @@ public:
 
   /// \return A list of vulkan extensions required by the underlying windowing
   /// system.
-  virtual const std::vector<const char *>
-  getRequiredVulkanInstanceExtensions() const = 0;
+  virtual const std::vector<const char *> getRequiredVulkanInstanceExtensions()
+      const = 0;
 
   /// Create and return a vk::SurfaceKHR instance.
   /// \param instance The vk::Instance to create the surface for.
@@ -65,7 +65,7 @@ public:
 
   /// Set window title.
   /// \param new_title The new window title.
-  virtual void setTitle(const std::string& new_title);
+  virtual void setTitle(const std::string &new_title);
 
   /// \return The width of the window.
   uint32_t getWidth() const;
@@ -88,7 +88,7 @@ public:
   /// \return True if the size has changed.
   bool sizeHasChanged() const;
 
-protected:
+ protected:
   /// Callback which sets the current position of the mouse
   /// \param xpos The x position of the mouse
   /// \param ypos The y position of the mouse
@@ -135,6 +135,6 @@ protected:
   std::shared_ptr<KeyboardInput> keyboard_input;
 };
 
-} // namespace VulkanEngine
+}  // namespace VulkanEngine
 
 #endif /* WINDOW_H */

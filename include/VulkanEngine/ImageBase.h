@@ -12,7 +12,7 @@ namespace VulkanEngine {
 
 /// Base class for image types.
 class ImageBase {
-public:
+ public:
   /// Contructor.
   ImageBase();
 
@@ -26,6 +26,6 @@ public:
   virtual vk::ImageView getVkImageView() const = 0;
 };
 
-} // namespace VulkanEngine
+}  // namespace VulkanEngine
 
 #endif /* IMAGEBASE_H */

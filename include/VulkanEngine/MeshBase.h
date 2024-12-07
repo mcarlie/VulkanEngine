@@ -15,7 +15,7 @@ namespace VulkanEngine {
 
 /// Base class for Mesh specializations.
 class MeshBase {
-public:
+ public:
   /// Constructor.
   MeshBase();
 
@@ -37,8 +37,8 @@ public:
   /// command_buffer The vk::CommandBuffer to insert the commands into.
   ///                       If none is provided a vk::CommandBuffer
   ///                       will be allocated and executed automatically.
-  virtual void
-  transferBuffers(const vk::CommandBuffer &command_buffer = nullptr) = 0;
+  virtual void transferBuffers(
+      const vk::CommandBuffer &command_buffer = nullptr) = 0;
 
   /// Bind VertexBuffers in this Mesh which will be used for rendering.
   /// \param command_buffer The vk::CommandBuffer to insert the commands into.
@@ -57,11 +57,11 @@ public:
     return *static_cast<const BoundingBox<PositionType> *>(bounding_box.get());
   }
 
-protected:
+ protected:
   /// The Mesh's bounding box.
   std::shared_ptr<BoundingBoxBase> bounding_box;
 };
 
-} // namespace VulkanEngine
+}  // namespace VulkanEngine
 
 #endif /* MESHBASE_H */

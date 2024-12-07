@@ -14,7 +14,7 @@
 namespace VulkanEngine {
 
 class Scene : public SceneObject {
-public:
+ public:
   /// Constructor.
   Scene(const std::vector<std::shared_ptr<Window>>& _windows);
 
@@ -27,10 +27,10 @@ public:
   /// Get the currently active window.
   const std::shared_ptr<Window> getActiveWindow() const;
 
-private:
+ private:
   /// \param scene_state Contains information about the current state of the
   /// scene.
-  virtual void update(SceneState &scene_state) override;
+  virtual void update(SceneState& scene_state) override;
 
   /// The current state of the scene.
   std::unique_ptr<SceneState> state_instance;
@@ -39,6 +39,6 @@ private:
   std::vector<std::shared_ptr<Window>> windows;
 };
 
-} // namespace VulkanEngine
+}  // namespace VulkanEngine
 
 #endif /* SCENE_H */

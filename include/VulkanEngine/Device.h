@@ -27,7 +27,7 @@ namespace VulkanEngine {
 /// Class which represents a Device with vulkan support.
 /// TODO this class is in development and unfinished.
 class Device {
-public:
+ public:
   /// Constructor.
   Device();
 
@@ -52,8 +52,7 @@ public:
 
   void endSingleUsageCommandBuffer();
 
-private:
-
+ private:
   int graphics_queue_family_index;
   vk::Device vk_device;
   VmaAllocator vma_allocator;
@@ -72,12 +71,11 @@ private:
   static VKAPI_ATTR VkBool32 VKAPI_CALL
   debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT message_severity,
                 VkDebugUtilsMessageTypeFlagsEXT message_type,
-                const VkDebugUtilsMessengerCallbackDataEXT *callback_data,
-                void *user_data);
+                const VkDebugUtilsMessengerCallbackDataEXT* callback_data,
+                void* user_data);
 #endif
-
 };
 
-} // namespace VulkanEngine
+}  // namespace VulkanEngine
 
 #endif /* DEVICE_H */

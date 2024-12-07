@@ -14,7 +14,7 @@ namespace VulkanEngine {
 class KeyboardInput {
   friend class Window;
 
-public:
+ public:
   /// Represents different states that keys can be in.
   enum KeyStatus { PRESSED, RELEASED, REPEAT, NO_STATUS };
 
@@ -32,11 +32,11 @@ public:
   /// \return The status of the provided key.
   const KeyStatus getLastKeyStatus(int key_id);
 
-private:
+ private:
   /// Maps key scancodes to KeyInfo instances.
   std::map<int, KeyInfo> key_status_map;
 };
 
-} // namespace VulkanEngine
+}  // namespace VulkanEngine
 
 #endif /* KEYBOARDINPUT_H */

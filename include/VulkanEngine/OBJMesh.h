@@ -6,7 +6,6 @@
 #ifndef OBJMESH_H
 #define OBJMESH_H
 
-#include "GraphicsPipeline.h"
 #include <VulkanEngine/BoundingBox.h>
 #include <VulkanEngine/GraphicsPipeline.h>
 #include <VulkanEngine/MeshBase.h>
@@ -17,11 +16,13 @@
 #include <filesystem>
 #include <unordered_map>
 
+#include "GraphicsPipeline.h"
+
 namespace VulkanEngine {
 
 /// A SceneObject which represents an OBJMesh.
 class OBJMesh : public SceneObject {
-public:
+ public:
   /// Constructor.
   /// \param obj_file Path to obj file.
   /// \param mtl_file Path to mtl file location.
@@ -34,8 +35,7 @@ public:
   /// \return The OBJMesh's bounding box.
   const BoundingBox<Eigen::Vector3f> &getBoundingBox() const;
 
-private:
-
+ private:
 #pragma pack(push, 1)
   struct MvpUbo {
     Eigen::Matrix4f model;
@@ -78,7 +78,8 @@ private:
   /// Model view projection uniform buffers for each frame in flight.
   std::vector<std::shared_ptr<UniformBuffer<MvpUbo>>> mvp_buffers;
 
-  std::vector<std::vector<std::shared_ptr<UniformBuffer<Material>>>> material_buffers;
+  std::vector<std::vector<std::shared_ptr<UniformBuffer<Material>>>>
+      material_buffers;
 
   /// Textures belonging to this mesh.
   std::unordered_map<std::string, std::shared_ptr<Descriptor>> textures;
@@ -90,6 +91,6 @@ private:
   BoundingBox<Eigen::Vector3f> bounding_box;
 };
 
-} // namespace VulkanEngine
+}  // namespace VulkanEngine
 
 #endif /* OBJMESH_H */

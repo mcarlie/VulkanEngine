@@ -13,7 +13,7 @@ namespace VulkanEngine {
 /// Base class for any classes which interface with the Vulkan resource
 /// descriptor concept.
 class Descriptor {
-public:
+ public:
   /// Constructor.
   Descriptor(uint32_t _binding, uint32_t _desciptor_count,
              vk::DescriptorType _vk_descriptor_type,
@@ -41,7 +41,7 @@ public:
       std::vector<vk::CopyDescriptorSet> &copy_descriptor_sets,
       const vk::DescriptorSet &destination_set) = 0;
 
-protected:
+ protected:
   /// The binding index
   uint32_t binding;
 
@@ -55,6 +55,6 @@ protected:
   vk::ShaderStageFlags vk_shader_stage_flags;
 };
 
-} // namespace VulkanEngine
+}  // namespace VulkanEngine
 
 #endif /* DESCRIPTOR_H */

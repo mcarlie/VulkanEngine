@@ -15,8 +15,9 @@ namespace VulkanEngine {
 
 /// Class which represents a vertex attribute.
 /// \tparam T The type to use to represent data elements.
-template <typename T> class VertexAttribute : public Attribute {
-public:
+template <typename T>
+class VertexAttribute : public Attribute {
+ public:
   /// Constructor.
   /// \param data The vertex data which will be represented by this
   /// VertexAttribute instance. \param binding The binding index of the vertex
@@ -29,8 +30,8 @@ public:
 
   /// \return The Vulkan VertexInputBindingDescription for this VertexAttribute
   /// instance.
-  const vk::VertexInputBindingDescription
-  getVkVertexInputBindingDescription(uint32_t binding_index) const;
+  const vk::VertexInputBindingDescription getVkVertexInputBindingDescription(
+      uint32_t binding_index) const;
 
   /// \return All vk::VertexInputAttributeDescription for this VertexAttribute
   /// instance.
@@ -41,7 +42,7 @@ public:
   /// vertex data.
   vk::Format getVkFormat() const;
 
-private:
+ private:
   /// Number representing the shader location of the VertexAttribute.
   uint32_t location;
 
@@ -49,7 +50,7 @@ private:
   vk::Format format;
 };
 
-} // namespace VulkanEngine
+}  // namespace VulkanEngine
 
 #include <VertexAttribute.cpp>
 

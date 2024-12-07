@@ -23,7 +23,7 @@ namespace VulkanEngine {
 
 /// Class which represents a single buffer using vk::Buffer.
 class Buffer : public StagedBufferDestination {
-public:
+ public:
   /// Constructor.
   /// Creates the buffer given the parameters.
   /// \param _data_size The total size of the data in the buffer.
@@ -51,7 +51,7 @@ public:
   /// buffer.
   virtual size_t getStagingBufferSize() const;
 
-private:
+ private:
   /// Creates the buffer given the parameters.
   /// \param usage_flags vk::BufferUsageFlags for this buffer.
   /// \param memory_property_flags vk::MemoryPropertyFlags for this buffer.
@@ -63,11 +63,11 @@ private:
   /// vk::Buffer instance which represents this buffer.
   vk::Buffer vk_buffer;
 
-protected:
+ protected:
   /// The size of the data.
   size_t data_size;
 };
 
-} // namespace VulkanEngine
+}  // namespace VulkanEngine
 
 #endif /* BUFFER_H */

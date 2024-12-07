@@ -29,6 +29,6 @@ class StagedBufferDestination : public BufferBase,
   virtual size_t getStagingBufferSize() const = 0;
 };
 
-} // namespace VulkanEngine
+}  // namespace VulkanEngine
 
 #endif /* STAGEDBUFFERDESTINATION_H */

@@ -6,17 +6,18 @@
 #ifndef SWAPCHAIN_H
 #define SWAPCHAIN_H
 
-#include <VulkanEngine/VulkanManager.h>
 #include <VulkanEngine/RenderPass.h>
+#include <VulkanEngine/VulkanManager.h>
 #include <VulkanEngine/Window.h>
 
 namespace VulkanEngine {
 
 /// Class which represents the swapchain.
 class Swapchain {
-public:
+ public:
   /// Constructor.
-  Swapchain(uint32_t number_of_images, std::shared_ptr<Window> _window, std::shared_ptr<RenderPass> render_pass);
+  Swapchain(uint32_t number_of_images, std::shared_ptr<Window> _window,
+            std::shared_ptr<RenderPass> render_pass);
 
   /// Destructor.
   ~Swapchain();
@@ -29,8 +30,7 @@ public:
 
   void waitForFence();
 
-private:
-
+ private:
   vk::SwapchainKHR vk_swapchain;
   std::vector<vk::Image> vk_swapchain_images;
   std::vector<vk::ImageView> vk_swapchain_image_views;
@@ -41,9 +41,8 @@ private:
   std::vector<vk::Fence> vk_in_flight_fences;
 
   std::shared_ptr<Window> window;
-
 };
 
-} // namespace VulkanEngine
+}  // namespace VulkanEngine
 
 #endif /* SWAPCHAIN_H */

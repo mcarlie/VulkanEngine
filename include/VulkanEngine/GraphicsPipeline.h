@@ -17,7 +17,7 @@ class MeshBase;
 /// Defines a graphics pipeline. A graphics pipelines defines the rendering of a
 /// mesh with a shader and rendering configurations of the object.
 class GraphicsPipeline {
-public:
+ public:
   /// Contructor.
   GraphicsPipeline();
 
@@ -52,7 +52,7 @@ public:
   void createGraphicsPipeline(const std::shared_ptr<MeshBase> mesh,
                               const std::shared_ptr<Shader> shader);
 
-private:
+ private:
   /// Internal vulkan instance of the graphics pipeline.
   vk::Pipeline vk_graphics_pipeline;
 
@@ -63,6 +63,6 @@ private:
   vk::Rect2D vk_scissor;
 };
 
-} // namespace VulkanEngine
+}  // namespace VulkanEngine
 
 #endif /* GRAPHICSPIPELINE_H */

@@ -7,13 +7,13 @@
 #define VULKANMANAGER_H
 
 #include <VulkanEngine/Camera.h>
+#include <VulkanEngine/Device.h>
 #include <VulkanEngine/IndexAttribute.h>
 #include <VulkanEngine/MeshBase.h>
 #include <VulkanEngine/Shader.h>
 #include <VulkanEngine/UniformBuffer.h>
 #include <VulkanEngine/VertexAttribute.h>
 #include <VulkanEngine/Window.h>
-#include <VulkanEngine/Device.h>
 
 // Support latest vk_mem_alloc with older Vulkan SDK headers.
 #ifndef VK_API_VERSION_MAJOR
@@ -46,7 +46,7 @@ class Swapchain;
 /// TODO this class is a work in progress. The current goal is to modulerize
 /// this more and place functionality in seperate classes.
 class VulkanManager {
-private:
+ private:
   /// Constructor.
   /// Private so that an instance may only be created from getInstance().
   VulkanManager();
@@ -54,15 +54,15 @@ private:
   /// Used for internal singleton handling.
   static std::shared_ptr<VulkanManager>& getInstanceInternal();
 
-public:
+ public:
   /// Destructor.
   ~VulkanManager();
 
   /// Delete copy constructor to disallow duplicates.
-  VulkanManager(const VulkanManager &) = delete;
+  VulkanManager(const VulkanManager&) = delete;
 
   /// Delete assignment operator to disallow duplicates.
-  void operator=(const VulkanManager &) = delete;
+  void operator=(const VulkanManager&) = delete;
 
   /// Get the singleton instance of the VulkanManager.
   /// Creates the instance when first called.
@@ -88,13 +88,9 @@ public:
   /// Executes all command buffers and swaps buffers.
   void drawImage();
 
-  std::shared_ptr<Device> getDevice() {
-    return device;
-  }
+  std::shared_ptr<Device> getDevice() { return device; }
 
-  vk::Instance getVkInstance() const {
-    return vk_instance;
-  }
+  vk::Instance getVkInstance() const { return vk_instance; }
 
   const std::shared_ptr<RenderPass> getDefaultRenderPass() const {
     return default_render_pass;
@@ -104,8 +100,7 @@ public:
 
   const size_t getFramesInFlight() const { return frames_in_flight; }
 
-private:
-
+ private:
   void cleanup();
 
   /// The main Vulkan instance
@@ -124,6 +119,6 @@ private:
   bool initialized;
 };
 
-} // namespace VulkanEngine
+}  // namespace VulkanEngine
 
 #endif /* VULKANMANAGER_H */

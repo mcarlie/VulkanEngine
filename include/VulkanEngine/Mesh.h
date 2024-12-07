@@ -33,7 +33,7 @@ class Mesh : public MeshBase {
                 "Mesh IndexType template parameter must be the same size as "
                 "either uint16_t or uint32_t");
 
-public:
+ public:
   /// Defines the container for storing additional attributes.
   /// \tparam T The type of the VertexAttribute.
   template <typename T>
@@ -94,8 +94,8 @@ public:
   /// command_buffer The vk::CommandBuffer to insert the commands into.
   ///                       If not specified an internal command buffer will be
   ///                       created and submitted to the graphics queue.
-  virtual void
-  transferBuffers(const vk::CommandBuffer &command_buffer = nullptr);
+  virtual void transferBuffers(
+      const vk::CommandBuffer &command_buffer = nullptr);
 
   /// Bind VertexBuffers in this Mesh which will be used for rendering.
   /// \param command_buffer The vk::CommandBuffer to insert the commands into.
@@ -109,7 +109,7 @@ public:
   /// \param command_buffer The vk::CommandBuffer to insert the commands into.
   virtual void draw(const vk::CommandBuffer &command_buffer);
 
-private:
+ private:
   /// The positions defining the Mesh.
   std::shared_ptr<VertexAttribute<PositionType>> positions;
 
@@ -132,7 +132,7 @@ private:
   bool pipeline_input_state_info_initialized;
 };
 
-} // namespace VulkanEngine
+}  // namespace VulkanEngine
 
 #include <Mesh.cpp>
 

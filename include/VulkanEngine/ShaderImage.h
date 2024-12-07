@@ -31,7 +31,7 @@ template <vk::Format format, vk::ImageType image_type, vk::ImageTiling tiling,
 class ShaderImage
     : public Image<format, image_type, tiling, sample_count_flags>,
       public Descriptor {
-public:
+ public:
   /// Constructor.
   /// \param initial_layout The initial vk::ImageLayout of the image.
   /// \param usage_flags vk::ImageUsageFlags specifying how the image will be
@@ -61,14 +61,14 @@ public:
       std::vector<vk::CopyDescriptorSet> &copy_descriptor_sets,
       const vk::DescriptorSet &destination_set);
 
-private:
+ private:
   /// The vk::Sampler created in createSampler().
   vk::Sampler vk_sampler;
 
   vk::DescriptorImageInfo vk_descriptor_image_info;
 };
 
-} // namespace VulkanEngine
+}  // namespace VulkanEngine
 
 #include <ShaderImage.cpp>
 

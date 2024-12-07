@@ -14,7 +14,7 @@ namespace VulkanEngine {
 
 /// An implementation of VulkanEngine::Window which uses the GLFW library.
 class GLFWWindow : public Window {
-public:
+ public:
   /// Contructor.
   /// \param _width The desired initial width of the window.
   /// \param _height The desired initial height of the window.
@@ -35,8 +35,8 @@ public:
   virtual void update();
 
   /// \return The required vulkan extensions for using GLFW.
-  virtual const std::vector<const char *>
-  getRequiredVulkanInstanceExtensions() const;
+  virtual const std::vector<const char *> getRequiredVulkanInstanceExtensions()
+      const;
 
   /// \return True if the window should close.
   virtual bool shouldClose();
@@ -51,13 +51,13 @@ public:
 
   /// Set window title.
   /// \param new_title The new window title.
-  virtual void setTitle(const std::string& new_title);
+  virtual void setTitle(const std::string &new_title);
 
   /// Get the Vulkan surface defined for this window.
   /// \return The vk::SurfaceKHR.
   virtual vk::SurfaceKHR getVkSurface();
 
-private:
+ private:
   /// Internal instance of the glfw window.
   GLFWwindow *glfw_window;
 
@@ -96,7 +96,7 @@ private:
   /// \param xoffset The scroll offset along x.
   /// \param yoffset The scroll offset along y.
   static void scrollCallback(GLFWwindow *_glfw_window, double xoffset,
-                                     double yoffset);
+                             double yoffset);
 
   /// Callback which gives which buttons are currently clicked on the mouse.
   /// \param _glfw_window The window which recieved the event.
@@ -116,6 +116,6 @@ private:
                           int action, int mods);
 };
 
-} // namespace VulkanEngine
+}  // namespace VulkanEngine
 
 #endif /* GLFWWINDOW_H */

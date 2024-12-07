@@ -19,18 +19,18 @@ namespace VulkanEngine {
 
 /// Base class for various classes which represent data buffers on the GPU/CPU.
 class BufferBase {
-public:
+ public:
   /// Copy the data to the buffer.
   /// \param data Pointer to the data.
   /// \param data_size The size of the data in bytes.
   virtual void updateBuffer(const void *_data, size_t _data_size);
 
-protected:
+ protected:
   /// VmaAllocation used to handle allocation with Vulkan Memory Allocator
   /// library.
   VmaAllocation vma_allocation;
 };
 
-} // namespace VulkanEngine
+}  // namespace VulkanEngine
 
 #endif /* BUFFERBASE_H */

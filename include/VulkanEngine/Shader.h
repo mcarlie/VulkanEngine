@@ -14,7 +14,7 @@ namespace VulkanEngine {
 /// Class which encapsulates a single shader consisting of several ShaderModule
 /// instances.
 class Shader {
-public:
+ public:
   /// Constructor.
   /// \param shader_modules ShaderModule instances to use in this shader.
   Shader(const std::vector<std::shared_ptr<ShaderModule>> &_shader_modules);
@@ -24,9 +24,9 @@ public:
 
   /// Set descriptors for this shader, such as images and buffers.
   /// \param _descriptors List of descriptors to set.
-  void
-  setDescriptors(const std::vector<std::vector<std::shared_ptr<Descriptor>>>
-                     &_descriptors);
+  void setDescriptors(
+      const std::vector<std::vector<std::shared_ptr<Descriptor>>>
+          &_descriptors);
 
   /// Bind a set of descriptors to an index.
   /// \param command_buffer Command buffer used for binding.
@@ -35,13 +35,13 @@ public:
                          uint32_t descriptor_set_index);
 
   /// \return Vulkan PipelineShaderStageCreateInfo instances.
-  const std::vector<vk::PipelineShaderStageCreateInfo> &
-  getVkShaderStages() const;
+  const std::vector<vk::PipelineShaderStageCreateInfo> &getVkShaderStages()
+      const;
 
   /// \return Vulkan PipelineLayout instances.
   const vk::PipelineLayout createVkPipelineLayout();
 
-private:
+ private:
   /// List of ShaderStages for this shader.
   std::vector<vk::PipelineShaderStageCreateInfo> shader_stages;
 
@@ -64,6 +64,6 @@ private:
   vk::PipelineLayout vk_pipeline_layout;
 };
 
-} // namespace VulkanEngine
+}  // namespace VulkanEngine
 
 #endif /* SHADER_H */

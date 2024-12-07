@@ -29,7 +29,7 @@ namespace VulkanEngine {
 template <vk::Format format, vk::ImageType image_type, vk::ImageTiling tiling,
           vk::SampleCountFlagBits sample_count_flags>
 class Image : public StagedBufferDestination, public ImageBase {
-public:
+ public:
   /// Constructor.
   /// \param initial_layout The initial vk::ImageLayout of the Image.
   /// \param usage_flags vk::ImageUsageFlags specifying how the image will be
@@ -40,8 +40,7 @@ public:
   /// in the image.
   Image(vk::ImageLayout initial_layout, vk::ImageUsageFlags usage_flags,
         VmaMemoryUsage vma_memory_usage, uint32_t _width, uint32_t _height,
-        uint32_t _depth, size_t pixel_size,
-        bool generate_mip_maps);
+        uint32_t _depth, size_t pixel_size, bool generate_mip_maps);
 
   /// Destructor.
   virtual ~Image();
@@ -76,7 +75,7 @@ public:
   /// Get the vk::ImageView.
   virtual vk::ImageView getVkImageView() const;
 
-protected:
+ protected:
   /// Overridden to handle tranferring data from a StagedBuffer to this Image.
   /// \param command_buffers The command buffer to insert the command into.
   /// \param source_buffer The source vk::Buffer in the StagedBuffer.
@@ -86,7 +85,7 @@ protected:
   /// \return The data size for the staging buffer.
   virtual size_t getStagingBufferSize() const;
 
-private:
+ private:
   /// Creates the Image and allocates memory.
   /// \param usage_flags vk::ImageUsageFlags specifying how the image will be
   /// used. \param vma_usage VmaMemoryUsage flags to pass to the Vulkan memory
@@ -98,7 +97,7 @@ private:
   /// mipmaps.
   void generateMipmaps(const vk::CommandBuffer &command_buffer);
 
-protected:
+ protected:
   /// The width of the Image.
   uint32_t width;
 
@@ -119,7 +118,7 @@ protected:
 
   /// Internal vk_image.
   vk::Image vk_image;
-  
+
   /// The vk::ImageView created in createImageView().
   vk::ImageView vk_image_view;
 
@@ -127,7 +126,7 @@ protected:
   VkImageCreateInfo image_create_info;
 };
 
-} // namespace VulkanEngine
+}  // namespace VulkanEngine
 
 #include <Image.cpp>
 

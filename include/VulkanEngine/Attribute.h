@@ -14,7 +14,7 @@ namespace VulkanEngine {
 
 /// Abstract base class for shader attributes
 class Attribute : public StagedBuffer<Buffer> {
-public:
+ public:
   /// Constructor.
   /// \param _num_elements The number of elements in this attribute buffer
   /// \param _element_size The size of a single element in the attribute buffer
@@ -28,7 +28,7 @@ public:
   /// \return The number of elements in this Attribute.
   size_t getNumElements() const;
 
-protected:
+ protected:
   /// The number of elements in this attribute.
   size_t num_elements;
 
@@ -36,6 +36,6 @@ protected:
   size_t element_size;
 };
 
-} // namespace VulkanEngine
+}  // namespace VulkanEngine
 
 #endif /* ATTRIBUTE_H */

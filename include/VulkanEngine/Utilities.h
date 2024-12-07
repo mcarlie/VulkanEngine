@@ -16,7 +16,8 @@ namespace VulkanEngine {
 namespace Utilities {
 
 /// Convert degrees to radian
-template <typename T> T toRadians(const T &val) {
+template <typename T>
+T toRadians(const T &val) {
   return val * Constants::pi<T>() / static_cast<T>(180);
 }
 
@@ -24,15 +25,16 @@ template <typename T> T toRadians(const T &val) {
 /// \tparam T The type to hash.
 /// \param seed The hash to combine with.
 /// \param v The value to hash.
-template <class T> inline void hashCombine(size_t &seed, const T &v) {
+template <class T>
+inline void hashCombine(size_t &seed, const T &v) {
   seed ^= std::hash<T>()(v) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
 }
 
 /// Allows iterating over a tuple using a visitor function pointer.
 /// https://gist.github.com/jks-liu/738976c06a0fbd547a64
 template <std::size_t i = 0, class C, class... Types>
-typename std::enable_if<i >= sizeof...(Types), C>::type
-tupleForEach(const std::tuple<Types...> &t, C &op) {
+typename std::enable_if<i >= sizeof...(Types), C>::type tupleForEach(
+    const std::tuple<Types...> &t, C &op) {
   return op;
 }
 
@@ -46,9 +48,9 @@ template <size_t i = 0, class C, class... Types>
   return tupleForEach<i + 1, C, Types...>(t, op);
 }
 
-} // namespace Utilities
+}  // namespace Utilities
 
-} // namespace VulkanEngine
+}  // namespace VulkanEngine
 
 /// Add std::hash definition for Eigen::Matrix.
 template <typename _Scalar, int _Rows, int _Cols, int _Options, int _MaxRows,
@@ -68,7 +70,8 @@ struct std::hash<
 
 /// Hash a tuple by combining the hashes of each element.
 /// \tparam TupleArgs The template arguments passed to the tuple definition.
-template <class... TupleArgs> struct std::hash<std::tuple<TupleArgs...>> {
+template <class... TupleArgs>
+struct std::hash<std::tuple<TupleArgs...>> {
   size_t operator()(const std::tuple<TupleArgs...> &tuple_value) const {
     size_t seed = 0;
     auto visitor = [&seed](const auto &element) {

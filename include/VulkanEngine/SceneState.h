@@ -15,7 +15,7 @@ class Scene;
 
 /// Contains information about the current state of the scene.
 class SceneState {
-public:
+ public:
   /// Constructor.
   SceneState(const Scene &_scene);
 
@@ -43,7 +43,7 @@ public:
   /// Set the current projection matrix.
   void setProjectionMatrix(const Eigen::Matrix4f &_projection_matrix);
 
-private:
+ private:
   const Scene &scene;
 
   /// The current total transformation matrix.
@@ -56,6 +56,6 @@ private:
   Eigen::Matrix4f projection_matrix;
 };
 
-} // namespace VulkanEngine
+}  // namespace VulkanEngine
 
 #endif /* SCENESTATE_H */

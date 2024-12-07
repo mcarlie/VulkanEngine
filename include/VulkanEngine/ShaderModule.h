@@ -16,7 +16,7 @@ namespace VulkanEngine {
 /// Class which represents a module in the shader pipeline, e.g vertex or
 /// fragment shader.
 class ShaderModule {
-public:
+ public:
   /// Constructor.
   /// \param shader_string Either the source path or raw shader string
   /// \param shader_stage_flag The vk::ShaderStageFlagBits which indicates the
@@ -33,7 +33,7 @@ public:
   /// \return The internal vk::ShaderModule instance.
   const vk::ShaderModule &getVkShaderModule() const;
 
-private:
+ private:
   /// Read the source code file.
   /// \param file_path The path to the file containing the source.
   /// \param [out] Contains the bytes read from the file.
@@ -55,6 +55,6 @@ private:
   static bool glslang_initialized;
 };
 
-} // namespace VulkanEngine
+}  // namespace VulkanEngine
 
 #endif /* SHADERMODULE_H */

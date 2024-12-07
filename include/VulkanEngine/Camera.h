@@ -17,7 +17,7 @@ namespace VulkanEngine {
 /// The camera provides view and projection matrices for rendering
 /// based on the current state of the camera object.
 class Camera : public SceneObject {
-public:
+ public:
   /// Constructor.
   /// \param _look_at What position the Camera should be oriented towards
   /// initially. \param _up_vector The up direction of the Camera. \param
@@ -64,7 +64,7 @@ public:
   /// \return The height of the camera.
   float getHeight() const;
 
-private:
+ private:
   /// Update the camera. Updates the projection and view matrix in \c
   /// scene_state with the camera's values. \param scene_state Represents the
   /// current state of the scene.
@@ -92,6 +92,6 @@ private:
   uint32_t height;
 };
 
-} // namespace VulkanEngine
+}  // namespace VulkanEngine
 
 #endif /* CAMERA_H */

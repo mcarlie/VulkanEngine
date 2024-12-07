@@ -19,8 +19,9 @@ namespace VulkanEngine {
 /// DestinationClassArgs Parameter pack specifying the signature of the
 /// constructor of DestinationClass
 ///                              to call from StagedBuffer's constructor.
-template <class DestinationClass> class StagedBuffer : public DestinationClass {
-public:
+template <class DestinationClass>
+class StagedBuffer : public DestinationClass {
+ public:
   /// Contructor.
   /// Creates the staging buffer.
   template <class... DestinationClassArgs>
@@ -42,13 +43,13 @@ public:
   /// \param _data_size The size of the data in bytes.
   virtual void updateBuffer(const void *_data, size_t _data_size) override;
 
-protected:
+ protected:
   /// The source buffer. Data will be transferred from this buffer to the
   /// destination buffer when calling transferBuffer().
   Buffer source_buffer;
 };
 
-} // namespace VulkanEngine
+}  // namespace VulkanEngine
 
 #include <StagedBuffer.cpp>
 

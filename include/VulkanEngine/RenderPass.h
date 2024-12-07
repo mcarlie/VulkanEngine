@@ -19,7 +19,7 @@ class Image;
 /// TODO development of this class is in progress.
 namespace VulkanEngine {
 class RenderPass {
-public:
+ public:
   using DepthStencilImageAttachment =
       Image<vk::Format::eD32SfloatS8Uint, vk::ImageType::e2D,
             vk::ImageTiling::eOptimal, vk::SampleCountFlagBits::e4>;
@@ -28,15 +28,15 @@ public:
       Image<vk::Format::eB8G8R8A8Unorm, vk::ImageType::e2D,
             vk::ImageTiling::eOptimal, vk::SampleCountFlagBits::e4>;
 
-public:
+ public:
   RenderPass(uint32_t _width, uint32_t _height);
 
   ~RenderPass();
 
   const vk::RenderPass &getVkRenderPass() const;
 
-  const std::shared_ptr<DepthStencilImageAttachment>
-  getDepthStencilAttachment() const {
+  const std::shared_ptr<DepthStencilImageAttachment> getDepthStencilAttachment()
+      const {
     return depth_stencil_attachment;
   }
 
@@ -50,7 +50,7 @@ public:
   /// End the RenderPass.
   void end();
 
-private:
+ private:
   std::shared_ptr<DepthStencilImageAttachment> depth_stencil_attachment;
 
   std::shared_ptr<ColorAttachment> color_attachment;
@@ -61,6 +61,6 @@ private:
   uint32_t height;
 };
 
-} // namespace VulkanEngine
+}  // namespace VulkanEngine
 
 #endif /* RENDERPASS_H */
