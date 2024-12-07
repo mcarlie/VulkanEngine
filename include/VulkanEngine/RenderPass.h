@@ -1,3 +1,8 @@
+// Copyright (c) 2024 Michael Carlie. All Rights Reserved.
+//
+// This software is released under the MIT License.
+// https://opensource.org/licenses/MIT
+
 #ifndef RENDERPASS_H
 #define RENDERPASS_H
 

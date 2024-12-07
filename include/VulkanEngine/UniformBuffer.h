@@ -1,3 +1,8 @@
+// Copyright (c) 2024 Michael Carlie. All Rights Reserved.
+//
+// This software is released under the MIT License.
+// https://opensource.org/licenses/MIT
+
 #ifndef UNIFORMBUFFER_H
 #define UNIFORMBUFFER_H
 

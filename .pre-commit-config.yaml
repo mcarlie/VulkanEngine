@@ -1,0 +1,15 @@
+repos:
+  - repo: local
+    hooks:
+      - id: clang-tidy
+        name: Run clang-tidy
+        entry: clang-tidy
+        language: system
+        types: [c, c++]
+        args: ["--format-style=google", "--fix", "--fix-errors"]
+      - id: cpplint
+        name: Run cpplint
+        entry: cpplint
+        language: system
+        types: [c, c++]
+        args: []
