@@ -1,7 +1,0 @@
-build/*
-.cache/*
-.vscode/*
-.devcontainer/*
-.DS_Store
-out/*
-.vs/*
