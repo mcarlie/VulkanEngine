@@ -7,7 +7,7 @@ var searchData=
   ['mipmap_5flevels_4',['mipmap_levels',['../class_vulkan_engine_1_1_image.html#a0cf2e0f6b71392508d9c1c751b8dfd86',1,'VulkanEngine::Image']]],
   ['mouse_5finput_5',['mouse_input',['../class_vulkan_engine_1_1_window.html#a0cd069728f1377550d34285c0d756c27',1,'VulkanEngine::Window']]],
   ['mousebuttonpressedcallback_6',['mouseButtonPressedCallback',['../class_vulkan_engine_1_1_window.html#a746632c84a3f1c2a5dc180979d58d691',1,'VulkanEngine::Window']]],
-  ['mouseinput_7',['MouseInput',['../class_mouse_input.html',1,'MouseInput'],['../class_mouse_input.html#a8c989aeb83dd5d5918eeb5c7684652d9',1,'MouseInput::MouseInput()']]],
+  ['mouseinput_7',['MouseInput',['../class_vulkan_engine_1_1_mouse_input.html#ae180383a78c6a87ae36ba04c3a339f02',1,'VulkanEngine::MouseInput::MouseInput()'],['../class_vulkan_engine_1_1_mouse_input.html',1,'VulkanEngine::MouseInput']]],
   ['mousepositioncallback_8',['mousePositionCallback',['../class_vulkan_engine_1_1_window.html#ae8c7a1af608b8d987a25efa8a7ca5851',1,'VulkanEngine::Window']]],
   ['mousescrollcallback_9',['mouseScrollCallback',['../class_vulkan_engine_1_1_window.html#aeaca64d3fadabdca42596b7a9ba1dce5',1,'VulkanEngine::Window']]]
 ];
