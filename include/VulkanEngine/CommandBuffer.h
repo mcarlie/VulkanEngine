@@ -6,21 +6,20 @@
 #ifndef COMMANDBUFFER_H
 #define COMMANDBUFFER_H
 
-namespace VulkanEngine;
-{
+namespace VulkanEngine {
 
-  /// Class which represents a command buffer.
-  class CommandBuffer {
-   public:
-    /// Constructor.
-    CommandBuffer();
+/// Class which represents a command buffer.
+class CommandBuffer {
+ public:
+  /// Constructor.
+  CommandBuffer();
 
-    /// Destructor.
-    ~CommandBuffer();
+  /// Destructor.
+  ~CommandBuffer();
 
-   private:
-    int graphics_queue_family_index;
-  };
+ private:
+  int graphics_queue_family_index;
+};
 
 }  // namespace VulkanEngine
 
