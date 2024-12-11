@@ -3,8 +3,8 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-#ifndef SCENEOBJECT_H
-#define SCENEOBJECT_H
+#ifndef INCLUDE_VULKANENGINE_SCENEOBJECT_H_
+#define INCLUDE_VULKANENGINE_SCENEOBJECT_H_
 
 #include <VulkanEngine/SceneState.h>
 
@@ -35,17 +35,17 @@ class SceneObject {
   /// Update this scene object.
   /// \param scene_state Contains information about the current state of the
   /// scene.
-  virtual void preUpdate(SceneState &scene_state);
+  virtual void preUpdate(std::shared_ptr<SceneState> scene_state);
 
   /// Update this scene object.
   /// \param scene_state Contains information about the current state of the
   /// scene.
-  virtual void update(SceneState &scene_state);
+  virtual void update(std::shared_ptr<SceneState> scene_state);
 
   /// Update this scene object.
   /// \param scene_state Contains information about the current state of the
   /// scene.
-  virtual void postUpdate(SceneState &scene_state);
+  virtual void postUpdate(std::shared_ptr<SceneState> scene_state);
 
   /// The transformation matrix of this SceneObject.
   /// By default it is set to identity.
@@ -58,4 +58,4 @@ class SceneObject {
 
 }  // namespace VulkanEngine
 
-#endif /* SCENEOBJECT_H */
+#endif  // INCLUDE_VULKANENGINE_SCENEOBJECT_H_

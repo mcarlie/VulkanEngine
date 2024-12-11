@@ -3,8 +3,8 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-#ifndef STAGEDBUFFERDESTINATION_H
-#define STAGEDBUFFERDESTINATION_H
+#ifndef INCLUDE_VULKANENGINE_STAGEDBUFFERDESTINATION_H_
+#define INCLUDE_VULKANENGINE_STAGEDBUFFERDESTINATION_H_
 
 #include <VulkanEngine/BufferBase.h>
 #include <VulkanEngine/SingleUsageCommandBuffer.h>
@@ -31,4 +31,4 @@ class StagedBufferDestination : public BufferBase,
 
 }  // namespace VulkanEngine
 
-#endif /* STAGEDBUFFERDESTINATION_H */
+#endif  // INCLUDE_VULKANENGINE_STAGEDBUFFERDESTINATION_H_

@@ -3,8 +3,8 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-#ifndef CAMERA_H
-#define CAMERA_H
+#ifndef INCLUDE_VULKANENGINE_CAMERA_H_
+#define INCLUDE_VULKANENGINE_CAMERA_H_
 
 #include <VulkanEngine/SceneObject.h>
 
@@ -68,7 +68,7 @@ class Camera : public SceneObject {
   /// Update the camera. Updates the projection and view matrix in \c
   /// scene_state with the camera's values. \param scene_state Represents the
   /// current state of the scene.
-  virtual void update(SceneState &scene_state) override;
+  void update(std::shared_ptr<SceneState> scene_state) override;
 
   /// What position the Camera is oriented towards.
   Eigen::Vector3f look_at;
@@ -94,4 +94,4 @@ class Camera : public SceneObject {
 
 }  // namespace VulkanEngine
 
-#endif /* CAMERA_H */
+#endif  // INCLUDE_VULKANENGINE_CAMERA_H_

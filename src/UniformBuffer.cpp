@@ -19,8 +19,8 @@ template <typename T> VulkanEngine::UniformBuffer<T>::~UniformBuffer() {}
 
 template <typename T>
 void VulkanEngine::UniformBuffer<T>::appendVkDescriptorSets(
-    std::vector<vk::WriteDescriptorSet> &write_descriptor_sets,
-    std::vector<vk::CopyDescriptorSet> &copy_descriptor_sets,
+    std::shared_ptr<std::vector<vk::WriteDescriptorSet>> write_descriptor_sets,
+    std::shared_ptr<std::vector<vk::CopyDescriptorSet>> copy_descriptor_sets,
     const vk::DescriptorSet &destination_set) {
   vk_descriptor_buffer_infos.clear();
 
@@ -31,7 +31,7 @@ void VulkanEngine::UniformBuffer<T>::appendVkDescriptorSets(
             .setOffset(sizeof(T) * static_cast<size_t>(i))
             .setRange(sizeof(T)));
 
-    write_descriptor_sets.push_back(
+    write_descriptor_sets->push_back(
         vk::WriteDescriptorSet()
             .setDstBinding(binding)
             .setDstArrayElement(i)

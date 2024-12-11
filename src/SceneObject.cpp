@@ -6,11 +6,11 @@ VulkanEngine::SceneObject::SceneObject()
 /// Update this scene object.
 /// \param scene_state Contains information about the current state of the
 /// scene.
-void VulkanEngine::SceneObject::preUpdate(SceneState &scene_state) {
-  scene_state.setTransform(scene_state.getTotalTransform() * transform);
+void VulkanEngine::SceneObject::preUpdate(std::shared_ptr<SceneState> scene_state) {
+  scene_state->setTransform(scene_state->getTotalTransform() * transform);
 }
 
-void VulkanEngine::SceneObject::update(SceneState &scene_state) {
+void VulkanEngine::SceneObject::update(std::shared_ptr<SceneState> scene_state) {
   /// Update all children
   for (const auto &child : children) {
     if (child.get() != nullptr) {
@@ -24,8 +24,8 @@ void VulkanEngine::SceneObject::update(SceneState &scene_state) {
 /// Update this scene object.
 /// \param scene_state Contains information about the current state of the
 /// scene.
-void VulkanEngine::SceneObject::postUpdate(SceneState &scene_state) {
-  scene_state.setTransform(scene_state.getTotalTransform() *
+void VulkanEngine::SceneObject::postUpdate(std::shared_ptr<SceneState> scene_state) {
+  scene_state->setTransform(scene_state->getTotalTransform() *
                            transform.inverse());
 }
 

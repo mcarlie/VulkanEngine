@@ -3,8 +3,8 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-#ifndef IMAGEBASE_H
-#define IMAGEBASE_H
+#ifndef INCLUDE_VULKANENGINE_IMAGEBASE_H_
+#define INCLUDE_VULKANENGINE_IMAGEBASE_H_
 
 #include <vulkan/vulkan.hpp>
 
@@ -28,4 +28,4 @@ class ImageBase {
 
 }  // namespace VulkanEngine
 
-#endif /* IMAGEBASE_H */
+#endif  // INCLUDE_VULKANENGINE_IMAGEBASE_H_

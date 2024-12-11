@@ -3,8 +3,8 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-#ifndef GRAPHICSPIPELINE_H
-#define GRAPHICSPIPELINE_H
+#ifndef INCLUDE_VULKANENGINE_GRAPHICSPIPELINE_H_
+#define INCLUDE_VULKANENGINE_GRAPHICSPIPELINE_H_
 
 #include <memory>
 #include <vulkan/vulkan.hpp>
@@ -65,4 +65,4 @@ class GraphicsPipeline {
 
 }  // namespace VulkanEngine
 
-#endif /* GRAPHICSPIPELINE_H */
+#endif  // INCLUDE_VULKANENGINE_GRAPHICSPIPELINE_H_

@@ -3,12 +3,14 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-#ifndef UNIFORMBUFFER_H
-#define UNIFORMBUFFER_H
+#ifndef INCLUDE_VULKANENGINE_UNIFORMBUFFER_H_
+#define INCLUDE_VULKANENGINE_UNIFORMBUFFER_H_
 
 #include <VulkanEngine/Buffer.h>
 #include <VulkanEngine/Descriptor.h>
 
+#include <memory>
+#include <vector>
 #include <vulkan/vulkan.hpp>
 
 namespace VulkanEngine {
@@ -31,8 +33,9 @@ class UniformBuffer : public Buffer, public Descriptor {
   virtual ~UniformBuffer();
 
   virtual void appendVkDescriptorSets(
-      std::vector<vk::WriteDescriptorSet> &write_descriptor_sets,
-      std::vector<vk::CopyDescriptorSet> &copy_descriptor_sets,
+      std::shared_ptr<std::vector<vk::WriteDescriptorSet>>
+          write_descriptor_sets,
+      std::shared_ptr<std::vector<vk::CopyDescriptorSet>> copy_descriptor_sets,
       const vk::DescriptorSet &destination_set);
 
  private:
@@ -44,6 +47,6 @@ class UniformBuffer : public Buffer, public Descriptor {
 
 }  // namespace VulkanEngine
 
-#include <UniformBuffer.cpp>
+#include <UniformBuffer.cpp>  // NOLINT(build/include)
 
-#endif /* UNIFORMBUFFER_H */
+#endif  // INCLUDE_VULKANENGINE_UNIFORMBUFFER_H_

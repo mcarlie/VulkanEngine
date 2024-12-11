@@ -3,8 +3,8 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-#ifndef BUFFER_H
-#define BUFFER_H
+#ifndef INCLUDE_VULKANENGINE_BUFFER_H_
+#define INCLUDE_VULKANENGINE_BUFFER_H_
 
 #include <VulkanEngine/StagedBufferDestination.h>
 
@@ -70,4 +70,4 @@ class Buffer : public StagedBufferDestination {
 
 }  // namespace VulkanEngine
 
-#endif /* BUFFER_H */
+#endif  // INCLUDE_VULKANENGINE_BUFFER_H_

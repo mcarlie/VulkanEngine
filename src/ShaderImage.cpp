@@ -71,15 +71,15 @@ template <vk::Format format, vk::ImageType image_type, vk::ImageTiling tiling,
           vk::SampleCountFlagBits sample_count_flags>
 void VulkanEngine::ShaderImage<format, image_type, tiling, sample_count_flags>::
     appendVkDescriptorSets(
-        std::vector<vk::WriteDescriptorSet> &write_descriptor_sets,
-        std::vector<vk::CopyDescriptorSet> &copy_descriptor_sets,
+        std::shared_ptr<std::vector<vk::WriteDescriptorSet>> write_descriptor_sets,
+        std::shared_ptr<std::vector<vk::CopyDescriptorSet>> copy_descriptor_sets,
         const vk::DescriptorSet &destination_set) {
   vk_descriptor_image_info = vk::DescriptorImageInfo()
                                  .setSampler(vk_sampler)
                                  .setImageView(this->vk_image_view)
                                  .setImageLayout(this->vk_image_layout);
 
-  write_descriptor_sets.push_back(
+  write_descriptor_sets->push_back(
       vk::WriteDescriptorSet()
           .setDstBinding(binding)
           .setDstArrayElement(0)

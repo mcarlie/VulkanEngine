@@ -3,8 +3,8 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-#ifndef STAGEDBUFFER_H
-#define STAGEDBUFFER_H
+#ifndef INCLUDE_VULKANENGINE_STAGEDBUFFER_H_
+#define INCLUDE_VULKANENGINE_STAGEDBUFFER_H_
 
 #include <VulkanEngine/Buffer.h>
 
@@ -25,7 +25,7 @@ class StagedBuffer : public DestinationClass {
   /// Contructor.
   /// Creates the staging buffer.
   template <class... DestinationClassArgs>
-  StagedBuffer(DestinationClassArgs... args);
+  explicit StagedBuffer(DestinationClassArgs... args);
 
   /// Destructor
   ~StagedBuffer();
@@ -41,7 +41,7 @@ class StagedBuffer : public DestinationClass {
   /// Overridden to update the source buffer.
   /// \param _data Pointer to the data.
   /// \param _data_size The size of the data in bytes.
-  virtual void updateBuffer(const void *_data, size_t _data_size) override;
+  void updateBuffer(const void *_data, size_t _data_size) override;
 
  protected:
   /// The source buffer. Data will be transferred from this buffer to the
@@ -51,6 +51,6 @@ class StagedBuffer : public DestinationClass {
 
 }  // namespace VulkanEngine
 
-#include <StagedBuffer.cpp>
+#include <StagedBuffer.cpp>  // NOLINT(build/include)
 
-#endif /* STAGEDBUFFER_H */
+#endif  // INCLUDE_VULKANENGINE_STAGEDBUFFER_H_

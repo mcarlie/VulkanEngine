@@ -3,9 +3,10 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-#ifndef DEVICE_H
-#define DEVICE_H
+#ifndef INCLUDE_VULKANENGINE_DEVICE_H_
+#define INCLUDE_VULKANENGINE_DEVICE_H_
 
+#include <vector>
 #include <vulkan/vulkan.hpp>
 
 // Support latest vk_mem_alloc with older Vulkan SDK headers.
@@ -78,4 +79,4 @@ class Device {
 
 }  // namespace VulkanEngine
 
-#endif /* DEVICE_H */
+#endif  // INCLUDE_VULKANENGINE_DEVICE_H_

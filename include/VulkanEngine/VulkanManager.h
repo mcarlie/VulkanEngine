@@ -3,8 +3,8 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-#ifndef VULKANMANAGER_H
-#define VULKANMANAGER_H
+#ifndef INCLUDE_VULKANENGINE_VULKANMANAGER_H_
+#define INCLUDE_VULKANENGINE_VULKANMANAGER_H_
 
 #include <VulkanEngine/Camera.h>
 #include <VulkanEngine/Device.h>
@@ -37,7 +37,8 @@ namespace VulkanEngine {
 
 // Forward decleration
 template <vk::Format format, vk::ImageType image_type, vk::ImageTiling tiling,
-          vk::SampleCountFlagBits sample_count_flags>
+          vk::SampleCountFlagBits  // NOLINT(whitespace/indent_namespace)
+              sample_count_flags>  // NOLINT(whitespace/indent_namespace)
 class Image;
 class RenderPass;
 class Framebuffer;
@@ -121,4 +122,4 @@ class VulkanManager {
 
 }  // namespace VulkanEngine
 
-#endif /* VULKANMANAGER_H */
+#endif  // INCLUDE_VULKANENGINE_VULKANMANAGER_H_

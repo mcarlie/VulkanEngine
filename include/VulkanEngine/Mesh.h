@@ -3,14 +3,17 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-#ifndef MESH_H
-#define MESH_H
+#ifndef INCLUDE_VULKANENGINE_MESH_H_
+#define INCLUDE_VULKANENGINE_MESH_H_
 
 #include <VulkanEngine/IndexAttribute.h>
 #include <VulkanEngine/MeshBase.h>
 #include <VulkanEngine/VertexAttribute.h>
 
 #include <Eigen/Eigen>
+#include <memory>
+#include <tuple>
+#include <vector>
 
 namespace VulkanEngine {
 
@@ -25,8 +28,10 @@ namespace VulkanEngine {
 /// positions, e.g float, double. \tparam IndexType The type to use for storing
 /// indices, e.g uint16_t or uint32_t. \tparam AdditionalAttributeTypes A
 /// variadic list of additional VertexAttribute types supported by the mesh.
-template <typename PositionType, typename IndexType,
-          class... AdditionalAttributeTypes>
+template <
+    typename PositionType,              // NOLINT(whitespace/indent_namespace)
+    typename IndexType,                 // NOLINT(whitespace/indent_namespace)
+    class... AdditionalAttributeTypes>  // NOLINT(whitespace/indent_namespace)
 class Mesh : public MeshBase {
   static_assert(sizeof(IndexType) == sizeof(uint16_t) ||
                     sizeof(IndexType) == sizeof(uint32_t),
@@ -134,6 +139,6 @@ class Mesh : public MeshBase {
 
 }  // namespace VulkanEngine
 
-#include <Mesh.cpp>
+#include <Mesh.cpp>  // NOLINT(build/include)
 
-#endif /* MESH_H */
+#endif  // INCLUDE_VULKANENGINE_MESH_H_

@@ -3,11 +3,13 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-#ifndef SHADER_H
-#define SHADER_H
+#ifndef INCLUDE_VULKANENGINE_SHADER_H_
+#define INCLUDE_VULKANENGINE_SHADER_H_
 
 #include <VulkanEngine/Descriptor.h>
 #include <VulkanEngine/ShaderModule.h>
+
+#include <vector>
 
 namespace VulkanEngine {
 
@@ -17,7 +19,8 @@ class Shader {
  public:
   /// Constructor.
   /// \param shader_modules ShaderModule instances to use in this shader.
-  Shader(const std::vector<std::shared_ptr<ShaderModule>> &_shader_modules);
+  explicit Shader(
+      const std::vector<std::shared_ptr<ShaderModule>> &_shader_modules);
 
   /// Destructor.
   ~Shader();
@@ -66,4 +69,4 @@ class Shader {
 
 }  // namespace VulkanEngine
 
-#endif /* SHADER_H */
+#endif  // INCLUDE_VULKANENGINE_SHADER_H_

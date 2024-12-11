@@ -3,10 +3,12 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-#ifndef SHADERIMAGE_H
-#define SHADERIMAGE_H
+#ifndef INCLUDE_VULKANENGINE_SHADERIMAGE_H_
+#define INCLUDE_VULKANENGINE_SHADERIMAGE_H_
 
 #include <VulkanEngine/Descriptor.h>
+
+#include <memory>
 
 #ifdef __clang__
 #pragma clang diagnostic push
@@ -23,11 +25,13 @@ namespace VulkanEngine {
 
 // Forward declaration
 template <vk::Format format, vk::ImageType image_type, vk::ImageTiling tiling,
-          vk::SampleCountFlagBits sample_count_flags>
+          vk::SampleCountFlagBits  // NOLINT(whitespace/indent_namespace)
+              sample_count_flags>  // NOLINT(whitespace/indent_namespace)
 class Image;
 
 template <vk::Format format, vk::ImageType image_type, vk::ImageTiling tiling,
-          vk::SampleCountFlagBits sample_count_flags>
+          vk::SampleCountFlagBits  // NOLINT(whitespace/indent_namespace)
+              sample_count_flags>  // NOLINT(whitespace/indent_namespace)
 class ShaderImage
     : public Image<format, image_type, tiling, sample_count_flags>,
       public Descriptor {
@@ -57,8 +61,9 @@ class ShaderImage
 
   /// Append descriptor sets to this shader image.
   virtual void appendVkDescriptorSets(
-      std::vector<vk::WriteDescriptorSet> &write_descriptor_sets,
-      std::vector<vk::CopyDescriptorSet> &copy_descriptor_sets,
+      std::shared_ptr<std::vector<vk::WriteDescriptorSet>>
+          write_descriptor_sets,
+      std::shared_ptr<std::vector<vk::CopyDescriptorSet>> copy_descriptor_sets,
       const vk::DescriptorSet &destination_set);
 
  private:
@@ -70,6 +75,6 @@ class ShaderImage
 
 }  // namespace VulkanEngine
 
-#include <ShaderImage.cpp>
+#include <ShaderImage.cpp>  // NOLINT(build/include)
 
-#endif /* SHADERIMAGE_H */
+#endif  // INCLUDE_VULKANENGINE_SHADERIMAGE_H_

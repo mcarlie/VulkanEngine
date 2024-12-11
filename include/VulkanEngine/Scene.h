@@ -3,20 +3,21 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-#ifndef SCENE_H
-#define SCENE_H
+#ifndef INCLUDE_VULKANENGINE_SCENE_H_
+#define INCLUDE_VULKANENGINE_SCENE_H_
 
 #include <VulkanEngine/SceneObject.h>
 #include <VulkanEngine/Window.h>
 
 #include <memory>
+#include <vector>
 
 namespace VulkanEngine {
 
 class Scene : public SceneObject {
  public:
   /// Constructor.
-  Scene(const std::vector<std::shared_ptr<Window>>& _windows);
+  explicit Scene(const std::vector<std::shared_ptr<Window>>& _windows);
 
   /// Destructor.
   virtual ~Scene();
@@ -30,10 +31,10 @@ class Scene : public SceneObject {
  private:
   /// \param scene_state Contains information about the current state of the
   /// scene.
-  virtual void update(SceneState& scene_state) override;
+  void update(std::shared_ptr<SceneState> scene_state) override;
 
   /// The current state of the scene.
-  std::unique_ptr<SceneState> state_instance;
+  std::shared_ptr<SceneState> state_instance;
 
   /// List of windows to render to.
   std::vector<std::shared_ptr<Window>> windows;
@@ -41,4 +42,4 @@ class Scene : public SceneObject {
 
 }  // namespace VulkanEngine
 
-#endif /* SCENE_H */
+#endif  // INCLUDE_VULKANENGINE_SCENE_H_

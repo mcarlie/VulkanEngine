@@ -3,8 +3,8 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-#ifndef SINGLEUSAGECOMMANDBUFFER_H
-#define SINGLEUSAGECOMMANDBUFFER_H
+#ifndef INCLUDE_VULKANENGINE_SINGLEUSAGECOMMANDBUFFER_H_
+#define INCLUDE_VULKANENGINE_SINGLEUSAGECOMMANDBUFFER_H_
 
 #include <vulkan/vulkan.hpp>
 
@@ -27,4 +27,4 @@ class SingleUsageCommandBuffer {
 
 }  // namespace VulkanEngine
 
-#endif /* SINGLEUSAGECOMMANDBUFFER_H */
+#endif  // INCLUDE_VULKANENGINE_SINGLEUSAGECOMMANDBUFFER_H_

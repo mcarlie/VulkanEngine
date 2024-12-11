@@ -3,10 +3,11 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-#ifndef FRAMEBUFFER_H
-#define FRAMEBUFFER_H
+#ifndef INCLUDE_VULKANENGINE_FRAMEBUFFER_H_
+#define INCLUDE_VULKANENGINE_FRAMEBUFFER_H_
 
 #include <memory>
+#include <vector>
 #include <vulkan/vulkan.hpp>
 
 namespace VulkanEngine {
@@ -29,4 +30,4 @@ class Framebuffer {
 
 }  // namespace VulkanEngine
 
-#endif /* FRAMEBUFFER_H */
+#endif  // INCLUDE_VULKANENGINE_FRAMEBUFFER_H_

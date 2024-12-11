@@ -3,14 +3,15 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-#ifndef WINDOW_H
-#define WINDOW_H
+#ifndef INCLUDE_VULKANENGINE_WINDOW_H_
+#define INCLUDE_VULKANENGINE_WINDOW_H_
 
 #include <VulkanEngine/KeyboardInput.h>
 #include <VulkanEngine/MouseInput.h>
 
 #include <memory>
 #include <string>
+#include <vector>
 #include <vulkan/vulkan.hpp>
 
 namespace VulkanEngine {
@@ -137,4 +138,4 @@ class Window {
 
 }  // namespace VulkanEngine
 
-#endif /* WINDOW_H */
+#endif  // INCLUDE_VULKANENGINE_WINDOW_H_

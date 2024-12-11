@@ -3,8 +3,10 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-#ifndef MOUSEINPUT_H
-#define MOUSEINPUT_H
+#ifndef INCLUDE_VULKANENGINE_MOUSEINPUT_H_
+#define INCLUDE_VULKANENGINE_MOUSEINPUT_H_
+
+#include <Eigen/Eigen>
 
 namespace VulkanEngine {
 
@@ -22,14 +24,12 @@ class MouseInput {
   ~MouseInput();
 
   /// Get the current position of the mouse
-  /// \param [out] x The x position
-  /// \param [out] y The y position
-  void getPosition(double &x, double &y);
+  /// \return X and Y coordinates of the mouse position.
+  Eigen::Vector2d getPosition();
 
   /// Get the current scroll offset mouse
-  /// \param [out] x The x scroll offset.
-  /// \param [out] y The y scroll offset.
-  void getScrollOffset(double &x, double &y);
+  /// \return Horizontal and vertical scroll offsets.
+  Eigen::Vector2d getScrollOffset();
 
   /// \return True if the left mouse button is currently pressed
   bool leftButtonPressed();
@@ -78,4 +78,4 @@ class MouseInput {
 
 }  // namespace VulkanEngine
 
-#endif /* MOUSEINPUT_H */
+#endif  // INCLUDE_VULKANENGINE_MOUSEINPUT_H_

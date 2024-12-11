@@ -18,12 +18,12 @@ VulkanEngine::ShaderModule::ShaderModule(
   std::vector<uint32_t> bytecode;
 
   if (!is_filepath) {
-    glslToSPIRV("unknown", shader_string, bytecode);
+    bytecode = glslToSPIRV("unknown", shader_string);
   } else {
     // Determine if this is a file path and attempt to open it if it is.
     std::filesystem::path shader_path(shader_string);
     if (std::filesystem::exists(shader_path)) {
-      readSource(shader_path, bytecode);
+      bytecode = readSource(shader_path);
     }
   }
 
@@ -57,8 +57,9 @@ const vk::ShaderModule &VulkanEngine::ShaderModule::getVkShaderModule() const {
   return vk_shader_module;
 }
 
-void VulkanEngine::ShaderModule::readSource(std::filesystem::path file_path,
-                                            std::vector<uint32_t> &bytecode) {
+std::vector<uint32_t> VulkanEngine::ShaderModule::readSource(std::filesystem::path file_path) {
+  std::vector<uint32_t> bytecode;
+  
   // Already compiled just read data
   if (file_path.extension() == ".spv") {
     std::ifstream file(file_path, std::ios::ate | std::ios::binary);
@@ -73,7 +74,7 @@ void VulkanEngine::ShaderModule::readSource(std::filesystem::path file_path,
     file.read(reinterpret_cast<char *>(bytecode.data()), file_size);
     file.close();
 
-    return;
+    return bytecode;
   }
 
   std::ifstream file(file_path);
@@ -85,12 +86,14 @@ void VulkanEngine::ShaderModule::readSource(std::filesystem::path file_path,
   std::string glsl_string((std::istreambuf_iterator<char>(file)),
                           std::istreambuf_iterator<char>());
 
-  glslToSPIRV(file_path.string(), glsl_string, bytecode);
+  bytecode = glslToSPIRV(file_path.string(), glsl_string);
+  return bytecode;
 }
 
-void VulkanEngine::ShaderModule::glslToSPIRV(const std::string &name,
-                                             const std::string &shader_string,
-                                             std::vector<uint32_t> &bytecode) {
+std::vector<uint32_t> VulkanEngine::ShaderModule::glslToSPIRV(const std::string &name,
+                                             const std::string &shader_string) {
+  std::vector<uint32_t> bytecode;
+  
   if (!glslang_initialized) {
     glslang::InitializeProcess();
     glslang_initialized = true;
@@ -204,4 +207,6 @@ void VulkanEngine::ShaderModule::glslToSPIRV(const std::string &name,
 
   bytecode.resize(spirv_data.size() * (sizeof(unsigned int) / sizeof(char)));
   std::memcpy(bytecode.data(), spirv_data.data(), bytecode.size());
+
+  return bytecode;
 }

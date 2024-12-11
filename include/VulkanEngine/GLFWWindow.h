@@ -3,12 +3,15 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-#ifndef GLFWWINDOW_H
-#define GLFWWINDOW_H
+#ifndef INCLUDE_VULKANENGINE_GLFWWINDOW_H_
+#define INCLUDE_VULKANENGINE_GLFWWINDOW_H_
 
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 #include <VulkanEngine/Window.h>
+
+#include <string>
+#include <vector>
 
 namespace VulkanEngine {
 
@@ -118,4 +121,4 @@ class GLFWWindow : public Window {
 
 }  // namespace VulkanEngine
 
-#endif /* GLFWWINDOW_H */
+#endif  // INCLUDE_VULKANENGINE_GLFWWINDOW_H_

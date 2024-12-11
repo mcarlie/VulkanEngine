@@ -14,15 +14,15 @@ VulkanEngine::Camera::Camera(Eigen::Vector3f _look_at,
 
 VulkanEngine::Camera::~Camera() {}
 
-void VulkanEngine::Camera::update(SceneState &scene_state) {
-  auto active_window = scene_state.getScene().getActiveWindow();
+void VulkanEngine::Camera::update(std::shared_ptr<SceneState> scene_state) {
+  auto active_window = scene_state->getScene().getActiveWindow();
   if (active_window.get() != nullptr) {
     setWidth(active_window->getFramebufferWidth());
     setHeight(active_window->getFramebufferHeight());
 
-    scene_state.setViewMatrix(scene_state.getTotalTransform() *
+    scene_state->setViewMatrix(scene_state->getTotalTransform() *
                               getTransform().inverse() * getViewMatrix());
-    scene_state.setProjectionMatrix(getPerspectiveProjectionMatrix());
+    scene_state->setProjectionMatrix(getPerspectiveProjectionMatrix());
   }
 
   SceneObject::update(scene_state);

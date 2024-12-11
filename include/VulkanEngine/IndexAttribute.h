@@ -3,8 +3,8 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-#ifndef INDEXATTRIBUTE_H
-#define INDEXATTRIBUTE_H
+#ifndef INCLUDE_VULKANENGINE_INDEXATTRIBUTE_H_
+#define INCLUDE_VULKANENGINE_INDEXATTRIBUTE_H_
 
 #include <VulkanEngine/Attribute.h>
 
@@ -28,6 +28,6 @@ class IndexAttribute : public Attribute {
 
 }  // namespace VulkanEngine
 
-#include <IndexAttribute.cpp>
+#include <IndexAttribute.cpp>  // NOLINT(build/include)
 
-#endif /* INDEXATTRIBUTE_H */
+#endif  // INCLUDE_VULKANENGINE_INDEXATTRIBUTE_H_

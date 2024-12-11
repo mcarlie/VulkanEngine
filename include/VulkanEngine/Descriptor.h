@@ -3,9 +3,11 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-#ifndef DESCRIPTOR_H
-#define DESCRIPTOR_H
+#ifndef INCLUDE_VULKANENGINE_DESCRIPTOR_H_
+#define INCLUDE_VULKANENGINE_DESCRIPTOR_H_
 
+#include <memory>
+#include <vector>
 #include <vulkan/vulkan.hpp>
 
 namespace VulkanEngine {
@@ -37,8 +39,9 @@ class Descriptor {
   /// be appended to this vector. \param destination_set The destination
   /// descriptor set of the write and copy descriptor sets.
   virtual void appendVkDescriptorSets(
-      std::vector<vk::WriteDescriptorSet> &write_descriptor_sets,
-      std::vector<vk::CopyDescriptorSet> &copy_descriptor_sets,
+      std::shared_ptr<std::vector<vk::WriteDescriptorSet>>
+          write_descriptor_sets,
+      std::shared_ptr<std::vector<vk::CopyDescriptorSet>> copy_descriptor_sets,
       const vk::DescriptorSet &destination_set) = 0;
 
  protected:
@@ -57,4 +60,4 @@ class Descriptor {
 
 }  // namespace VulkanEngine
 
-#endif /* DESCRIPTOR_H */
+#endif  // INCLUDE_VULKANENGINE_DESCRIPTOR_H_

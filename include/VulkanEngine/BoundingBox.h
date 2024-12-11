@@ -3,8 +3,8 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-#ifndef BOUNDINGBOX_H
-#define BOUNDINGBOX_H
+#ifndef INCLUDE_VULKANENGINE_BOUNDINGBOX_H_
+#define INCLUDE_VULKANENGINE_BOUNDINGBOX_H_
 
 /// Base class for BoundingBox specializations.
 struct BoundingBoxBase {};
@@ -20,4 +20,4 @@ struct BoundingBox : public BoundingBoxBase {
   PositionType min;
 };
 
-#endif /* BOUNDINGBOX_H */
+#endif  // INCLUDE_VULKANENGINE_BOUNDINGBOX_H_

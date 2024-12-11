@@ -3,8 +3,8 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-#ifndef OBJMESH_H
-#define OBJMESH_H
+#ifndef INCLUDE_VULKANENGINE_OBJMESH_H_
+#define INCLUDE_VULKANENGINE_OBJMESH_H_
 
 #include <VulkanEngine/BoundingBox.h>
 #include <VulkanEngine/GraphicsPipeline.h>
@@ -13,8 +13,11 @@
 #include <VulkanEngine/UniformBuffer.h>
 
 #include <array>
-#include <filesystem>
+#include <filesystem>  // NOLINT(build/c++17)
+#include <memory>
+#include <string>
 #include <unordered_map>
+#include <vector>
 
 #include "GraphicsPipeline.h"
 
@@ -52,7 +55,7 @@ class OBJMesh : public SceneObject {
 
   /// \param scene_state Contains information about the current state of the
   /// scene.
-  virtual void update(SceneState &scene_state) override;
+  void update(std::shared_ptr<SceneState> scene_state) override;
 
   /// Load an obj file from the given path
   /// \param obj_path Path to the obj file.
@@ -93,4 +96,4 @@ class OBJMesh : public SceneObject {
 
 }  // namespace VulkanEngine
 
-#endif /* OBJMESH_H */
+#endif  // INCLUDE_VULKANENGINE_OBJMESH_H_

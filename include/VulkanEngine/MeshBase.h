@@ -3,8 +3,8 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-#ifndef MESHBASE_H
-#define MESHBASE_H
+#ifndef INCLUDE_VULKANENGINE_MESHBASE_H_
+#define INCLUDE_VULKANENGINE_MESHBASE_H_
 
 #include <VulkanEngine/BoundingBox.h>
 #include <VulkanEngine/Shader.h>
@@ -64,4 +64,4 @@ class MeshBase {
 
 }  // namespace VulkanEngine
 
-#endif /* MESHBASE_H */
+#endif  // INCLUDE_VULKANENGINE_MESHBASE_H_

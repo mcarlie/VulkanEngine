@@ -200,8 +200,7 @@ int main(int argc, char **argv) {
         Eigen::Transform<float, 3, Eigen::Affine> transform(matrix);
 
         const auto& mouse_input = window->getMouseInput();
-        Eigen::Vector2d mouse_position; 
-        mouse_input->getPosition(mouse_position.x(), mouse_position.y());
+        const auto mouse_position = mouse_input->getPosition();
 
         if (mouse_input->leftButtonPressed()) {
 
@@ -217,13 +216,13 @@ int main(int argc, char **argv) {
         }
         prev_mouse_position = mouse_position;
 
-        Eigen::Vector3d scroll_offset = {0.0, 0.0, 0.0};
-        mouse_input->getScrollOffset(scroll_offset.x(), scroll_offset.y());
-        scroll_offset *= 0.1;
-        scroll_offset.x() *= -1;
-        camera->setLookAt(camera->getLookAt() + scroll_offset.cast<float>());
+        const auto scroll_offset_2d = mouse_input->getScrollOffset();
+        Eigen::Vector3d scroll_offset_3d = {scroll_offset_2d.x(), scroll_offset_2d.y(), 0.0};
+        scroll_offset_3d *= 0.1;
+        scroll_offset_3d.x() *= -1;
+        camera->setLookAt(camera->getLookAt() + scroll_offset_3d.cast<float>());
         camera->setTransform(
-            Eigen::Affine3f(Eigen::Translation3f(scroll_offset.cast<float>()) *
+            Eigen::Affine3f(Eigen::Translation3f(scroll_offset_3d.cast<float>()) *
                             Eigen::Affine3f(camera->getTransform()))
                 .matrix());
 

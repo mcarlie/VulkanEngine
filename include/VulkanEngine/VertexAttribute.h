@@ -3,8 +3,8 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-#ifndef VERTEXATTRIBUTE_H
-#define VERTEXATTRIBUTE_H
+#ifndef INCLUDE_VULKANENGINE_VERTEXATTRIBUTE_H_
+#define INCLUDE_VULKANENGINE_VERTEXATTRIBUTE_H_
 
 #include <VulkanEngine/Attribute.h>
 
@@ -52,6 +52,6 @@ class VertexAttribute : public Attribute {
 
 }  // namespace VulkanEngine
 
-#include <VertexAttribute.cpp>
+#include <VertexAttribute.cpp>  // NOLINT(build/include)
 
-#endif /* VERTEXATTRIBUTE_H */
+#endif  // INCLUDE_VULKANENGINE_VERTEXATTRIBUTE_H_

@@ -3,8 +3,8 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-#ifndef KEYBOARDINPUT_H
-#define KEYBOARDINPUT_H
+#ifndef INCLUDE_VULKANENGINE_KEYBOARDINPUT_H_
+#define INCLUDE_VULKANENGINE_KEYBOARDINPUT_H_
 
 #include <map>
 
@@ -39,4 +39,4 @@ class KeyboardInput {
 
 }  // namespace VulkanEngine
 
-#endif /* KEYBOARDINPUT_H */
+#endif  // INCLUDE_VULKANENGINE_KEYBOARDINPUT_H_

@@ -3,17 +3,14 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-#ifndef COMMANDBUFFER_H
-#define COMMANDBUFFER_H
+#ifndef INCLUDE_VULKANENGINE_COMMANDBUFFER_H_
+#define INCLUDE_VULKANENGINE_COMMANDBUFFER_H_
 
 namespace VulkanEngine {
 
 /// Class which represents a command buffer.
 class CommandBuffer {
  public:
-  /// Constructor.
-  CommandBuffer();
-
   /// Destructor.
   ~CommandBuffer();
 
@@ -23,4 +20,4 @@ class CommandBuffer {
 
 }  // namespace VulkanEngine
 
-#endif /* COMMANDBUFFER_H */
+#endif  // INCLUDE_VULKANENGINE_COMMANDBUFFER_H_

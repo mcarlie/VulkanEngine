@@ -239,11 +239,11 @@ VulkanEngine::OBJMesh::getBoundingBox() const {
   return bounding_box;
 }
 
-void VulkanEngine::OBJMesh::update(SceneState &scene_state) {
+void VulkanEngine::OBJMesh::update(std::shared_ptr<SceneState> scene_state) {
   MvpUbo ubo_data;
-  ubo_data.projection = scene_state.getProjectionMatrix();
-  ubo_data.view = scene_state.getViewMatrix();
-  ubo_data.model = scene_state.getTotalTransform();
+  ubo_data.projection = scene_state->getProjectionMatrix();
+  ubo_data.view = scene_state->getViewMatrix();
+  ubo_data.model = scene_state->getTotalTransform();
 
   for (auto &ub : mvp_buffers) {
     ub->updateBuffer(&ubo_data, sizeof(ubo_data));
@@ -251,7 +251,7 @@ void VulkanEngine::OBJMesh::update(SceneState &scene_state) {
 
   auto &vulkan_manager = VulkanManager::getInstance();
 
-  const auto window = scene_state.getScene().getActiveWindow();
+  const auto window = scene_state->getScene().getActiveWindow();
   if (graphics_pipeline_updated) {
     graphics_pipeline_updated = !window->sizeHasChanged();
   }

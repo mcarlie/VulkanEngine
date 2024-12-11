@@ -3,12 +3,15 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-#ifndef SWAPCHAIN_H
-#define SWAPCHAIN_H
+#ifndef INCLUDE_VULKANENGINE_SWAPCHAIN_H_
+#define INCLUDE_VULKANENGINE_SWAPCHAIN_H_
 
 #include <VulkanEngine/RenderPass.h>
 #include <VulkanEngine/VulkanManager.h>
 #include <VulkanEngine/Window.h>
+
+#include <memory>
+#include <vector>
 
 namespace VulkanEngine {
 
@@ -45,4 +48,4 @@ class Swapchain {
 
 }  // namespace VulkanEngine
 
-#endif /* SWAPCHAIN_H */
+#endif  // INCLUDE_VULKANENGINE_SWAPCHAIN_H_

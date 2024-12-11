@@ -9,14 +9,12 @@ VulkanEngine::MouseInput::MouseInput()
 
 VulkanEngine::MouseInput::~MouseInput() {}
 
-void VulkanEngine::MouseInput::getPosition(double &x, double &y) {
-  x = xpos;
-  y = ypos;
+Eigen::Vector2d VulkanEngine::MouseInput::getPosition() {
+  return {xpos, ypos};
 }
 
-void VulkanEngine::MouseInput::getScrollOffset(double &x, double &y) {
-  x = scroll_offset_x;
-  y = scroff_offset_y;
+Eigen::Vector2d VulkanEngine::MouseInput::getScrollOffset() {
+  return {scroll_offset_x, scroff_offset_y};
 }
 
 bool VulkanEngine::MouseInput::leftButtonPressed() {

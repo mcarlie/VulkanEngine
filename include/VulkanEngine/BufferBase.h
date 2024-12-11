@@ -3,8 +3,8 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-#ifndef BUFFERBASE_H
-#define BUFFERBASE_H
+#ifndef INCLUDE_VULKANENGINE_BUFFERBASE_H_
+#define INCLUDE_VULKANENGINE_BUFFERBASE_H_
 
 #ifdef __clang__
 #pragma clang diagnostic push
@@ -33,4 +33,4 @@ class BufferBase {
 
 }  // namespace VulkanEngine
 
-#endif /* BUFFERBASE_H */
+#endif  // INCLUDE_VULKANENGINE_BUFFERBASE_H_

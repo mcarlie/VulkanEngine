@@ -3,8 +3,8 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-#ifndef SCENESTATE_H
-#define SCENESTATE_H
+#ifndef INCLUDE_VULKANENGINE_SCENESTATE_H_
+#define INCLUDE_VULKANENGINE_SCENESTATE_H_
 
 #include <Eigen/Eigen>
 #include <memory>
@@ -17,7 +17,7 @@ class Scene;
 class SceneState {
  public:
   /// Constructor.
-  SceneState(const Scene &_scene);
+  explicit SceneState(const Scene &_scene);
 
   const Scene &getScene() const;
 
@@ -58,4 +58,4 @@ class SceneState {
 
 }  // namespace VulkanEngine
 
-#endif /* SCENESTATE_H */
+#endif  // INCLUDE_VULKANENGINE_SCENESTATE_H_

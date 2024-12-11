@@ -3,8 +3,8 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-#ifndef RENDERPASS_H
-#define RENDERPASS_H
+#ifndef INCLUDE_VULKANENGINE_RENDERPASS_H_
+#define INCLUDE_VULKANENGINE_RENDERPASS_H_
 
 #include <VulkanEngine/Image.h>
 #include <VulkanEngine/VulkanManager.h>
@@ -63,4 +63,4 @@ class RenderPass {
 
 }  // namespace VulkanEngine
 
-#endif /* RENDERPASS_H */
+#endif  // INCLUDE_VULKANENGINE_RENDERPASS_H_

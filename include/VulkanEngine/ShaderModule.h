@@ -3,10 +3,10 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-#ifndef SHADERMODULE_H
-#define SHADERMODULE_H
+#ifndef INCLUDE_VULKANENGINE_SHADERMODULE_H_
+#define INCLUDE_VULKANENGINE_SHADERMODULE_H_
 
-#include <filesystem>
+#include <filesystem>  // NOLINT(build/c++17)
 #include <string>
 #include <vector>
 #include <vulkan/vulkan.hpp>
@@ -36,15 +36,14 @@ class ShaderModule {
  private:
   /// Read the source code file.
   /// \param file_path The path to the file containing the source.
-  /// \param [out] Contains the bytes read from the file.
-  void readSource(std::filesystem::path file_path,
-                  std::vector<uint32_t> &bytecode);
+  /// \returns The bytes read from the file.
+  std::vector<uint32_t> readSource(std::filesystem::path file_path);
 
   /// Convert a GLSL shader string to SPIRV bytecode
   /// \param shader_string The GLSL shader string
   /// \param [out] spirv The resulting SPIRV bytecode
-  void glslToSPIRV(const std::string &name, const std::string &shader_string,
-                   std::vector<uint32_t> &bytecode);
+  std::vector<uint32_t> glslToSPIRV(const std::string &name,
+                                    const std::string &shader_string);
 
   /// The internal vk::ShaderModule instance.
   vk::ShaderModule vk_shader_module;
@@ -57,4 +56,4 @@ class ShaderModule {
 
 }  // namespace VulkanEngine
 
-#endif /* SHADERMODULE_H */
+#endif  // INCLUDE_VULKANENGINE_SHADERMODULE_H_

@@ -3,8 +3,8 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-#ifndef IMAGE_H
-#define IMAGE_H
+#ifndef INCLUDE_VULKANENGINE_IMAGE_H_
+#define INCLUDE_VULKANENGINE_IMAGE_H_
 
 #include <VulkanEngine/ImageBase.h>
 #include <VulkanEngine/StagedBufferDestination.h>
@@ -27,7 +27,8 @@ namespace VulkanEngine {
 /// \tparam sample_count_flags vk::SampleCountFlagBits option to use for the
 /// image.
 template <vk::Format format, vk::ImageType image_type, vk::ImageTiling tiling,
-          vk::SampleCountFlagBits sample_count_flags>
+          vk::SampleCountFlagBits  // NOLINT(whitespace/indent_namespace)
+              sample_count_flags>  // NOLINT(whitespace/indent_namespace)
 class Image : public StagedBufferDestination, public ImageBase {
  public:
   /// Constructor.
@@ -128,6 +129,6 @@ class Image : public StagedBufferDestination, public ImageBase {
 
 }  // namespace VulkanEngine
 
-#include <Image.cpp>
+#include <Image.cpp>  // NOLINT(build/include)
 
-#endif /* IMAGE_H */
+#endif  // INCLUDE_VULKANENGINE_IMAGE_H_

@@ -3,8 +3,8 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-#ifndef ATTRIBUTE_H
-#define ATTRIBUTE_H
+#ifndef INCLUDE_VULKANENGINE_ATTRIBUTE_H_
+#define INCLUDE_VULKANENGINE_ATTRIBUTE_H_
 
 #include <VulkanEngine/StagedBuffer.h>
 
@@ -38,4 +38,4 @@ class Attribute : public StagedBuffer<Buffer> {
 
 }  // namespace VulkanEngine
 
-#endif /* ATTRIBUTE_H */
+#endif  // INCLUDE_VULKANENGINE_ATTRIBUTE_H_

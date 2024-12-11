@@ -81,15 +81,15 @@ void VulkanEngine::Shader::setDescriptors(
       vk_device.allocateDescriptorSets(descriptor_set_allocate_info);
 
   for (size_t i = 0; i < descriptors.size(); ++i) {
-    std::vector<vk::WriteDescriptorSet> write_descriptor_sets;
-    std::vector<vk::CopyDescriptorSet> copy_descriptor_sets;
+    auto write_descriptor_sets = std::make_shared<std::vector<vk::WriteDescriptorSet>>();
+    auto copy_descriptor_sets = std::make_shared<std::vector<vk::CopyDescriptorSet>>();
 
     for (const auto &d : descriptors[i]) {
       d->appendVkDescriptorSets(write_descriptor_sets, copy_descriptor_sets,
                                 vk_descriptor_sets[i]);
     }
 
-    vk_device.updateDescriptorSets(write_descriptor_sets, nullptr);
+    vk_device.updateDescriptorSets(*write_descriptor_sets.get(), nullptr);
   }
 }
 

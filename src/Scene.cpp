@@ -19,7 +19,7 @@ void VulkanEngine::Scene::update() {
     }
   }
   VulkanManager::getInstance().getDefaultRenderPass()->begin();
-  SceneObject::update(*state_instance.get());
+  SceneObject::update(state_instance);
   VulkanManager::getInstance().getDefaultRenderPass()->end();
 }
 
@@ -32,4 +32,4 @@ VulkanEngine::Scene::getActiveWindow() const {
   return std::shared_ptr<VulkanEngine::Window>();
 }
 
-void VulkanEngine::Scene::update(SceneState &scene_state) {}
+void VulkanEngine::Scene::update(std::shared_ptr<SceneState> scene_state) {}
