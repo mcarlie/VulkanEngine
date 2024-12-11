@@ -124,8 +124,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a10e1ae5ac54f3b552a6715e4ce7567bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad0b90b3bfbb62701d968fbcaa5a973c2"><td class="memItemLeft" align="right" valign="top">const vk::DescriptorPoolSize&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vulkan_engine_1_1_descriptor.html#ad0b90b3bfbb62701d968fbcaa5a973c2">getVkDescriptorPoolSize</a> () const</td></tr>
 <tr class="separator:ad0b90b3bfbb62701d968fbcaa5a973c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa60974c18bd0a679c4118a8bb888f5a3"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vulkan_engine_1_1_descriptor.html#aa60974c18bd0a679c4118a8bb888f5a3">appendVkDescriptorSets</a> (std::vector&lt; vk::WriteDescriptorSet &gt; &amp;write_descriptor_sets, std::vector&lt; vk::CopyDescriptorSet &gt; &amp;copy_descriptor_sets, const vk::DescriptorSet &amp;destination_set)=0</td></tr>
-<tr class="separator:aa60974c18bd0a679c4118a8bb888f5a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aebd807bca40a82f2143470f2362745fc"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vulkan_engine_1_1_descriptor.html#aebd807bca40a82f2143470f2362745fc">appendVkDescriptorSets</a> (std::shared_ptr&lt; std::vector&lt; vk::WriteDescriptorSet &gt; &gt; write_descriptor_sets, std::shared_ptr&lt; std::vector&lt; vk::CopyDescriptorSet &gt; &gt; copy_descriptor_sets, const vk::DescriptorSet &amp;destination_set)=0</td></tr>
+<tr class="separator:aebd807bca40a82f2143470f2362745fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-attribs" name="pro-attribs"></a>
 Protected Attributes</h2></td></tr>
@@ -148,8 +148,8 @@ vk::ShaderStageFlags&#160;</td><td class="memItemRight" valign="bottom"><b>vk_sh
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Base class for any classes which interface with the Vulkan resource descriptor concept. </p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
-<a id="aa60974c18bd0a679c4118a8bb888f5a3" name="aa60974c18bd0a679c4118a8bb888f5a3"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa60974c18bd0a679c4118a8bb888f5a3">&#9670;&#160;</a></span>appendVkDescriptorSets()</h2>
+<a id="aebd807bca40a82f2143470f2362745fc" name="aebd807bca40a82f2143470f2362745fc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aebd807bca40a82f2143470f2362745fc">&#9670;&#160;</a></span>appendVkDescriptorSets()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -160,13 +160,13 @@ vk::ShaderStageFlags&#160;</td><td class="memItemRight" valign="bottom"><b>vk_sh
         <tr>
           <td class="memname">virtual void VulkanEngine::Descriptor::appendVkDescriptorSets </td>
           <td>(</td>
-          <td class="paramtype">std::vector&lt; vk::WriteDescriptorSet &gt; &amp;&#160;</td>
+          <td class="paramtype">std::shared_ptr&lt; std::vector&lt; vk::WriteDescriptorSet &gt; &gt;&#160;</td>
           <td class="paramname"><em>write_descriptor_sets</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::vector&lt; vk::CopyDescriptorSet &gt; &amp;&#160;</td>
+          <td class="paramtype">std::shared_ptr&lt; std::vector&lt; vk::CopyDescriptorSet &gt; &gt;&#160;</td>
           <td class="paramname"><em>copy_descriptor_sets</em>, </td>
         </tr>
         <tr>
@@ -196,7 +196,7 @@ vk::ShaderStageFlags&#160;</td><td class="memItemRight" valign="bottom"><b>vk_sh
   </dd>
 </dl>
 
-<p>Implemented in <a class="el" href="class_vulkan_engine_1_1_shader_image.html#ae0cc53ec264920e264eca9002f5fa9c8">VulkanEngine::ShaderImage&lt; format, image_type, tiling, sample_count_flags &gt;</a>, and <a class="el" href="class_vulkan_engine_1_1_uniform_buffer.html#a4bb90a3476300132ddc7d41011b9efb8">VulkanEngine::UniformBuffer&lt; T &gt;</a>.</p>
+<p>Implemented in <a class="el" href="class_vulkan_engine_1_1_shader_image.html#a37747457fbff7e4718e76bca1775d9b8">VulkanEngine::ShaderImage&lt; format, image_type, tiling, sample_count_flags &gt;</a>, and <a class="el" href="class_vulkan_engine_1_1_uniform_buffer.html#a478e2cdcda3ed7138b1f5d35056b5c90">VulkanEngine::UniformBuffer&lt; T &gt;</a>.</p>
 
 </div>
 </div>

@@ -113,10 +113,10 @@ Public Member Functions</h2></td></tr>
 &#160;</td><td class="memItemRight" valign="bottom"><b>~MouseInput</b> ()</td></tr>
 <tr class="memdesc:a587b2cb15fbf796a18098b5bba232933"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destructor. <br /></td></tr>
 <tr class="separator:a587b2cb15fbf796a18098b5bba232933"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a09b0437e1a28951ea32d1e520e800829"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vulkan_engine_1_1_mouse_input.html#a09b0437e1a28951ea32d1e520e800829">getPosition</a> (double &amp;x, double &amp;y)</td></tr>
-<tr class="separator:a09b0437e1a28951ea32d1e520e800829"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0fa04804d0d0876c43f015a6f5c2330d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vulkan_engine_1_1_mouse_input.html#a0fa04804d0d0876c43f015a6f5c2330d">getScrollOffset</a> (double &amp;x, double &amp;y)</td></tr>
-<tr class="separator:a0fa04804d0d0876c43f015a6f5c2330d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a205a17846e7349800d2cb8510a9bf93c"><td class="memItemLeft" align="right" valign="top">Eigen::Vector2d&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vulkan_engine_1_1_mouse_input.html#a205a17846e7349800d2cb8510a9bf93c">getPosition</a> ()</td></tr>
+<tr class="separator:a205a17846e7349800d2cb8510a9bf93c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a163f57a9942eff07c14995dd7c707e01"><td class="memItemLeft" align="right" valign="top">Eigen::Vector2d&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vulkan_engine_1_1_mouse_input.html#a163f57a9942eff07c14995dd7c707e01">getScrollOffset</a> ()</td></tr>
+<tr class="separator:a163f57a9942eff07c14995dd7c707e01"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abbb01540c3c5cc9f0c60566a6f3b64c5"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vulkan_engine_1_1_mouse_input.html#abbb01540c3c5cc9f0c60566a6f3b64c5">leftButtonPressed</a> ()</td></tr>
 <tr class="separator:abbb01540c3c5cc9f0c60566a6f3b64c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
@@ -129,73 +129,39 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>Window</b></td></tr>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Class which can be used to get input from the mouse. </p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
-<a id="a09b0437e1a28951ea32d1e520e800829" name="a09b0437e1a28951ea32d1e520e800829"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a09b0437e1a28951ea32d1e520e800829">&#9670;&#160;</a></span>getPosition()</h2>
+<a id="a205a17846e7349800d2cb8510a9bf93c" name="a205a17846e7349800d2cb8510a9bf93c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a205a17846e7349800d2cb8510a9bf93c">&#9670;&#160;</a></span>getPosition()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void VulkanEngine::MouseInput::getPosition </td>
+          <td class="memname">Eigen::Vector2d VulkanEngine::MouseInput::getPosition </td>
           <td>(</td>
-          <td class="paramtype">double &amp;&#160;</td>
-          <td class="paramname"><em>x</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
+          <td class="paramname"></td><td>)</td>
           <td></td>
-          <td class="paramtype">double &amp;&#160;</td>
-          <td class="paramname"><em>y</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Get the current position of the mouse </p><dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[out]</td><td class="paramname">x</td><td>The x position </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">y</td><td>The y position </td></tr>
-  </table>
-  </dd>
-</dl>
+<p>Get the current position of the mouse </p><dl class="section return"><dt>Returns</dt><dd>X and Y coordinates of the mouse position. </dd></dl>
 
 </div>
 </div>
-<a id="a0fa04804d0d0876c43f015a6f5c2330d" name="a0fa04804d0d0876c43f015a6f5c2330d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0fa04804d0d0876c43f015a6f5c2330d">&#9670;&#160;</a></span>getScrollOffset()</h2>
+<a id="a163f57a9942eff07c14995dd7c707e01" name="a163f57a9942eff07c14995dd7c707e01"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a163f57a9942eff07c14995dd7c707e01">&#9670;&#160;</a></span>getScrollOffset()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void VulkanEngine::MouseInput::getScrollOffset </td>
+          <td class="memname">Eigen::Vector2d VulkanEngine::MouseInput::getScrollOffset </td>
           <td>(</td>
-          <td class="paramtype">double &amp;&#160;</td>
-          <td class="paramname"><em>x</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
+          <td class="paramname"></td><td>)</td>
           <td></td>
-          <td class="paramtype">double &amp;&#160;</td>
-          <td class="paramname"><em>y</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Get the current scroll offset mouse </p><dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[out]</td><td class="paramname">x</td><td>The x scroll offset. </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">y</td><td>The y scroll offset. </td></tr>
-  </table>
-  </dd>
-</dl>
+<p>Get the current scroll offset mouse </p><dl class="section return"><dt>Returns</dt><dd>Horizontal and vertical scroll offsets. </dd></dl>
 
 </div>
 </div>

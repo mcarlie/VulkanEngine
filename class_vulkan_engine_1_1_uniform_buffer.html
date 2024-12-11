@@ -120,8 +120,8 @@ Public Member Functions</h2></td></tr>
 virtual&#160;</td><td class="memItemRight" valign="bottom"><b>~UniformBuffer</b> ()</td></tr>
 <tr class="memdesc:ad2eb6a9ea6ffd1c97a8b88797fd15d9e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destructor. <br /></td></tr>
 <tr class="separator:ad2eb6a9ea6ffd1c97a8b88797fd15d9e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4bb90a3476300132ddc7d41011b9efb8"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vulkan_engine_1_1_uniform_buffer.html#a4bb90a3476300132ddc7d41011b9efb8">appendVkDescriptorSets</a> (std::vector&lt; vk::WriteDescriptorSet &gt; &amp;write_descriptor_sets, std::vector&lt; vk::CopyDescriptorSet &gt; &amp;copy_descriptor_sets, const vk::DescriptorSet &amp;destination_set)</td></tr>
-<tr class="separator:a4bb90a3476300132ddc7d41011b9efb8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a478e2cdcda3ed7138b1f5d35056b5c90"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vulkan_engine_1_1_uniform_buffer.html#a478e2cdcda3ed7138b1f5d35056b5c90">appendVkDescriptorSets</a> (std::shared_ptr&lt; std::vector&lt; vk::WriteDescriptorSet &gt; &gt; write_descriptor_sets, std::shared_ptr&lt; std::vector&lt; vk::CopyDescriptorSet &gt; &gt; copy_descriptor_sets, const vk::DescriptorSet &amp;destination_set)</td></tr>
+<tr class="separator:a478e2cdcda3ed7138b1f5d35056b5c90"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_class_vulkan_engine_1_1_buffer"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_class_vulkan_engine_1_1_buffer')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="class_vulkan_engine_1_1_buffer.html">VulkanEngine::Buffer</a></td></tr>
 <tr class="memitem:a3e473d47e51bfc2f27466f2add390473 inherit pub_methods_class_vulkan_engine_1_1_buffer"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vulkan_engine_1_1_buffer.html#a3e473d47e51bfc2f27466f2add390473">Buffer</a> (size_t _data_size, vk::BufferUsageFlags usage_flags, vk::MemoryPropertyFlags memory_property_flags, VmaMemoryUsage vma_memory_usage)</td></tr>
 <tr class="separator:a3e473d47e51bfc2f27466f2add390473 inherit pub_methods_class_vulkan_engine_1_1_buffer"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -151,8 +151,8 @@ virtual&#160;</td><td class="memItemRight" valign="bottom"><b>~UniformBuffer</b>
 <tr class="separator:a10e1ae5ac54f3b552a6715e4ce7567bf inherit pub_methods_class_vulkan_engine_1_1_descriptor"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad0b90b3bfbb62701d968fbcaa5a973c2 inherit pub_methods_class_vulkan_engine_1_1_descriptor"><td class="memItemLeft" align="right" valign="top">const vk::DescriptorPoolSize&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vulkan_engine_1_1_descriptor.html#ad0b90b3bfbb62701d968fbcaa5a973c2">getVkDescriptorPoolSize</a> () const</td></tr>
 <tr class="separator:ad0b90b3bfbb62701d968fbcaa5a973c2 inherit pub_methods_class_vulkan_engine_1_1_descriptor"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa60974c18bd0a679c4118a8bb888f5a3 inherit pub_methods_class_vulkan_engine_1_1_descriptor"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vulkan_engine_1_1_descriptor.html#aa60974c18bd0a679c4118a8bb888f5a3">appendVkDescriptorSets</a> (std::vector&lt; vk::WriteDescriptorSet &gt; &amp;write_descriptor_sets, std::vector&lt; vk::CopyDescriptorSet &gt; &amp;copy_descriptor_sets, const vk::DescriptorSet &amp;destination_set)=0</td></tr>
-<tr class="separator:aa60974c18bd0a679c4118a8bb888f5a3 inherit pub_methods_class_vulkan_engine_1_1_descriptor"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aebd807bca40a82f2143470f2362745fc inherit pub_methods_class_vulkan_engine_1_1_descriptor"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vulkan_engine_1_1_descriptor.html#aebd807bca40a82f2143470f2362745fc">appendVkDescriptorSets</a> (std::shared_ptr&lt; std::vector&lt; vk::WriteDescriptorSet &gt; &gt; write_descriptor_sets, std::shared_ptr&lt; std::vector&lt; vk::CopyDescriptorSet &gt; &gt; copy_descriptor_sets, const vk::DescriptorSet &amp;destination_set)=0</td></tr>
+<tr class="separator:aebd807bca40a82f2143470f2362745fc inherit pub_methods_class_vulkan_engine_1_1_descriptor"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="inherited" name="inherited"></a>
 Additional Inherited Members</h2></td></tr>
@@ -249,8 +249,8 @@ template&lt;typename T &gt; </div>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="a4bb90a3476300132ddc7d41011b9efb8" name="a4bb90a3476300132ddc7d41011b9efb8"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4bb90a3476300132ddc7d41011b9efb8">&#9670;&#160;</a></span>appendVkDescriptorSets()</h2>
+<a id="a478e2cdcda3ed7138b1f5d35056b5c90" name="a478e2cdcda3ed7138b1f5d35056b5c90"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a478e2cdcda3ed7138b1f5d35056b5c90">&#9670;&#160;</a></span>appendVkDescriptorSets()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -263,13 +263,13 @@ template&lt;typename T &gt; </div>
         <tr>
           <td class="memname">void <a class="el" href="class_vulkan_engine_1_1_uniform_buffer.html">VulkanEngine::UniformBuffer</a>&lt; T &gt;::appendVkDescriptorSets </td>
           <td>(</td>
-          <td class="paramtype">std::vector&lt; vk::WriteDescriptorSet &gt; &amp;&#160;</td>
+          <td class="paramtype">std::shared_ptr&lt; std::vector&lt; vk::WriteDescriptorSet &gt; &gt;&#160;</td>
           <td class="paramname"><em>write_descriptor_sets</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::vector&lt; vk::CopyDescriptorSet &gt; &amp;&#160;</td>
+          <td class="paramtype">std::shared_ptr&lt; std::vector&lt; vk::CopyDescriptorSet &gt; &gt;&#160;</td>
           <td class="paramname"><em>copy_descriptor_sets</em>, </td>
         </tr>
         <tr>
@@ -299,7 +299,7 @@ template&lt;typename T &gt; </div>
   </dd>
 </dl>
 
-<p>Implements <a class="el" href="class_vulkan_engine_1_1_descriptor.html#aa60974c18bd0a679c4118a8bb888f5a3">VulkanEngine::Descriptor</a>.</p>
+<p>Implements <a class="el" href="class_vulkan_engine_1_1_descriptor.html#aebd807bca40a82f2143470f2362745fc">VulkanEngine::Descriptor</a>.</p>
 
 </div>
 </div>

@@ -98,74 +98,79 @@ $(document).ready(function(){initNavTree('_shader_image_8h_source.html',''); ini
 <div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="comment">// This software is released under the MIT License.</span></div>
 <div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="comment">// https://opensource.org/licenses/MIT</span></div>
 <div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span> </div>
-<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#ifndef SHADERIMAGE_H</span></div>
-<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#define SHADERIMAGE_H</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#ifndef INCLUDE_VULKANENGINE_SHADERIMAGE_H_</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#define INCLUDE_VULKANENGINE_SHADERIMAGE_H_</span></div>
 <div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
 <div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;VulkanEngine/Descriptor.h&gt;</span></div>
 <div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
-<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#ifdef __clang__</span></div>
-<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#pragma clang diagnostic push</span></div>
-<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#pragma clang diagnostic ignored &quot;-Wnullability-completeness&quot;</span></div>
-<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#endif</span></div>
-<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">#include &lt;vk_mem_alloc.h&gt;</span></div>
-<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="preprocessor">#ifdef __clang__</span></div>
-<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="preprocessor">#pragma clang diagnostic pop</span></div>
-<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="preprocessor">#endif</span></div>
-<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span> </div>
-<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="preprocessor">#include &lt;vulkan/vulkan.hpp&gt;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &lt;memory&gt;</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span> </div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#ifdef __clang__</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#pragma clang diagnostic push</span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">#pragma clang diagnostic ignored &quot;-Wnullability-completeness&quot;</span></div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="preprocessor">#include &lt;vk_mem_alloc.h&gt;</span></div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="preprocessor">#ifdef __clang__</span></div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="preprocessor">#pragma clang diagnostic pop</span></div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="preprocessor">#endif</span></div>
 <div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
-<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespace_vulkan_engine.html">VulkanEngine</a> {</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="preprocessor">#include &lt;vulkan/vulkan.hpp&gt;</span></div>
 <div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span> </div>
-<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span><span class="comment">// Forward declaration</span></div>
-<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="keyword">template</span> &lt;vk::Format format, vk::ImageType image_type, vk::ImageTiling tiling,</div>
-<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>          vk::SampleCountFlagBits sample_count_flags&gt;</div>
-<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span><span class="keyword">class </span>Image;</div>
-<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span> </div>
-<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span><span class="keyword">template</span> &lt;vk::Format format, vk::ImageType image_type, vk::ImageTiling tiling,</div>
-<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>          vk::SampleCountFlagBits sample_count_flags&gt;</div>
-<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="class_vulkan_engine_1_1_shader_image.html">   31</a></span><span class="keyword">class </span><a class="code hl_class" href="class_vulkan_engine_1_1_shader_image.html">ShaderImage</a></div>
-<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    : <span class="keyword">public</span> <a class="code hl_class" href="class_vulkan_engine_1_1_image.html">Image</a>&lt;format, image_type, tiling, sample_count_flags&gt;,</div>
-<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>      <span class="keyword">public</span> <a class="code hl_class" href="class_vulkan_engine_1_1_descriptor.html">Descriptor</a> {</div>
-<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span> <span class="keyword">public</span>:</div>
-<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>  <a class="code hl_class" href="class_vulkan_engine_1_1_shader_image.html">ShaderImage</a>(vk::ImageLayout initial_layout, vk::ImageUsageFlags usage_flags,</div>
-<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>              VmaMemoryUsage vma_memory_usage, uint32_t <a class="code hl_variable" href="class_vulkan_engine_1_1_image.html#ad3cce53820ef2793b81f36732af1eb79">width</a>, uint32_t <a class="code hl_variable" href="class_vulkan_engine_1_1_image.html#a41a5add26d5d20ca015bcf7128b606cb">height</a>,</div>
-<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>              uint32_t <a class="code hl_variable" href="class_vulkan_engine_1_1_image.html#aabb19b048c7228548839b45e294e7793">depth</a>, <span class="keywordtype">size_t</span> pixel_size, uint32_t <a class="code hl_variable" href="class_vulkan_engine_1_1_descriptor.html#a130a207134734945069d74a1fef72727">binding</a>,</div>
-<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>              uint32_t <a class="code hl_variable" href="class_vulkan_engine_1_1_descriptor.html#ac7829dacfd76b2e3b9128202803fcd86">descriptor_count</a>, vk::DescriptorType descriptor_type,</div>
-<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>              vk::ShaderStageFlags shader_stage_flags);</div>
-<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span> </div>
-<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>  <a class="code hl_function" href="class_vulkan_engine_1_1_shader_image.html#abac0b1b82e9d4b96904ffaba48690d37">~ShaderImage</a>();</div>
-<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span> </div>
-<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>  <span class="keywordtype">void</span> <a class="code hl_function" href="class_vulkan_engine_1_1_shader_image.html#ae92a9ecd3970a97faaa4ff979345cd1e">createSampler</a>();</div>
-<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span> </div>
-<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>  vk::DescriptorImageInfo <a class="code hl_function" href="class_vulkan_engine_1_1_shader_image.html#ab1cc8df12ee1af529ff662d925f97a0c">getVkDescriptorImageInfo</a>() <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span> </div>
-<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>  <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code hl_function" href="class_vulkan_engine_1_1_shader_image.html#ae0cc53ec264920e264eca9002f5fa9c8">appendVkDescriptorSets</a>(</div>
-<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>      std::vector&lt;vk::WriteDescriptorSet&gt; &amp;write_descriptor_sets,</div>
-<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>      std::vector&lt;vk::CopyDescriptorSet&gt; &amp;copy_descriptor_sets,</div>
-<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>      <span class="keyword">const</span> vk::DescriptorSet &amp;destination_set);</div>
-<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span> </div>
-<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span> <span class="keyword">private</span>:</div>
-<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>  vk::Sampler vk_sampler;</div>
-<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span> </div>
-<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>  vk::DescriptorImageInfo vk_descriptor_image_info;</div>
-<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>};</div>
-<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span> </div>
-<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>}  <span class="comment">// namespace VulkanEngine</span></div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespace_vulkan_engine.html">VulkanEngine</a> {</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span> </div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><span class="comment">// Forward declaration</span></div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span><span class="keyword">template</span> &lt;vk::Format format, vk::ImageType image_type, vk::ImageTiling tiling,</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>          vk::SampleCountFlagBits  <span class="comment">// NOLINT(whitespace/indent_namespace)</span></div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>              sample_count_flags&gt;  <span class="comment">// NOLINT(whitespace/indent_namespace)</span></div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span><span class="keyword">class </span>Image;</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span> </div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span><span class="keyword">template</span> &lt;vk::Format format, vk::ImageType image_type, vk::ImageTiling tiling,</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>          vk::SampleCountFlagBits  <span class="comment">// NOLINT(whitespace/indent_namespace)</span></div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>              sample_count_flags&gt;  <span class="comment">// NOLINT(whitespace/indent_namespace)</span></div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno"><a class="line" href="class_vulkan_engine_1_1_shader_image.html">   35</a></span><span class="keyword">class </span><a class="code hl_class" href="class_vulkan_engine_1_1_shader_image.html">ShaderImage</a></div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    : <span class="keyword">public</span> <a class="code hl_class" href="class_vulkan_engine_1_1_image.html">Image</a>&lt;format, image_type, tiling, sample_count_flags&gt;,</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>      <span class="keyword">public</span> <a class="code hl_class" href="class_vulkan_engine_1_1_descriptor.html">Descriptor</a> {</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span> <span class="keyword">public</span>:</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>  <a class="code hl_class" href="class_vulkan_engine_1_1_shader_image.html">ShaderImage</a>(vk::ImageLayout initial_layout, vk::ImageUsageFlags usage_flags,</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>              VmaMemoryUsage vma_memory_usage, uint32_t <a class="code hl_variable" href="class_vulkan_engine_1_1_image.html#ad3cce53820ef2793b81f36732af1eb79">width</a>, uint32_t <a class="code hl_variable" href="class_vulkan_engine_1_1_image.html#a41a5add26d5d20ca015bcf7128b606cb">height</a>,</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>              uint32_t <a class="code hl_variable" href="class_vulkan_engine_1_1_image.html#aabb19b048c7228548839b45e294e7793">depth</a>, <span class="keywordtype">size_t</span> pixel_size, uint32_t <a class="code hl_variable" href="class_vulkan_engine_1_1_descriptor.html#a130a207134734945069d74a1fef72727">binding</a>,</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>              uint32_t <a class="code hl_variable" href="class_vulkan_engine_1_1_descriptor.html#ac7829dacfd76b2e3b9128202803fcd86">descriptor_count</a>, vk::DescriptorType descriptor_type,</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>              vk::ShaderStageFlags shader_stage_flags);</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span> </div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>  <a class="code hl_function" href="class_vulkan_engine_1_1_shader_image.html#abac0b1b82e9d4b96904ffaba48690d37">~ShaderImage</a>();</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span> </div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>  <span class="keywordtype">void</span> <a class="code hl_function" href="class_vulkan_engine_1_1_shader_image.html#ae92a9ecd3970a97faaa4ff979345cd1e">createSampler</a>();</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span> </div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>  vk::DescriptorImageInfo <a class="code hl_function" href="class_vulkan_engine_1_1_shader_image.html#ab1cc8df12ee1af529ff662d925f97a0c">getVkDescriptorImageInfo</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span> </div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>  <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code hl_function" href="class_vulkan_engine_1_1_shader_image.html#a37747457fbff7e4718e76bca1775d9b8">appendVkDescriptorSets</a>(</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>      std::shared_ptr&lt;std::vector&lt;vk::WriteDescriptorSet&gt;&gt;</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>          write_descriptor_sets,</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>      std::shared_ptr&lt;std::vector&lt;vk::CopyDescriptorSet&gt;&gt; copy_descriptor_sets,</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>      <span class="keyword">const</span> vk::DescriptorSet &amp;destination_set);</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span> </div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span> <span class="keyword">private</span>:</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>  vk::Sampler vk_sampler;</div>
 <div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span> </div>
-<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span><span class="preprocessor">#include &lt;ShaderImage.cpp&gt;</span></div>
-<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span> </div>
-<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span><span class="preprocessor">#endif </span><span class="comment">/* SHADERIMAGE_H */</span><span class="preprocessor"></span></div>
-<div class="ttc" id="aclass_vulkan_engine_1_1_descriptor_html"><div class="ttname"><a href="class_vulkan_engine_1_1_descriptor.html">VulkanEngine::Descriptor</a></div><div class="ttdef"><b>Definition:</b> Descriptor.h:15</div></div>
-<div class="ttc" id="aclass_vulkan_engine_1_1_descriptor_html_a130a207134734945069d74a1fef72727"><div class="ttname"><a href="class_vulkan_engine_1_1_descriptor.html#a130a207134734945069d74a1fef72727">VulkanEngine::Descriptor::binding</a></div><div class="ttdeci">uint32_t binding</div><div class="ttdoc">The binding index.</div><div class="ttdef"><b>Definition:</b> Descriptor.h:46</div></div>
-<div class="ttc" id="aclass_vulkan_engine_1_1_descriptor_html_ac7829dacfd76b2e3b9128202803fcd86"><div class="ttname"><a href="class_vulkan_engine_1_1_descriptor.html#ac7829dacfd76b2e3b9128202803fcd86">VulkanEngine::Descriptor::descriptor_count</a></div><div class="ttdeci">uint32_t descriptor_count</div><div class="ttdoc">The number of descriptors represented.</div><div class="ttdef"><b>Definition:</b> Descriptor.h:49</div></div>
-<div class="ttc" id="aclass_vulkan_engine_1_1_image_html"><div class="ttname"><a href="class_vulkan_engine_1_1_image.html">VulkanEngine::Image</a></div><div class="ttdef"><b>Definition:</b> Image.h:31</div></div>
-<div class="ttc" id="aclass_vulkan_engine_1_1_image_html_a41a5add26d5d20ca015bcf7128b606cb"><div class="ttname"><a href="class_vulkan_engine_1_1_image.html#a41a5add26d5d20ca015bcf7128b606cb">VulkanEngine::Image::height</a></div><div class="ttdeci">uint32_t height</div><div class="ttdoc">The height of the Image.</div><div class="ttdef"><b>Definition:</b> Image.h:105</div></div>
-<div class="ttc" id="aclass_vulkan_engine_1_1_image_html_aabb19b048c7228548839b45e294e7793"><div class="ttname"><a href="class_vulkan_engine_1_1_image.html#aabb19b048c7228548839b45e294e7793">VulkanEngine::Image::depth</a></div><div class="ttdeci">uint32_t depth</div><div class="ttdoc">The depth of the Image.</div><div class="ttdef"><b>Definition:</b> Image.h:108</div></div>
-<div class="ttc" id="aclass_vulkan_engine_1_1_image_html_ad3cce53820ef2793b81f36732af1eb79"><div class="ttname"><a href="class_vulkan_engine_1_1_image.html#ad3cce53820ef2793b81f36732af1eb79">VulkanEngine::Image::width</a></div><div class="ttdeci">uint32_t width</div><div class="ttdoc">The width of the Image.</div><div class="ttdef"><b>Definition:</b> Image.h:102</div></div>
-<div class="ttc" id="aclass_vulkan_engine_1_1_shader_image_html"><div class="ttname"><a href="class_vulkan_engine_1_1_shader_image.html">VulkanEngine::ShaderImage</a></div><div class="ttdef"><b>Definition:</b> ShaderImage.h:33</div></div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>  vk::DescriptorImageInfo vk_descriptor_image_info;</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>};</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span> </div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>}  <span class="comment">// namespace VulkanEngine</span></div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span> </div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span><span class="preprocessor">#include &lt;ShaderImage.cpp&gt;</span>  <span class="comment">// NOLINT(build/include)</span></div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span> </div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span><span class="preprocessor">#endif  </span><span class="comment">// INCLUDE_VULKANENGINE_SHADERIMAGE_H_</span></div>
+<div class="ttc" id="aclass_vulkan_engine_1_1_descriptor_html"><div class="ttname"><a href="class_vulkan_engine_1_1_descriptor.html">VulkanEngine::Descriptor</a></div><div class="ttdef"><b>Definition:</b> Descriptor.h:17</div></div>
+<div class="ttc" id="aclass_vulkan_engine_1_1_descriptor_html_a130a207134734945069d74a1fef72727"><div class="ttname"><a href="class_vulkan_engine_1_1_descriptor.html#a130a207134734945069d74a1fef72727">VulkanEngine::Descriptor::binding</a></div><div class="ttdeci">uint32_t binding</div><div class="ttdoc">The binding index.</div><div class="ttdef"><b>Definition:</b> Descriptor.h:49</div></div>
+<div class="ttc" id="aclass_vulkan_engine_1_1_descriptor_html_ac7829dacfd76b2e3b9128202803fcd86"><div class="ttname"><a href="class_vulkan_engine_1_1_descriptor.html#ac7829dacfd76b2e3b9128202803fcd86">VulkanEngine::Descriptor::descriptor_count</a></div><div class="ttdeci">uint32_t descriptor_count</div><div class="ttdoc">The number of descriptors represented.</div><div class="ttdef"><b>Definition:</b> Descriptor.h:52</div></div>
+<div class="ttc" id="aclass_vulkan_engine_1_1_image_html"><div class="ttname"><a href="class_vulkan_engine_1_1_image.html">VulkanEngine::Image</a></div><div class="ttdef"><b>Definition:</b> Image.h:32</div></div>
+<div class="ttc" id="aclass_vulkan_engine_1_1_image_html_a41a5add26d5d20ca015bcf7128b606cb"><div class="ttname"><a href="class_vulkan_engine_1_1_image.html#a41a5add26d5d20ca015bcf7128b606cb">VulkanEngine::Image::height</a></div><div class="ttdeci">uint32_t height</div><div class="ttdoc">The height of the Image.</div><div class="ttdef"><b>Definition:</b> Image.h:106</div></div>
+<div class="ttc" id="aclass_vulkan_engine_1_1_image_html_aabb19b048c7228548839b45e294e7793"><div class="ttname"><a href="class_vulkan_engine_1_1_image.html#aabb19b048c7228548839b45e294e7793">VulkanEngine::Image::depth</a></div><div class="ttdeci">uint32_t depth</div><div class="ttdoc">The depth of the Image.</div><div class="ttdef"><b>Definition:</b> Image.h:109</div></div>
+<div class="ttc" id="aclass_vulkan_engine_1_1_image_html_ad3cce53820ef2793b81f36732af1eb79"><div class="ttname"><a href="class_vulkan_engine_1_1_image.html#ad3cce53820ef2793b81f36732af1eb79">VulkanEngine::Image::width</a></div><div class="ttdeci">uint32_t width</div><div class="ttdoc">The width of the Image.</div><div class="ttdef"><b>Definition:</b> Image.h:103</div></div>
+<div class="ttc" id="aclass_vulkan_engine_1_1_shader_image_html"><div class="ttname"><a href="class_vulkan_engine_1_1_shader_image.html">VulkanEngine::ShaderImage</a></div><div class="ttdef"><b>Definition:</b> ShaderImage.h:37</div></div>
+<div class="ttc" id="aclass_vulkan_engine_1_1_shader_image_html_a37747457fbff7e4718e76bca1775d9b8"><div class="ttname"><a href="class_vulkan_engine_1_1_shader_image.html#a37747457fbff7e4718e76bca1775d9b8">VulkanEngine::ShaderImage::appendVkDescriptorSets</a></div><div class="ttdeci">virtual void appendVkDescriptorSets(std::shared_ptr&lt; std::vector&lt; vk::WriteDescriptorSet &gt; &gt; write_descriptor_sets, std::shared_ptr&lt; std::vector&lt; vk::CopyDescriptorSet &gt; &gt; copy_descriptor_sets, const vk::DescriptorSet &amp;destination_set)</div><div class="ttdoc">Append descriptor sets to this shader image.</div><div class="ttdef"><b>Definition:</b> ShaderImage.cpp:73</div></div>
 <div class="ttc" id="aclass_vulkan_engine_1_1_shader_image_html_ab1cc8df12ee1af529ff662d925f97a0c"><div class="ttname"><a href="class_vulkan_engine_1_1_shader_image.html#ab1cc8df12ee1af529ff662d925f97a0c">VulkanEngine::ShaderImage::getVkDescriptorImageInfo</a></div><div class="ttdeci">vk::DescriptorImageInfo getVkDescriptorImageInfo() const</div><div class="ttdoc">Get descriptor image info.</div><div class="ttdef"><b>Definition:</b> ShaderImage.cpp:62</div></div>
 <div class="ttc" id="aclass_vulkan_engine_1_1_shader_image_html_abac0b1b82e9d4b96904ffaba48690d37"><div class="ttname"><a href="class_vulkan_engine_1_1_shader_image.html#abac0b1b82e9d4b96904ffaba48690d37">VulkanEngine::ShaderImage::~ShaderImage</a></div><div class="ttdeci">~ShaderImage()</div><div class="ttdoc">Destructor.</div><div class="ttdef"><b>Definition:</b> ShaderImage.cpp:25</div></div>
-<div class="ttc" id="aclass_vulkan_engine_1_1_shader_image_html_ae0cc53ec264920e264eca9002f5fa9c8"><div class="ttname"><a href="class_vulkan_engine_1_1_shader_image.html#ae0cc53ec264920e264eca9002f5fa9c8">VulkanEngine::ShaderImage::appendVkDescriptorSets</a></div><div class="ttdeci">virtual void appendVkDescriptorSets(std::vector&lt; vk::WriteDescriptorSet &gt; &amp;write_descriptor_sets, std::vector&lt; vk::CopyDescriptorSet &gt; &amp;copy_descriptor_sets, const vk::DescriptorSet &amp;destination_set)</div><div class="ttdoc">Append descriptor sets to this shader image.</div><div class="ttdef"><b>Definition:</b> ShaderImage.cpp:73</div></div>
 <div class="ttc" id="aclass_vulkan_engine_1_1_shader_image_html_ae92a9ecd3970a97faaa4ff979345cd1e"><div class="ttname"><a href="class_vulkan_engine_1_1_shader_image.html#ae92a9ecd3970a97faaa4ff979345cd1e">VulkanEngine::ShaderImage::createSampler</a></div><div class="ttdeci">void createSampler()</div><div class="ttdoc">Create image sampler.</div><div class="ttdef"><b>Definition:</b> ShaderImage.cpp:32</div></div>
 <div class="ttc" id="anamespace_vulkan_engine_html"><div class="ttname"><a href="namespace_vulkan_engine.html">VulkanEngine</a></div><div class="ttdoc">TODO development of this class is in progress.</div><div class="ttdef"><b>Definition:</b> Attribute.h:13</div></div>
 </div><!-- fragment --></div><!-- contents -->

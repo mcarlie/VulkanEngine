@@ -98,10 +98,10 @@ $(document).ready(function(){initNavTree('_shader_module_8h_source.html',''); in
 <div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="comment">// This software is released under the MIT License.</span></div>
 <div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="comment">// https://opensource.org/licenses/MIT</span></div>
 <div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span> </div>
-<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#ifndef SHADERMODULE_H</span></div>
-<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#define SHADERMODULE_H</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#ifndef INCLUDE_VULKANENGINE_SHADERMODULE_H_</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#define INCLUDE_VULKANENGINE_SHADERMODULE_H_</span></div>
 <div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
-<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;filesystem&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;filesystem&gt;</span>  <span class="comment">// NOLINT(build/c++17)</span></div>
 <div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &lt;string&gt;</span></div>
 <div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
 <div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &lt;vulkan/vulkan.hpp&gt;</span></div>
@@ -120,22 +120,21 @@ $(document).ready(function(){initNavTree('_shader_module_8h_source.html',''); in
 <div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>  <span class="keyword">const</span> vk::ShaderModule &amp;<a class="code hl_function" href="class_vulkan_engine_1_1_shader_module.html#a2b89f7676f29b04f218f2057794ef5fd">getVkShaderModule</a>() <span class="keyword">const</span>;</div>
 <div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span> </div>
 <div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span> <span class="keyword">private</span>:</div>
-<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>  <span class="keywordtype">void</span> readSource(std::filesystem::path file_path,</div>
-<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>                  std::vector&lt;uint32_t&gt; &amp;bytecode);</div>
-<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span> </div>
-<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>  <span class="keywordtype">void</span> glslToSPIRV(<span class="keyword">const</span> std::string &amp;name, <span class="keyword">const</span> std::string &amp;shader_string,</div>
-<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>                   std::vector&lt;uint32_t&gt; &amp;bytecode);</div>
-<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span> </div>
-<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>  vk::ShaderModule vk_shader_module;</div>
-<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span> </div>
-<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>  vk::ShaderStageFlagBits vk_shader_stage_flag;</div>
-<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span> </div>
-<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>  <span class="keyword">static</span> <span class="keywordtype">bool</span> glslang_initialized;</div>
-<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>};</div>
-<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span> </div>
-<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>}  <span class="comment">// namespace VulkanEngine</span></div>
-<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span> </div>
-<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span><span class="preprocessor">#endif </span><span class="comment">/* SHADERMODULE_H */</span><span class="preprocessor"></span></div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>  std::vector&lt;uint32_t&gt; readSource(std::filesystem::path file_path);</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span> </div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>  std::vector&lt;uint32_t&gt; glslToSPIRV(<span class="keyword">const</span> std::string &amp;name,</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>                                    <span class="keyword">const</span> std::string &amp;shader_string);</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span> </div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>  vk::ShaderModule vk_shader_module;</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span> </div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>  vk::ShaderStageFlagBits vk_shader_stage_flag;</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span> </div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>  <span class="keyword">static</span> <span class="keywordtype">bool</span> glslang_initialized;</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>};</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span> </div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>}  <span class="comment">// namespace VulkanEngine</span></div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span> </div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span><span class="preprocessor">#endif  </span><span class="comment">// INCLUDE_VULKANENGINE_SHADERMODULE_H_</span></div>
 <div class="ttc" id="aclass_vulkan_engine_1_1_shader_module_html"><div class="ttname"><a href="class_vulkan_engine_1_1_shader_module.html">VulkanEngine::ShaderModule</a></div><div class="ttdef"><b>Definition:</b> ShaderModule.h:18</div></div>
 <div class="ttc" id="aclass_vulkan_engine_1_1_shader_module_html_a1ddb51e68f147a0890f7ac3f15937cae"><div class="ttname"><a href="class_vulkan_engine_1_1_shader_module.html#a1ddb51e68f147a0890f7ac3f15937cae">VulkanEngine::ShaderModule::~ShaderModule</a></div><div class="ttdeci">~ShaderModule()</div><div class="ttdoc">Destructor.</div><div class="ttdef"><b>Definition:</b> ShaderModule.cpp:46</div></div>
 <div class="ttc" id="aclass_vulkan_engine_1_1_shader_module_html_a2b89f7676f29b04f218f2057794ef5fd"><div class="ttname"><a href="class_vulkan_engine_1_1_shader_module.html#a2b89f7676f29b04f218f2057794ef5fd">VulkanEngine::ShaderModule::getVkShaderModule</a></div><div class="ttdeci">const vk::ShaderModule &amp; getVkShaderModule() const</div><div class="ttdef"><b>Definition:</b> ShaderModule.cpp:56</div></div>
