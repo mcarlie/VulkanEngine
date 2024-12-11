@@ -8,13 +8,6 @@ repos:
         types: [c, c++]
         args: ["--style=google", "-i"]
         exclude: ^thirdparty/
-      - id: clang-tidy
-        name: Run clang-tidy
-        entry: clang-tidy
-        language: system
-        types: [c, c++]
-        args: ["--format-style=google", "--fix", "--fix-errors"]
-        exclude: ^thirdparty/
       - id: cpplint
         name: Run cpplint
         entry: cpplint
