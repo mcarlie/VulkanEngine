@@ -93,22 +93,28 @@ $(document).ready(function(){initNavTree('_bounding_box_8h_source.html',''); ini
   <div class="headertitle"><div class="title">BoundingBox.h</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#ifndef BOUNDINGBOX_H</span></div>
-<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#define BOUNDINGBOX_H</span></div>
-<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
-<div class="line"><a id="l00005" name="l00005"></a><span class="lineno"><a class="line" href="struct_bounding_box_base.html">    5</a></span><span class="keyword">struct </span><a class="code hl_struct" href="struct_bounding_box_base.html">BoundingBoxBase</a> {};</div>
-<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
-<div class="line"><a id="l00009" name="l00009"></a><span class="lineno"><a class="line" href="struct_bounding_box.html">    9</a></span><span class="keyword">template</span> &lt;<span class="keyword">typename</span> PositionType&gt; <span class="keyword">struct </span><a class="code hl_struct" href="struct_bounding_box.html">BoundingBox</a> : <span class="keyword">public</span> <a class="code hl_struct" href="struct_bounding_box_base.html">BoundingBoxBase</a> {</div>
-<div class="line"><a id="l00011" name="l00011"></a><span class="lineno"><a class="line" href="struct_bounding_box.html#a823a737cc4911d0b1e11e394d5c4d5c6">   11</a></span>  PositionType <a class="code hl_variable" href="struct_bounding_box.html#a823a737cc4911d0b1e11e394d5c4d5c6">max</a>;</div>
-<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span> </div>
-<div class="line"><a id="l00014" name="l00014"></a><span class="lineno"><a class="line" href="struct_bounding_box.html#a9ea1d2c2faf5ae402214a3da903a42c5">   14</a></span>  PositionType <a class="code hl_variable" href="struct_bounding_box.html#a9ea1d2c2faf5ae402214a3da903a42c5">min</a>;</div>
-<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>};</div>
-<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span> </div>
-<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="preprocessor">#endif </span><span class="comment">/* BOUNDINGBOX_H */</span><span class="preprocessor"></span></div>
-<div class="ttc" id="astruct_bounding_box_base_html"><div class="ttname"><a href="struct_bounding_box_base.html">BoundingBoxBase</a></div><div class="ttdoc">Base class for BoundingBox specializations.</div><div class="ttdef"><b>Definition:</b> BoundingBox.h:5</div></div>
-<div class="ttc" id="astruct_bounding_box_html"><div class="ttname"><a href="struct_bounding_box.html">BoundingBox</a></div><div class="ttdef"><b>Definition:</b> BoundingBox.h:9</div></div>
-<div class="ttc" id="astruct_bounding_box_html_a823a737cc4911d0b1e11e394d5c4d5c6"><div class="ttname"><a href="struct_bounding_box.html#a823a737cc4911d0b1e11e394d5c4d5c6">BoundingBox::max</a></div><div class="ttdeci">PositionType max</div><div class="ttdoc">The maximum extent of the bounding box.</div><div class="ttdef"><b>Definition:</b> BoundingBox.h:11</div></div>
-<div class="ttc" id="astruct_bounding_box_html_a9ea1d2c2faf5ae402214a3da903a42c5"><div class="ttname"><a href="struct_bounding_box.html#a9ea1d2c2faf5ae402214a3da903a42c5">BoundingBox::min</a></div><div class="ttdeci">PositionType min</div><div class="ttdoc">The minimum extent of the bounding box.</div><div class="ttdef"><b>Definition:</b> BoundingBox.h:14</div></div>
+<div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="comment">// Copyright (c) 2024 Michael Carlie. All Rights Reserved.</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="comment">//</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="comment">// This software is released under the MIT License.</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="comment">// https://opensource.org/licenses/MIT</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span> </div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#ifndef BOUNDINGBOX_H</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#define BOUNDINGBOX_H</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno"><a class="line" href="struct_bounding_box_base.html">   10</a></span><span class="keyword">struct </span><a class="code hl_struct" href="struct_bounding_box_base.html">BoundingBoxBase</a> {};</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="keyword">template</span> &lt;<span class="keyword">typename</span> PositionType&gt;</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno"><a class="line" href="struct_bounding_box.html">   15</a></span><span class="keyword">struct </span><a class="code hl_struct" href="struct_bounding_box.html">BoundingBox</a> : <span class="keyword">public</span> <a class="code hl_struct" href="struct_bounding_box_base.html">BoundingBoxBase</a> {</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno"><a class="line" href="struct_bounding_box.html#a823a737cc4911d0b1e11e394d5c4d5c6">   17</a></span>  PositionType <a class="code hl_variable" href="struct_bounding_box.html#a823a737cc4911d0b1e11e394d5c4d5c6">max</a>;</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno"><a class="line" href="struct_bounding_box.html#a9ea1d2c2faf5ae402214a3da903a42c5">   20</a></span>  PositionType <a class="code hl_variable" href="struct_bounding_box.html#a9ea1d2c2faf5ae402214a3da903a42c5">min</a>;</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>};</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span> </div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="preprocessor">#endif </span><span class="comment">/* BOUNDINGBOX_H */</span><span class="preprocessor"></span></div>
+<div class="ttc" id="astruct_bounding_box_base_html"><div class="ttname"><a href="struct_bounding_box_base.html">BoundingBoxBase</a></div><div class="ttdoc">Base class for BoundingBox specializations.</div><div class="ttdef"><b>Definition:</b> BoundingBox.h:10</div></div>
+<div class="ttc" id="astruct_bounding_box_html"><div class="ttname"><a href="struct_bounding_box.html">BoundingBox</a></div><div class="ttdef"><b>Definition:</b> BoundingBox.h:15</div></div>
+<div class="ttc" id="astruct_bounding_box_html_a823a737cc4911d0b1e11e394d5c4d5c6"><div class="ttname"><a href="struct_bounding_box.html#a823a737cc4911d0b1e11e394d5c4d5c6">BoundingBox::max</a></div><div class="ttdeci">PositionType max</div><div class="ttdoc">The maximum extent of the bounding box.</div><div class="ttdef"><b>Definition:</b> BoundingBox.h:17</div></div>
+<div class="ttc" id="astruct_bounding_box_html_a9ea1d2c2faf5ae402214a3da903a42c5"><div class="ttname"><a href="struct_bounding_box.html#a9ea1d2c2faf5ae402214a3da903a42c5">BoundingBox::min</a></div><div class="ttdeci">PositionType min</div><div class="ttdoc">The minimum extent of the bounding box.</div><div class="ttdef"><b>Definition:</b> BoundingBox.h:20</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

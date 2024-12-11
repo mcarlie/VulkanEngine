@@ -20,7 +20,6 @@ var hierarchy =
         ] ]
       ] ]
     ] ],
-    [ "VulkanEngine::CommandBuffer", "class_vulkan_engine_1_1_command_buffer.html", null ],
     [ "VulkanEngine::Descriptor", "class_vulkan_engine_1_1_descriptor.html", [
       [ "VulkanEngine::ShaderImage< format, image_type, tiling, sample_count_flags >", "class_vulkan_engine_1_1_shader_image.html", null ],
       [ "VulkanEngine::UniformBuffer< T >", "class_vulkan_engine_1_1_uniform_buffer.html", null ]
@@ -41,7 +40,7 @@ var hierarchy =
     [ "VulkanEngine::MeshBase", "class_vulkan_engine_1_1_mesh_base.html", [
       [ "VulkanEngine::Mesh< PositionType, IndexType, AdditionalAttributeTypes >", "class_vulkan_engine_1_1_mesh.html", null ]
     ] ],
-    [ "VulkanEngine::MouseInput", "class_vulkan_engine_1_1_mouse_input.html", null ],
+    [ "MouseInput", "class_mouse_input.html", null ],
     [ "VulkanEngine::RenderPass", "class_vulkan_engine_1_1_render_pass.html", null ],
     [ "VulkanEngine::SceneObject", "class_vulkan_engine_1_1_scene_object.html", [
       [ "VulkanEngine::Camera", "class_vulkan_engine_1_1_camera.html", null ],

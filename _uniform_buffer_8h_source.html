@@ -93,46 +93,52 @@ $(document).ready(function(){initNavTree('_uniform_buffer_8h_source.html',''); i
   <div class="headertitle"><div class="title">UniformBuffer.h</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#ifndef UNIFORMBUFFER_H</span></div>
-<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#define UNIFORMBUFFER_H</span></div>
-<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
-<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;VulkanEngine/Buffer.h&gt;</span></div>
-<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;VulkanEngine/Descriptor.h&gt;</span></div>
-<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
-<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;vulkan/vulkan.hpp&gt;</span></div>
+<div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="comment">// Copyright (c) 2024 Michael Carlie. All Rights Reserved.</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="comment">//</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="comment">// This software is released under the MIT License.</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="comment">// https://opensource.org/licenses/MIT</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span> </div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#ifndef UNIFORMBUFFER_H</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#define UNIFORMBUFFER_H</span></div>
 <div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
-<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespace_vulkan_engine.html">VulkanEngine</a> {</div>
-<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
-<div class="line"><a id="l00013" name="l00013"></a><span class="lineno"><a class="line" href="class_vulkan_engine_1_1_uniform_buffer.html">   13</a></span><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt; <span class="keyword">class </span><a class="code hl_class" href="class_vulkan_engine_1_1_uniform_buffer.html">UniformBuffer</a> : <span class="keyword">public</span> <a class="code hl_class" href="class_vulkan_engine_1_1_buffer.html">Buffer</a>, <span class="keyword">public</span> <a class="code hl_class" href="class_vulkan_engine_1_1_descriptor.html">Descriptor</a> {</div>
-<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="keyword">public</span>:</div>
-<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>  <a class="code hl_class" href="class_vulkan_engine_1_1_uniform_buffer.html">UniformBuffer</a>(uint32_t _binding, uint32_t _array_size = 1,</div>
-<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>                vk::ShaderStageFlags _vk_shader_stage_flags =</div>
-<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>                    vk::ShaderStageFlagBits::eAllGraphics);</div>
-<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span> </div>
-<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>  <span class="keyword">virtual</span> <a class="code hl_function" href="class_vulkan_engine_1_1_uniform_buffer.html#ad2eb6a9ea6ffd1c97a8b88797fd15d9e">~UniformBuffer</a>();</div>
-<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span> </div>
-<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>  <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code hl_function" href="class_vulkan_engine_1_1_uniform_buffer.html#a4bb90a3476300132ddc7d41011b9efb8">appendVkDescriptorSets</a>(</div>
-<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>      std::vector&lt;vk::WriteDescriptorSet&gt; &amp;write_descriptor_sets,</div>
-<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>      std::vector&lt;vk::CopyDescriptorSet&gt; &amp;copy_descriptor_sets,</div>
-<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>      <span class="keyword">const</span> vk::DescriptorSet &amp;destination_set);</div>
-<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span> </div>
-<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span><span class="keyword">private</span>:</div>
-<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>  uint32_t array_size;</div>
-<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span> </div>
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>  std::vector&lt;vk::DescriptorBufferInfo&gt; vk_descriptor_buffer_infos;</div>
-<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>};</div>
-<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span> </div>
-<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>} <span class="comment">// namespace VulkanEngine</span></div>
-<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span> </div>
-<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span><span class="preprocessor">#include &lt;UniformBuffer.cpp&gt;</span></div>
-<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span> </div>
-<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span><span class="preprocessor">#endif </span><span class="comment">/* UNIFORMBUFFER_H */</span><span class="preprocessor"></span></div>
-<div class="ttc" id="aclass_vulkan_engine_1_1_buffer_html"><div class="ttname"><a href="class_vulkan_engine_1_1_buffer.html">VulkanEngine::Buffer</a></div><div class="ttdoc">Class which represents a single buffer using vk::Buffer.</div><div class="ttdef"><b>Definition:</b> Buffer.h:20</div></div>
-<div class="ttc" id="aclass_vulkan_engine_1_1_descriptor_html"><div class="ttname"><a href="class_vulkan_engine_1_1_descriptor.html">VulkanEngine::Descriptor</a></div><div class="ttdef"><b>Definition:</b> Descriptor.h:10</div></div>
-<div class="ttc" id="aclass_vulkan_engine_1_1_uniform_buffer_html"><div class="ttname"><a href="class_vulkan_engine_1_1_uniform_buffer.html">VulkanEngine::UniformBuffer</a></div><div class="ttdef"><b>Definition:</b> UniformBuffer.h:13</div></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;VulkanEngine/Buffer.h&gt;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &lt;VulkanEngine/Descriptor.h&gt;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &lt;vulkan/vulkan.hpp&gt;</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespace_vulkan_engine.html">VulkanEngine</a> {</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno"><a class="line" href="class_vulkan_engine_1_1_uniform_buffer.html">   19</a></span><span class="keyword">class </span><a class="code hl_class" href="class_vulkan_engine_1_1_uniform_buffer.html">UniformBuffer</a> : <span class="keyword">public</span> <a class="code hl_class" href="class_vulkan_engine_1_1_buffer.html">Buffer</a>, <span class="keyword">public</span> <a class="code hl_class" href="class_vulkan_engine_1_1_descriptor.html">Descriptor</a> {</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span> <span class="keyword">public</span>:</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>  <a class="code hl_class" href="class_vulkan_engine_1_1_uniform_buffer.html">UniformBuffer</a>(uint32_t _binding, uint32_t _array_size = 1,</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>                vk::ShaderStageFlags _vk_shader_stage_flags =</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>                    vk::ShaderStageFlagBits::eAllGraphics);</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span> </div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>  <span class="keyword">virtual</span> <a class="code hl_function" href="class_vulkan_engine_1_1_uniform_buffer.html#ad2eb6a9ea6ffd1c97a8b88797fd15d9e">~UniformBuffer</a>();</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span> </div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>  <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code hl_function" href="class_vulkan_engine_1_1_uniform_buffer.html#a4bb90a3476300132ddc7d41011b9efb8">appendVkDescriptorSets</a>(</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>      std::vector&lt;vk::WriteDescriptorSet&gt; &amp;write_descriptor_sets,</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>      std::vector&lt;vk::CopyDescriptorSet&gt; &amp;copy_descriptor_sets,</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>      <span class="keyword">const</span> vk::DescriptorSet &amp;destination_set);</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span> </div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span> <span class="keyword">private</span>:</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>  uint32_t array_size;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span> </div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>  std::vector&lt;vk::DescriptorBufferInfo&gt; vk_descriptor_buffer_infos;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>};</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span> </div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>}  <span class="comment">// namespace VulkanEngine</span></div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span> </div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span><span class="preprocessor">#include &lt;UniformBuffer.cpp&gt;</span></div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span> </div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span><span class="preprocessor">#endif </span><span class="comment">/* UNIFORMBUFFER_H */</span><span class="preprocessor"></span></div>
+<div class="ttc" id="aclass_vulkan_engine_1_1_buffer_html"><div class="ttname"><a href="class_vulkan_engine_1_1_buffer.html">VulkanEngine::Buffer</a></div><div class="ttdoc">Class which represents a single buffer using vk::Buffer.</div><div class="ttdef"><b>Definition:</b> Buffer.h:25</div></div>
+<div class="ttc" id="aclass_vulkan_engine_1_1_descriptor_html"><div class="ttname"><a href="class_vulkan_engine_1_1_descriptor.html">VulkanEngine::Descriptor</a></div><div class="ttdef"><b>Definition:</b> Descriptor.h:15</div></div>
+<div class="ttc" id="aclass_vulkan_engine_1_1_uniform_buffer_html"><div class="ttname"><a href="class_vulkan_engine_1_1_uniform_buffer.html">VulkanEngine::UniformBuffer</a></div><div class="ttdef"><b>Definition:</b> UniformBuffer.h:19</div></div>
 <div class="ttc" id="aclass_vulkan_engine_1_1_uniform_buffer_html_a4bb90a3476300132ddc7d41011b9efb8"><div class="ttname"><a href="class_vulkan_engine_1_1_uniform_buffer.html#a4bb90a3476300132ddc7d41011b9efb8">VulkanEngine::UniformBuffer::appendVkDescriptorSets</a></div><div class="ttdeci">virtual void appendVkDescriptorSets(std::vector&lt; vk::WriteDescriptorSet &gt; &amp;write_descriptor_sets, std::vector&lt; vk::CopyDescriptorSet &gt; &amp;copy_descriptor_sets, const vk::DescriptorSet &amp;destination_set)</div><div class="ttdef"><b>Definition:</b> UniformBuffer.cpp:21</div></div>
 <div class="ttc" id="aclass_vulkan_engine_1_1_uniform_buffer_html_ad2eb6a9ea6ffd1c97a8b88797fd15d9e"><div class="ttname"><a href="class_vulkan_engine_1_1_uniform_buffer.html#ad2eb6a9ea6ffd1c97a8b88797fd15d9e">VulkanEngine::UniformBuffer::~UniformBuffer</a></div><div class="ttdeci">virtual ~UniformBuffer()</div><div class="ttdoc">Destructor.</div><div class="ttdef"><b>Definition:</b> UniformBuffer.cpp:18</div></div>
-<div class="ttc" id="anamespace_vulkan_engine_html"><div class="ttname"><a href="namespace_vulkan_engine.html">VulkanEngine</a></div><div class="ttdoc">TODO development of this class is in progress.</div><div class="ttdef"><b>Definition:</b> Attribute.h:8</div></div>
+<div class="ttc" id="anamespace_vulkan_engine_html"><div class="ttname"><a href="namespace_vulkan_engine.html">VulkanEngine</a></div><div class="ttdoc">TODO development of this class is in progress.</div><div class="ttdef"><b>Definition:</b> Attribute.h:13</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

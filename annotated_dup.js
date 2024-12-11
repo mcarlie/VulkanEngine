@@ -9,7 +9,6 @@ var annotated_dup =
       [ "Buffer", "class_vulkan_engine_1_1_buffer.html", "class_vulkan_engine_1_1_buffer" ],
       [ "BufferBase", "class_vulkan_engine_1_1_buffer_base.html", "class_vulkan_engine_1_1_buffer_base" ],
       [ "Camera", "class_vulkan_engine_1_1_camera.html", "class_vulkan_engine_1_1_camera" ],
-      [ "CommandBuffer", "class_vulkan_engine_1_1_command_buffer.html", "class_vulkan_engine_1_1_command_buffer" ],
       [ "Descriptor", "class_vulkan_engine_1_1_descriptor.html", "class_vulkan_engine_1_1_descriptor" ],
       [ "Device", "class_vulkan_engine_1_1_device.html", "class_vulkan_engine_1_1_device" ],
       [ "Framebuffer", "class_vulkan_engine_1_1_framebuffer.html", null ],
@@ -21,7 +20,6 @@ var annotated_dup =
       [ "KeyboardInput", "class_vulkan_engine_1_1_keyboard_input.html", "class_vulkan_engine_1_1_keyboard_input" ],
       [ "Mesh", "class_vulkan_engine_1_1_mesh.html", "class_vulkan_engine_1_1_mesh" ],
       [ "MeshBase", "class_vulkan_engine_1_1_mesh_base.html", "class_vulkan_engine_1_1_mesh_base" ],
-      [ "MouseInput", "class_vulkan_engine_1_1_mouse_input.html", "class_vulkan_engine_1_1_mouse_input" ],
       [ "OBJMesh", "class_vulkan_engine_1_1_o_b_j_mesh.html", "class_vulkan_engine_1_1_o_b_j_mesh" ],
       [ "RenderPass", "class_vulkan_engine_1_1_render_pass.html", "class_vulkan_engine_1_1_render_pass" ],
       [ "Scene", "class_vulkan_engine_1_1_scene.html", "class_vulkan_engine_1_1_scene" ],
@@ -40,5 +38,6 @@ var annotated_dup =
       [ "Window", "class_vulkan_engine_1_1_window.html", "class_vulkan_engine_1_1_window" ]
     ] ],
     [ "BoundingBox", "struct_bounding_box.html", "struct_bounding_box" ],
-    [ "BoundingBoxBase", "struct_bounding_box_base.html", null ]
+    [ "BoundingBoxBase", "struct_bounding_box_base.html", null ],
+    [ "MouseInput", "class_mouse_input.html", "class_mouse_input" ]
 ];
