@@ -11,7 +11,7 @@ This project was started to get some insight into how modern graphics APIs work.
 
 ## Build
 
-CMake is required for building.
+CMake version 3.16 or higher is required for building.
 
 First clone and enter the project directory.
 
