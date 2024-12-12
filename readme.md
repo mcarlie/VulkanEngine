@@ -71,7 +71,7 @@ cmake --build build
 
 </break>
 
-## Running
+## Run
 There is an example SimpleScene which demontrates how to use the API.
 
 ```
@@ -80,17 +80,7 @@ There is an example SimpleScene which demontrates how to use the API.
 
 Use the `--obj` option to specify the obj file and `--mtl` to specify the mtl file (if it's not in the same directory).
 
-### Inside the Docker container
-You can run the engine inside the Docker container with software rendering (expect very slow performance).
-
-The following command is for MacOS. After building inside the container run:
-```
-docker run -v ./build:/build -e DISPLAY=host.docker.internal:0 vulkan-engine /build/examples/SimpleScene
-```
-
-[Docker supports GPU rendering with NVidia GPUs.](https://docs.docker.com/config/containers/resource_constraints/#expose-gpus-for-use)
-
-## Tests
+## Test
 Tests can be enabled with the BUILD_TESTS CMake option.
 
 ```
