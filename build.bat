@@ -1,7 +1,5 @@
 @echo off
 
-REM Check if Git is installed
-echo Checking for Git...
 git --version >nul 2>&1
 if %ERRORLEVEL% neq 0 (
     echo ERROR: Git is not installed or not found in PATH.
@@ -9,7 +7,6 @@ if %ERRORLEVEL% neq 0 (
     exit /b 1
 )
 
-REM Check if vcpkg directory exists
 if not exist "vcpkg" (
     echo Cloning the vcpkg repository...
     git clone https://github.com/microsoft/vcpkg.git
