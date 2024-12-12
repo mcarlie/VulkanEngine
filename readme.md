@@ -11,14 +11,19 @@ This project was started to get some insight into how modern graphics APIs work.
 
 ## Build
 
+### Nix (MacOS, Linux)
+
+If you have Nix installed you can build the engine with the `build.sh` script.
+
+### Windows
+
+On Windows you can run the `build.bat` script.
+
+### Manual build
+<details>
+  <summary>Click to expand</summary>
+
 CMake version 3.16 or higher is required for building.
-
-First clone and enter the project directory.
-
-```
-git clone https://github.com/mcarlie/VulkanEngine.git
-cd VulkanEngine
-```
 
 ### MacOS
 Tested on MacOS 14 Sonoma with Clang 15. Dependencies can be installed with [Homebrew](https://brew.sh/)
@@ -62,16 +67,9 @@ mkdir build
 cmake -S . -B build -DCMAKE_TOOLCHAIN_FILE="$PWD\vcpkg\scripts\buildsystems\vcpkg.cmake"
 cmake --build build
 ```
+</details>
 
-### Docker
-A Dockerfile is provided which includes all dependencies and can be used to build for Ubuntu 22.04.
-
-```
-docker build -f Dockerfile -t vulkan-engine .
-docker run -v $(pwd):/src vulkan-engine /bin/sh -c "cmake -B /src/build /src && cmake --build /src/build"
-```
-
-Build output will be available in the `build` folder on the host.
+</break>
 
 ## Running
 There is an example SimpleScene which demontrates how to use the API.
