@@ -72,7 +72,6 @@ jobs:
             libvulkan-dev \
             glslang-dev \
             glslang-tools \
-            vulkan-validationlayers-dev \
             mesa-vulkan-drivers \
             xvfb
         sudo apt-get clean
