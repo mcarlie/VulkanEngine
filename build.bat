@@ -1,5 +1,18 @@
 @echo off
 
+set "BUILD_TYPE=Release"
+
+if "%1" neq "" (
+    if /i "%1"=="Debug" (
+        set "BUILD_TYPE=Debug"
+    ) else if /i "%1"=="Release" (
+        set "BUILD_TYPE=Release"
+    ) else (
+        echo ERROR: Invalid argument. Use "Debug" or "Release".
+        exit /b 1
+    )
+)
+
 git --version >nul 2>&1
 if %ERRORLEVEL% neq 0 (
     echo ERROR: Git is not installed or not found in PATH.
@@ -25,5 +38,5 @@ call .\bootstrap-vcpkg.bat
 set "VULKAN_SDK=%cd%\installed\x64-windows"
 cd ..
 if not exist "build" mkdir build
-cmake -S . -B build -DCMAKE_TOOLCHAIN_FILE=%cd%\vcpkg\scripts\buildsystems\vcpkg.cmake
-cmake --build build
+cmake -S . -B build -DCMAKE_BUILD_TYPE=%BUILD_TYPE% -DCMAKE_TOOLCHAIN_FILE=%cd%\vcpkg\scripts\buildsystems\vcpkg.cmake
+cmake --build build --config %BUILD_TYPE%
