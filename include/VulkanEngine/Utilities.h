@@ -18,7 +18,7 @@ namespace Utilities {
 
 /// Convert degrees to radian
 template <typename T>
-T toRadians(const T &val) {
+T toRadians(const T& val) {
   return val * Constants::pi<T>() / static_cast<T>(180);
 }
 
@@ -27,7 +27,7 @@ T toRadians(const T &val) {
 /// \param seed The hash to combine with.
 /// \param v The value to hash.
 template <class T>
-inline void hashCombine(size_t *seed, const T &v) {
+inline void hashCombine(size_t* seed, const T& v) {
   *seed ^= std::hash<T>()(v) + 0x9e3779b9 + (*seed << 6) + (*seed >> 2);
 }
 
@@ -35,8 +35,8 @@ inline void hashCombine(size_t *seed, const T &v) {
 /// https://gist.github.com/jks-liu/738976c06a0fbd547a64
 template <std::size_t i = 0, class C, class... Types>
 typename std::enable_if<i >= sizeof...(Types), C>::type tupleForEach(
-    const std::tuple<Types...> &t,  // NOLINT(whitespace/indent_namespace)
-    const C &op) {                  // NOLINT(whitespace/indent_namespace)
+    const std::tuple<Types...>& t,  // NOLINT(whitespace/indent_namespace)
+    const C& op) {                  // NOLINT(whitespace/indent_namespace)
   return op;
 }
 
@@ -46,8 +46,8 @@ template <size_t i = 0, class C, class... Types>
     typename std::enable_if <           // NOLINT(whitespace/indent_namespace)
     i<sizeof...(Types), C>::type        // NOLINT(whitespace/indent_namespace)
     tupleForEach(                       // NOLINT(whitespace/indent_namespace)
-        const std::tuple<Types...> &t,  // NOLINT(whitespace/indent_namespace)
-        const C &op) {                  // NOLINT(whitespace/indent_namespace)
+        const std::tuple<Types...>& t,  // NOLINT(whitespace/indent_namespace)
+        const C& op) {                  // NOLINT(whitespace/indent_namespace)
   op(std::get<i>(t));
   return tupleForEach<i + 1, C, Types...>(t, op);
 }
@@ -62,7 +62,7 @@ template <typename _Scalar, int _Rows, int _Cols, int _Options, int _MaxRows,
 struct std::hash<
     Eigen::Matrix<_Scalar, _Rows, _Cols, _Options, _MaxRows, _MaxCols>> {
   typedef Eigen::Matrix<_Scalar, _Rows, _Cols, _Options, _MaxRows, _MaxCols> T;
-  size_t operator()(T const &matrix) const {
+  size_t operator()(T const& matrix) const {
     size_t seed = 0;
     for (int i = 0; i < matrix.size(); ++i) {
       auto elem = *(matrix.data() + i);
@@ -76,9 +76,9 @@ struct std::hash<
 /// \tparam TupleArgs The template arguments passed to the tuple definition.
 template <class... TupleArgs>
 struct std::hash<std::tuple<TupleArgs...>> {
-  size_t operator()(const std::tuple<TupleArgs...> &tuple_value) const {
+  size_t operator()(const std::tuple<TupleArgs...>& tuple_value) const {
     size_t seed = 0;
-    auto visitor = [&seed](const auto &element) {
+    auto visitor = [&seed](const auto& element) {
       VulkanEngine::Utilities::hashCombine(&seed, element);
     };
     VulkanEngine::Utilities::tupleForEach(tuple_value, visitor);

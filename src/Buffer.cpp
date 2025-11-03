@@ -1,3 +1,23 @@
+// Copyright (c) 2025 Michael Carlie
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+
 #include <VulkanEngine/Buffer.h>
 #include <VulkanEngine/VulkanManager.h>
 
@@ -20,7 +40,7 @@ void VulkanEngine::Buffer::createBuffer(
     vk::BufferUsageFlags usage_flags,
     vk::MemoryPropertyFlags memory_property_flags,
     VmaMemoryUsage vma_memory_usage) {
-  auto &vulkan_manager = VulkanManager::getInstance();
+  auto& vulkan_manager = VulkanManager::getInstance();
 
   auto buffer_info = vk::BufferCreateInfo()
                          .setSize(data_size)
@@ -37,9 +57,9 @@ void VulkanEngine::Buffer::createBuffer(
       static_cast<VkBufferCreateInfo>(buffer_info);
 
   auto result = vmaCreateBuffer(
-      vulkan_manager.getDevice()->getVmaAllocator(), &buffer_create_info_c_handle,
-      &vma_allocation_create_info, reinterpret_cast<VkBuffer *>(&buffer),
-      &vma_allocation, nullptr);
+      vulkan_manager.getDevice()->getVmaAllocator(),
+      &buffer_create_info_c_handle, &vma_allocation_create_info,
+      reinterpret_cast<VkBuffer*>(&buffer), &vma_allocation, nullptr);
 
   if (result != VK_SUCCESS) {
     throw std::runtime_error("Could not create buffer!");
@@ -49,7 +69,7 @@ void VulkanEngine::Buffer::createBuffer(
 }
 
 void VulkanEngine::Buffer::insertTransferCommand(
-    const vk::CommandBuffer &command_buffer, const vk::Buffer &source_buffer) {
+    const vk::CommandBuffer& command_buffer, const vk::Buffer& source_buffer) {
   auto buffer_copy =
       vk::BufferCopy().setSrcOffset(0).setDstOffset(0).setSize(data_size);
 

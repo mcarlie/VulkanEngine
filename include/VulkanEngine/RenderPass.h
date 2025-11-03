@@ -33,7 +33,7 @@ class RenderPass {
 
   ~RenderPass();
 
-  const vk::RenderPass &getVkRenderPass() const;
+  const vk::RenderPass& getVkRenderPass() const;
 
   const std::shared_ptr<DepthStencilImageAttachment> getDepthStencilAttachment()
       const {

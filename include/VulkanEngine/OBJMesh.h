@@ -36,7 +36,7 @@ class OBJMesh : public SceneObject {
   virtual ~OBJMesh();
 
   /// \return The OBJMesh's bounding box.
-  const BoundingBox<Eigen::Vector3f> &getBoundingBox() const;
+  const BoundingBox<Eigen::Vector3f>& getBoundingBox() const;
 
  private:
 #pragma pack(push, 1)
@@ -60,7 +60,7 @@ class OBJMesh : public SceneObject {
   /// Load an obj file from the given path
   /// \param obj_path Path to the obj file.
   /// \param mtl_path Optional path to the mtl file.
-  void loadOBJ(const char *obj_path, const char *mtl_path);
+  void loadOBJ(const char* obj_path, const char* mtl_path);
 
   /// \return Auto generated vertex shader for this OBJMesh.
   /// \param has_tex_coords Set to true if the obj has texture coordinates.

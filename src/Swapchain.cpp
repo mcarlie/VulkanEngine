@@ -1,10 +1,33 @@
+// Copyright (c) 2025 Michael Carlie
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+
 #include <VulkanEngine/Swapchain.h>
+
+#include <limits>
+#include <memory>
 
 VulkanEngine::Swapchain::Swapchain(uint32_t number_of_images,
                                    std::shared_ptr<Window> _window,
                                    std::shared_ptr<RenderPass> render_pass)
     : window(_window) {
-  auto &vulkan_manager = VulkanManager::getInstance();
+  auto& vulkan_manager = VulkanManager::getInstance();
 
   auto swapchain_info =
       vk::SwapchainCreateInfoKHR()
@@ -84,7 +107,7 @@ VulkanEngine::Swapchain::Swapchain(uint32_t number_of_images,
       throw std::runtime_error("Could not create sync objects for rendering!");
     }
   }
-};
+}
 
 VulkanEngine::Swapchain::~Swapchain() {
   auto vk_device = VulkanManager::getInstance().getDevice()->getVkDevice();
@@ -106,11 +129,11 @@ VulkanEngine::Swapchain::~Swapchain() {
     vk_device.destroySemaphore(vk_rendering_finished_semaphores[i]);
     vk_device.destroyFence(vk_in_flight_fences[i]);
   }
-};
+}
 
 bool VulkanEngine::Swapchain::present() {
   uint32_t image_index;
-  auto &vulkan_manager = VulkanManager::getInstance();
+  auto& vulkan_manager = VulkanManager::getInstance();
   auto vk_device = vulkan_manager.getDevice()->getVkDevice();
 
   const uint64_t current_frame = vulkan_manager.getCurrentFrame();
@@ -118,8 +141,7 @@ bool VulkanEngine::Swapchain::present() {
   // Acquire the next available swapchain image that we can write to
   vk::Result result = vk_device.acquireNextImageKHR(
       vk_swapchain, std::numeric_limits<uint32_t>::max(),
-      vk_image_available_semaphores[current_frame], nullptr,
-      &image_index);
+      vk_image_available_semaphores[current_frame], nullptr, &image_index);
 
   // If the window size has changed or the image view is out of date
   // according to Vulkan then recreate the pipeline from the swapchain stage
@@ -149,14 +171,16 @@ bool VulkanEngine::Swapchain::present() {
                          .setSignalSemaphoreCount(signal_semaphores_count)
                          .setPSignalSemaphores(signal_semaphores);
 
-  auto fence_wait_result = vk_device.waitForFences(1, &vk_in_flight_fences[current_frame], VK_TRUE, std::numeric_limits<uint64_t>::max());
+  auto fence_wait_result =
+      vk_device.waitForFences(1, &vk_in_flight_fences[current_frame], VK_TRUE,
+                              std::numeric_limits<uint64_t>::max());
 
   if (fence_wait_result != vk::Result::eSuccess) {
-      if (fence_wait_result == vk::Result::eTimeout) {
-          throw std::runtime_error("Timeout while waiting for fence!");
-      } else {
-          throw std::runtime_error("Failed to wait for fence!");
-      }
+    if (fence_wait_result == vk::Result::eTimeout) {
+      throw std::runtime_error("Timeout while waiting for fence!");
+    } else {
+      throw std::runtime_error("Failed to wait for fence!");
+    }
   }
 
   vk_device.resetFences(vk_in_flight_fences[current_frame]);
@@ -188,7 +212,7 @@ vk::SwapchainKHR VulkanEngine::Swapchain::getVkSwapChain() {
 }
 
 void VulkanEngine::Swapchain::waitForFence() {
-  auto &vulkan_manager = VulkanManager::getInstance();
+  auto& vulkan_manager = VulkanManager::getInstance();
   auto fence_result = vulkan_manager.getDevice()->getVkDevice().waitForFences(
       vk_in_flight_fences[vulkan_manager.getCurrentFrame()], VK_TRUE,
       std::numeric_limits<uint32_t>::max());

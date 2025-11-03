@@ -22,7 +22,7 @@ class VertexAttribute : public Attribute {
   /// \param data The vertex data which will be represented by this
   /// VertexAttribute instance. \param binding The binding index of the vertex
   /// attribute.
-  VertexAttribute(const T *data, size_t _num_elements, uint32_t _location,
+  VertexAttribute(const T* data, size_t _num_elements, uint32_t _location,
                   vk::Format _format);
 
   /// Destructor.

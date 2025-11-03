@@ -35,7 +35,7 @@ class Camera : public SceneObject {
 
   /// Set the look at vector of the camera.
   /// \param _look_at The look at vector to use.
-  void setLookAt(const Eigen::Vector3f &_look_at);
+  void setLookAt(const Eigen::Vector3f& _look_at);
 
   /// \return The current look at vector
   const Eigen::Vector3f getLookAt() const;

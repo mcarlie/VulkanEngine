@@ -43,8 +43,8 @@ class Buffer : public StagedBufferDestination {
   /// Overriden to handle tranferring data from a StagedBuffer to this buffer.
   /// \param command_buffers The command buffer to insert the command into.
   /// \param source_buffer The source vk::Buffer in the StagedBuffer.
-  virtual void insertTransferCommand(const vk::CommandBuffer &command_buffer,
-                                     const vk::Buffer &source_buffer);
+  virtual void insertTransferCommand(const vk::CommandBuffer& command_buffer,
+                                     const vk::Buffer& source_buffer);
 
   /// Override to return the required data size of the staging buffer in order
   /// to transfer all data to this buffer. \return The data size for the staging

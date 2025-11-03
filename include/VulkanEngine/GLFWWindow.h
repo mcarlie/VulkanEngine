@@ -23,7 +23,7 @@ class GLFWWindow : public Window {
   /// \param _height The desired initial height of the window.
   /// \param _title The title of the window.
   /// \param _full_screen If true the window will be initialized to full screen.
-  GLFWWindow(int _width, int _height, const std::string &_title,
+  GLFWWindow(int _width, int _height, const std::string& _title,
              bool _full_screen);
 
   /// Desctructor.
@@ -38,7 +38,7 @@ class GLFWWindow : public Window {
   virtual void update();
 
   /// \return The required vulkan extensions for using GLFW.
-  virtual const std::vector<const char *> getRequiredVulkanInstanceExtensions()
+  virtual const std::vector<const char*> getRequiredVulkanInstanceExtensions()
       const;
 
   /// \return True if the window should close.
@@ -54,7 +54,7 @@ class GLFWWindow : public Window {
 
   /// Set window title.
   /// \param new_title The new window title.
-  virtual void setTitle(const std::string &new_title);
+  virtual void setTitle(const std::string& new_title);
 
   /// Get the Vulkan surface defined for this window.
   /// \return The vk::SurfaceKHR.
@@ -62,7 +62,7 @@ class GLFWWindow : public Window {
 
  private:
   /// Internal instance of the glfw window.
-  GLFWwindow *glfw_window;
+  GLFWwindow* glfw_window;
 
   /// Vulkan surface created by this window.
   VkSurfaceKHR vk_surface;
@@ -71,34 +71,34 @@ class GLFWWindow : public Window {
   /// Prints the error to std::err.
   /// \param error The error code.
   /// \param description Text describing the error.
-  static void errorCallback(int error, const char *description);
+  static void errorCallback(int error, const char* description);
 
   /// Callback which is called when the window's size has changed.
   /// \param _glfw_window The window which was resized.
   /// \param _width The new width of the window.
   /// \param _height The new height of the window.
-  static void windowResizeCallback(GLFWwindow *_glfw_window, int _width,
+  static void windowResizeCallback(GLFWwindow* _glfw_window, int _width,
                                    int _height);
 
   /// Callback which is called when the window's framebuffer size has changed.
   /// \param _glfw_window The window which was resized.
   /// \param _width The new width of the framebuffer.
   /// \param _height The new height of the framebuffer.
-  static void framebufferResizeCallback(GLFWwindow *_glfw_window, int _width,
+  static void framebufferResizeCallback(GLFWwindow* _glfw_window, int _width,
                                         int _height);
 
   /// Callback which gives the current position of the mouse.
   /// \param _glfw_window The window which recieved the event.
   /// \param xpos The x position of the mouse.
   /// \param ypos The y position of the mouse.
-  static void cursorPositionCallback(GLFWwindow *_glfw_window, double xpos,
+  static void cursorPositionCallback(GLFWwindow* _glfw_window, double xpos,
                                      double ypos);
 
   /// Callback for storing scroll value.
   /// \param _glfw_window The window which recieved the event.
   /// \param xoffset The scroll offset along x.
   /// \param yoffset The scroll offset along y.
-  static void scrollCallback(GLFWwindow *_glfw_window, double xoffset,
+  static void scrollCallback(GLFWwindow* _glfw_window, double xoffset,
                              double yoffset);
 
   /// Callback which gives which buttons are currently clicked on the mouse.
@@ -106,7 +106,7 @@ class GLFWWindow : public Window {
   /// \param button The button which has an event.
   /// \param action The action performed on the button.
   /// \param mods The modifier buttons pressed.
-  static void mouseButtonCallback(GLFWwindow *_glfw_window, int button,
+  static void mouseButtonCallback(GLFWwindow* _glfw_window, int button,
                                   int action, int mods);
 
   /// Callback which gives which buttons are currently pressed on the keyboard.
@@ -115,7 +115,7 @@ class GLFWWindow : public Window {
   /// \param scancode scanecode id.
   /// \param action The action performed on the button.
   /// \param mods The modifier buttons pressed.
-  static void keyCallback(GLFWwindow *_glfw_window, int key, int scancode,
+  static void keyCallback(GLFWwindow* _glfw_window, int key, int scancode,
                           int action, int mods);
 };
 

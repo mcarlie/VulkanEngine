@@ -53,11 +53,11 @@ class Mesh : public MeshBase {
   /// mesh. \param _attribute A list of additional VertexAttribute instances
   /// which will be used when rendering the mesh. \param _shader The shader to
   /// use when rendering the mesh.
-  Mesh(const std::shared_ptr<VertexAttribute<PositionType>> &_positions,
-       const std::shared_ptr<IndexAttribute<IndexType>> &_indices,
-       const std::tuple<AttributeContainer<AdditionalAttributeTypes>...>
-           &_attributes,
-       const std::shared_ptr<Shader> &_shader);
+  Mesh(const std::shared_ptr<VertexAttribute<PositionType>>& _positions,
+       const std::shared_ptr<IndexAttribute<IndexType>>& _indices,
+       const std::tuple<AttributeContainer<AdditionalAttributeTypes>...>&
+           _attributes,
+       const std::shared_ptr<Shader>& _shader);
 
   /// Destructor.
   virtual ~Mesh();
@@ -66,32 +66,32 @@ class Mesh : public MeshBase {
   /// \param _positions A VertexAttribute giving the positions of the vertices
   /// of the Mesh.
   void setPositions(
-      const std::shared_ptr<VertexAttribute<PositionType>> &_positions);
+      const std::shared_ptr<VertexAttribute<PositionType>>& _positions);
 
   /// Sets the indices of the Mesh.
   /// \param _indices An IndexAttribute giving the indices of the Mesh.
-  void setIndices(const std::shared_ptr<IndexAttribute<IndexType>> &_indices);
+  void setIndices(const std::shared_ptr<IndexAttribute<IndexType>>& _indices);
 
   /// Sets the additional attributes of the Mesh.
   /// \param _additional_attributes A list of additional VertexAttribute
   /// instances which will be used when rendering the Mesh.
   void setAttributes(
-      const std::tuple<AttributeContainer<AdditionalAttributeTypes>...>
-          &_attributes);
+      const std::tuple<AttributeContainer<AdditionalAttributeTypes>...>&
+          _attributes);
 
   /// Set the Mesh's BoundingBox.
   /// \param max The maximum position of the bounding box.
   /// \param min The minimum position of the bounding box.
-  void setBoundingBox(const PositionType &max, const PositionType &min);
+  void setBoundingBox(const PositionType& max, const PositionType& min);
 
   /// \return The vk::PipelineVertexInputStateCreateInfo instance describing the
   /// attributes that constitute the Mesh.
-  virtual const vk::PipelineVertexInputStateCreateInfo &
+  virtual const vk::PipelineVertexInputStateCreateInfo&
   createVkPipelineVertexInputStateCreateInfo();
 
   /// \return The vk::PipelineInputAssemblyStateCreateInfo describing how to
   /// handle the input assembly stage for the Mesh.
-  virtual const vk::PipelineInputAssemblyStateCreateInfo &
+  virtual const vk::PipelineInputAssemblyStateCreateInfo&
   createVkPipelineInputAssemblyStateCreateInfo();
 
   /// Start transfer of data belonging to all associated VertexAttribute
@@ -100,19 +100,19 @@ class Mesh : public MeshBase {
   ///                       If not specified an internal command buffer will be
   ///                       created and submitted to the graphics queue.
   virtual void transferBuffers(
-      const vk::CommandBuffer &command_buffer = nullptr);
+      const vk::CommandBuffer& command_buffer = nullptr);
 
   /// Bind VertexBuffers in this Mesh which will be used for rendering.
   /// \param command_buffer The vk::CommandBuffer to insert the commands into.
-  virtual void bindVertexBuffers(const vk::CommandBuffer &command_buffer);
+  virtual void bindVertexBuffers(const vk::CommandBuffer& command_buffer);
 
   /// Bind the index buffer of this Mesh.
   /// \param command_buffer The vk::CommandBuffer to insert the commands into.
-  virtual void bindIndexBuffer(const vk::CommandBuffer &command_buffer);
+  virtual void bindIndexBuffer(const vk::CommandBuffer& command_buffer);
 
   /// Insert drawing commands.
   /// \param command_buffer The vk::CommandBuffer to insert the commands into.
-  virtual void draw(const vk::CommandBuffer &command_buffer);
+  virtual void draw(const vk::CommandBuffer& command_buffer);
 
  private:
   /// The positions defining the Mesh.

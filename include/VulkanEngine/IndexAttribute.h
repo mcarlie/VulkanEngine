@@ -20,7 +20,7 @@ class IndexAttribute : public Attribute {
   /// Constructor.
   /// \param data The index data.
   /// \param num_elements The number of indice.
-  IndexAttribute(const T *data, size_t num_elements);
+  IndexAttribute(const T* data, size_t num_elements);
 
   /// Destructor.
   virtual ~IndexAttribute();

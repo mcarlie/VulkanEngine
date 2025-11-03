@@ -24,7 +24,7 @@ class Window {
   /// \param _height The desired initial height of the window.
   /// \param _title The title of the window.
   /// \param _full_screen If true the window will be initialized to full screen.
-  Window(uint32_t _width, uint32_t _height, const std::string &_title,
+  Window(uint32_t _width, uint32_t _height, const std::string& _title,
          bool _full_screen);
 
   /// Desctructor.
@@ -36,7 +36,7 @@ class Window {
 
   /// \return A list of vulkan extensions required by the underlying windowing
   /// system.
-  virtual const std::vector<const char *> getRequiredVulkanInstanceExtensions()
+  virtual const std::vector<const char*> getRequiredVulkanInstanceExtensions()
       const = 0;
 
   /// Create and return a vk::SurfaceKHR instance.
@@ -66,7 +66,7 @@ class Window {
 
   /// Set window title.
   /// \param new_title The new window title.
-  virtual void setTitle(const std::string &new_title);
+  virtual void setTitle(const std::string& new_title);
 
   /// \return The width of the window.
   uint32_t getWidth() const;
@@ -81,7 +81,7 @@ class Window {
   uint32_t getFramebufferHeight() const;
 
   /// \return The window's title.
-  const std::string &getTitle() const;
+  const std::string& getTitle() const;
 
   /// \return True if the window is in full screen mode.
   bool isFullScreen() const;
@@ -105,7 +105,7 @@ class Window {
                                   bool middle_pressed);
 
   void keyboardButtonPressedCallback(int scancode,
-                                     const KeyboardInput::KeyInfo &key_info);
+                                     const KeyboardInput::KeyInfo& key_info);
 
   /// The current width of the window.
   uint32_t width;

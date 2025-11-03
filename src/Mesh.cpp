@@ -1,25 +1,49 @@
+// Copyright (c) 2025 Michael Carlie
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+
 #ifndef MESH_CPP
 #define MESH_CPP
 
-#include "VulkanEngine/BoundingBox.h"
+#include <VulkanEngine/BoundingBox.h>
 #include <VulkanEngine/Mesh.h>
 #include <VulkanEngine/Utilities.h>
 
+#include <memory>
+#include <tuple>
+#include <vector>
+
 template <typename PositionType, typename IndexType,
           class... AdditionalAttributeTypes>
-VulkanEngine::Mesh<PositionType, IndexType,
-                   AdditionalAttributeTypes...>::Mesh() : pipeline_input_state_info_initialized(false) {
+VulkanEngine::Mesh<PositionType, IndexType, AdditionalAttributeTypes...>::Mesh()
+    : pipeline_input_state_info_initialized(false) {
   bounding_box.reset(new BoundingBox<PositionType>());
 }
 
 template <typename PositionType, typename IndexType,
           class... AdditionalAttributeTypes>
 VulkanEngine::Mesh<PositionType, IndexType, AdditionalAttributeTypes...>::Mesh(
-    const std::shared_ptr<VertexAttribute<PositionType>> &_positions,
-    const std::shared_ptr<IndexAttribute<IndexType>> &_indices,
-    const std::tuple<AttributeContainer<AdditionalAttributeTypes>...>
-        &_attributes,
-    const std::shared_ptr<Shader> &_shader) {}
+    const std::shared_ptr<VertexAttribute<PositionType>>& _positions,
+    const std::shared_ptr<IndexAttribute<IndexType>>& _indices,
+    const std::tuple<AttributeContainer<AdditionalAttributeTypes>...>&
+        _attributes,
+    const std::shared_ptr<Shader>& _shader) {}
 
 template <typename PositionType, typename IndexType,
           class... AdditionalAttributeTypes>
@@ -30,14 +54,14 @@ template <typename PositionType, typename IndexType,
           class... AdditionalAttributeTypes>
 void VulkanEngine::Mesh<PositionType, IndexType, AdditionalAttributeTypes...>::
     setPositions(
-        const std::shared_ptr<VertexAttribute<PositionType>> &_positions) {
+        const std::shared_ptr<VertexAttribute<PositionType>>& _positions) {
   positions = _positions;
 }
 
 template <typename PositionType, typename IndexType,
           class... AdditionalAttributeTypes>
 void VulkanEngine::Mesh<PositionType, IndexType, AdditionalAttributeTypes...>::
-    setIndices(const std::shared_ptr<IndexAttribute<IndexType>> &_indices) {
+    setIndices(const std::shared_ptr<IndexAttribute<IndexType>>& _indices) {
   indices = _indices;
 }
 
@@ -45,27 +69,26 @@ template <typename PositionType, typename IndexType,
           class... AdditionalAttributeTypes>
 void VulkanEngine::Mesh<PositionType, IndexType, AdditionalAttributeTypes...>::
     setAttributes(
-        const std::tuple<AttributeContainer<AdditionalAttributeTypes>...>
-            &_attributes) {
+        const std::tuple<AttributeContainer<AdditionalAttributeTypes>...>&
+            _attributes) {
   attributes = _attributes;
 }
 
 template <typename PositionType, typename IndexType,
           class... AdditionalAttributeTypes>
 void VulkanEngine::Mesh<PositionType, IndexType, AdditionalAttributeTypes...>::
-    setBoundingBox(const PositionType &max, const PositionType &min) {
+    setBoundingBox(const PositionType& max, const PositionType& min) {
   auto downcast_bbox =
-      static_cast<BoundingBox<PositionType> *>(bounding_box.get());
+      static_cast<BoundingBox<PositionType>*>(bounding_box.get());
   downcast_bbox->max = max;
   downcast_bbox->min = min;
 }
 
 template <typename PositionType, typename IndexType,
           class... AdditionalAttributeTypes>
-const vk::PipelineVertexInputStateCreateInfo &
-VulkanEngine::Mesh<PositionType, IndexType, AdditionalAttributeTypes...>::
-    createVkPipelineVertexInputStateCreateInfo() {
-
+const vk::PipelineVertexInputStateCreateInfo& VulkanEngine::Mesh<
+    PositionType, IndexType,
+    AdditionalAttributeTypes...>::createVkPipelineVertexInputStateCreateInfo() {
   if (pipeline_input_state_info_initialized) {
     return pipeline_vertex_input_state_info;
   }
@@ -77,8 +100,8 @@ VulkanEngine::Mesh<PositionType, IndexType, AdditionalAttributeTypes...>::
   attribute_descriptions.push_back(
       positions->getVkVertexInputAttributeDescriptions(binding_index));
 
-  auto visitor = [this, &binding_index](const auto &attrib_vec) {
-    for (const auto &attrib : attrib_vec) {
+  auto visitor = [this, &binding_index](const auto& attrib_vec) {
+    for (const auto& attrib : attrib_vec) {
       if (attrib.get()) {
         ++binding_index;
         binding_descriptions.push_back(
@@ -106,7 +129,7 @@ VulkanEngine::Mesh<PositionType, IndexType, AdditionalAttributeTypes...>::
 
 template <typename PositionType, typename IndexType,
           class... AdditionalAttributeTypes>
-const vk::PipelineInputAssemblyStateCreateInfo &
+const vk::PipelineInputAssemblyStateCreateInfo&
 VulkanEngine::Mesh<PositionType, IndexType, AdditionalAttributeTypes...>::
     createVkPipelineInputAssemblyStateCreateInfo() {
   pipeline_input_assembly_state_info =
@@ -120,7 +143,7 @@ VulkanEngine::Mesh<PositionType, IndexType, AdditionalAttributeTypes...>::
 template <typename PositionType, typename IndexType,
           class... AdditionalAttributeTypes>
 void VulkanEngine::Mesh<PositionType, IndexType, AdditionalAttributeTypes...>::
-    transferBuffers(const vk::CommandBuffer &command_buffer) {
+    transferBuffers(const vk::CommandBuffer& command_buffer) {
   if (!positions.get()) {
     throw std::runtime_error("No position vertex buffer to transfer for mesh.");
   }
@@ -131,8 +154,8 @@ void VulkanEngine::Mesh<PositionType, IndexType, AdditionalAttributeTypes...>::
     indices->transferBuffer();
   }
 
-  auto visitor = [](const auto &attrib_vec) {
-    for (const auto &attrib : attrib_vec) {
+  auto visitor = [](const auto& attrib_vec) {
+    for (const auto& attrib : attrib_vec) {
       if (attrib.get()) {
         attrib->transferBuffer();
       }
@@ -145,7 +168,7 @@ void VulkanEngine::Mesh<PositionType, IndexType, AdditionalAttributeTypes...>::
 template <typename PositionType, typename IndexType,
           class... AdditionalAttributeTypes>
 void VulkanEngine::Mesh<PositionType, IndexType, AdditionalAttributeTypes...>::
-    bindVertexBuffers(const vk::CommandBuffer &command_buffer) {
+    bindVertexBuffers(const vk::CommandBuffer& command_buffer) {
   if (!positions.get()) {
     throw std::runtime_error("No position vertex buffer to bind for mesh.");
   }
@@ -153,8 +176,8 @@ void VulkanEngine::Mesh<PositionType, IndexType, AdditionalAttributeTypes...>::
   std::vector<vk::Buffer> buffers;
   buffers.push_back(positions->getVkBuffer());
 
-  auto visitor = [&buffers](const auto &attrib_vec) {
-    for (const auto &attrib : attrib_vec) {
+  auto visitor = [&buffers](const auto& attrib_vec) {
+    for (const auto& attrib : attrib_vec) {
       if (attrib.get()) {
         buffers.push_back(attrib->getVkBuffer());
       }
@@ -170,7 +193,7 @@ void VulkanEngine::Mesh<PositionType, IndexType, AdditionalAttributeTypes...>::
 template <typename PositionType, typename IndexType,
           class... AdditionalAttributeTypes>
 void VulkanEngine::Mesh<PositionType, IndexType, AdditionalAttributeTypes...>::
-    bindIndexBuffer(const vk::CommandBuffer &command_buffer) {
+    bindIndexBuffer(const vk::CommandBuffer& command_buffer) {
   if (indices.get()) {
     command_buffer.bindIndexBuffer(indices->getVkBuffer(), 0,
                                    sizeof(IndexType) == sizeof(uint16_t)
@@ -182,7 +205,7 @@ void VulkanEngine::Mesh<PositionType, IndexType, AdditionalAttributeTypes...>::
 template <typename PositionType, typename IndexType,
           class... AdditionalAttributeTypes>
 void VulkanEngine::Mesh<PositionType, IndexType, AdditionalAttributeTypes...>::
-    draw(const vk::CommandBuffer &command_buffer) {
+    draw(const vk::CommandBuffer& command_buffer) {
   if (indices.get()) {
     command_buffer.drawIndexed(static_cast<uint32_t>(indices->getNumElements()),
                                1, 0, 0, 0);

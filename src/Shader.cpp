@@ -1,11 +1,34 @@
+// Copyright (c) 2025 Michael Carlie
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+
+#include <VulkanEngine/Device.h>
 #include <VulkanEngine/Shader.h>
 #include <VulkanEngine/VulkanManager.h>
-#include <VulkanEngine/Device.h>
+
+#include <memory>
+#include <vector>
 
 VulkanEngine::Shader::Shader(
-    const std::vector<std::shared_ptr<ShaderModule>> &_shader_modules) {
+    const std::vector<std::shared_ptr<ShaderModule>>& _shader_modules) {
   shader_modules = _shader_modules;
-  for (const auto &sm : shader_modules) {
+  for (const auto& sm : shader_modules) {
     auto shader_stage_info = vk::PipelineShaderStageCreateInfo()
                                  .setModule(sm->getVkShaderModule())
                                  .setStage(sm->getVkShaderStageFlag())
@@ -15,17 +38,19 @@ VulkanEngine::Shader::Shader(
 }
 
 VulkanEngine::Shader::~Shader() {
-  const auto &vk_device = VulkanManager::getInstance().getDevice()->getVkDevice();
+  const auto& vk_device =
+      VulkanManager::getInstance().getDevice()->getVkDevice();
   vk_device.destroyDescriptorPool(vk_descriptor_pool);
   vk_device.destroyPipelineLayout(vk_pipeline_layout);
-  for (const auto &dsl : vk_descriptor_set_layouts) {
+  for (const auto& dsl : vk_descriptor_set_layouts) {
     vk_device.destroyDescriptorSetLayout(dsl);
   }
 }
 
 void VulkanEngine::Shader::setDescriptors(
-    const std::vector<std::vector<std::shared_ptr<Descriptor>>> &_descriptors) {
-  const auto &vk_device = VulkanManager::getInstance().getDevice()->getVkDevice();
+    const std::vector<std::vector<std::shared_ptr<Descriptor>>>& _descriptors) {
+  const auto& vk_device =
+      VulkanManager::getInstance().getDevice()->getVkDevice();
 
   // Causes the pipeline layout to be recreated and include changes to
   // descriptors
@@ -39,10 +64,10 @@ void VulkanEngine::Shader::setDescriptors(
   std::vector<std::vector<vk::DescriptorSetLayoutBinding>>
       descriptor_set_layout_bindings;
 
-  for (const auto &d_vec : descriptors) {
+  for (const auto& d_vec : descriptors) {
     descriptor_set_layout_bindings.push_back(
         std::vector<vk::DescriptorSetLayoutBinding>());
-    for (const auto &d : d_vec) {
+    for (const auto& d : d_vec) {
       pool_sizes.push_back(d->getVkDescriptorPoolSize());
       descriptor_set_layout_bindings.back().push_back(
           d->getVkDescriptorSetLayoutBinding());
@@ -81,10 +106,12 @@ void VulkanEngine::Shader::setDescriptors(
       vk_device.allocateDescriptorSets(descriptor_set_allocate_info);
 
   for (size_t i = 0; i < descriptors.size(); ++i) {
-    auto write_descriptor_sets = std::make_shared<std::vector<vk::WriteDescriptorSet>>();
-    auto copy_descriptor_sets = std::make_shared<std::vector<vk::CopyDescriptorSet>>();
+    auto write_descriptor_sets =
+        std::make_shared<std::vector<vk::WriteDescriptorSet>>();
+    auto copy_descriptor_sets =
+        std::make_shared<std::vector<vk::CopyDescriptorSet>>();
 
-    for (const auto &d : descriptors[i]) {
+    for (const auto& d : descriptors[i]) {
       d->appendVkDescriptorSets(write_descriptor_sets, copy_descriptor_sets,
                                 vk_descriptor_sets[i]);
     }
@@ -94,7 +121,7 @@ void VulkanEngine::Shader::setDescriptors(
 }
 
 void VulkanEngine::Shader::bindDescriptorSet(
-    const vk::CommandBuffer &command_buffer, uint32_t descriptor_set_index) {
+    const vk::CommandBuffer& command_buffer, uint32_t descriptor_set_index) {
   if (descriptor_set_index < vk_descriptor_sets.size()) {
     command_buffer.bindDescriptorSets(
         vk::PipelineBindPoint::eGraphics, createVkPipelineLayout(), 0,
@@ -102,7 +129,7 @@ void VulkanEngine::Shader::bindDescriptorSet(
   }
 }
 
-const std::vector<vk::PipelineShaderStageCreateInfo> &
+const std::vector<vk::PipelineShaderStageCreateInfo>&
 VulkanEngine::Shader::getVkShaderStages() const {
   return shader_stages;
 }
@@ -116,9 +143,10 @@ const vk::PipelineLayout VulkanEngine::Shader::createVkPipelineLayout() {
             .setPSetLayouts(vk_descriptor_set_layouts.data())
             .setPushConstantRangeCount(0)
             .setPPushConstantRanges(nullptr);
-    vk_pipeline_layout =
-        VulkanManager::getInstance().getDevice()->getVkDevice().createPipelineLayout(
-            pipeline_layout_info);
+    vk_pipeline_layout = VulkanManager::getInstance()
+                             .getDevice()
+                             ->getVkDevice()
+                             .createPipelineLayout(pipeline_layout_info);
   }
 
   if (!vk_pipeline_layout) {

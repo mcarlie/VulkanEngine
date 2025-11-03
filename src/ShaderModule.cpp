@@ -1,6 +1,26 @@
+// Copyright (c) 2025 Michael Carlie
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+
+#include <VulkanEngine/Device.h>
 #include <VulkanEngine/ShaderModule.h>
 #include <VulkanEngine/VulkanManager.h>
-#include <VulkanEngine/Device.h>
 #include <glslang/Public/ResourceLimits.h>
 #include <glslang/Public/ShaderLang.h>
 #include <glslang/SPIRV/GlslangToSpv.h>
@@ -8,11 +28,13 @@
 #include <fstream>
 #include <iostream>
 #include <stdexcept>
+#include <string>
+#include <vector>
 
 bool VulkanEngine::ShaderModule::glslang_initialized = false;
 
 VulkanEngine::ShaderModule::ShaderModule(
-    const std::string &shader_string, bool is_filepath,
+    const std::string& shader_string, bool is_filepath,
     vk::ShaderStageFlagBits shader_stage_flag)
     : vk_shader_stage_flag(shader_stage_flag) {
   std::vector<uint32_t> bytecode;
@@ -35,9 +57,10 @@ VulkanEngine::ShaderModule::ShaderModule(
                                 .setPCode(bytecode.data())
                                 .setCodeSize(bytecode.size());
 
-  vk_shader_module =
-      VulkanManager::getInstance().getDevice()->getVkDevice().createShaderModule(
-          shader_module_info);
+  vk_shader_module = VulkanManager::getInstance()
+                         .getDevice()
+                         ->getVkDevice()
+                         .createShaderModule(shader_module_info);
   if (!vk_shader_module) {
     throw std::runtime_error("Could not create ShaderModule!");
   }
@@ -48,18 +71,19 @@ VulkanEngine::ShaderModule::~ShaderModule() {
       vk_shader_module);
 }
 
-const vk::ShaderStageFlagBits
-VulkanEngine::ShaderModule::getVkShaderStageFlag() const {
+const vk::ShaderStageFlagBits VulkanEngine::ShaderModule::getVkShaderStageFlag()
+    const {
   return vk_shader_stage_flag;
 }
 
-const vk::ShaderModule &VulkanEngine::ShaderModule::getVkShaderModule() const {
+const vk::ShaderModule& VulkanEngine::ShaderModule::getVkShaderModule() const {
   return vk_shader_module;
 }
 
-std::vector<uint32_t> VulkanEngine::ShaderModule::readSource(std::filesystem::path file_path) {
+std::vector<uint32_t> VulkanEngine::ShaderModule::readSource(
+    std::filesystem::path file_path) {
   std::vector<uint32_t> bytecode;
-  
+
   // Already compiled just read data
   if (file_path.extension() == ".spv") {
     std::ifstream file(file_path, std::ios::ate | std::ios::binary);
@@ -71,7 +95,7 @@ std::vector<uint32_t> VulkanEngine::ShaderModule::readSource(std::filesystem::pa
     const size_t file_size = static_cast<size_t>(file.tellg());
     bytecode.resize(file_size);
     file.seekg(0);
-    file.read(reinterpret_cast<char *>(bytecode.data()), file_size);
+    file.read(reinterpret_cast<char*>(bytecode.data()), file_size);
     file.close();
 
     return bytecode;
@@ -90,10 +114,10 @@ std::vector<uint32_t> VulkanEngine::ShaderModule::readSource(std::filesystem::pa
   return bytecode;
 }
 
-std::vector<uint32_t> VulkanEngine::ShaderModule::glslToSPIRV(const std::string &name,
-                                             const std::string &shader_string) {
+std::vector<uint32_t> VulkanEngine::ShaderModule::glslToSPIRV(
+    const std::string& name, const std::string& shader_string) {
   std::vector<uint32_t> bytecode;
-  
+
   if (!glslang_initialized) {
     glslang::InitializeProcess();
     glslang_initialized = true;
@@ -101,75 +125,70 @@ std::vector<uint32_t> VulkanEngine::ShaderModule::glslToSPIRV(const std::string 
 
   EShLanguage shader_type;
   switch (vk_shader_stage_flag) {
-  case vk::ShaderStageFlagBits::eVertex:
-    shader_type = EShLangVertex;
-    break;
-  case vk::ShaderStageFlagBits::eTessellationControl:
-    shader_type = EShLangTessControl;
-    break;
-  case vk::ShaderStageFlagBits::eTessellationEvaluation:
-    shader_type = EShLangTessEvaluation;
-    break;
-  case vk::ShaderStageFlagBits::eGeometry:
-    shader_type = EShLangGeometry;
-    break;
-  case vk::ShaderStageFlagBits::eFragment:
-    shader_type = EShLangFragment;
-    break;
-  case vk::ShaderStageFlagBits::eCompute:
-    shader_type = EShLangCompute;
-    break;
-  case vk::ShaderStageFlagBits::eRaygenNV:
-    shader_type = EShLangRayGenNV;
-    break;
-  case vk::ShaderStageFlagBits::eAnyHitNV:
-    shader_type = EShLangAnyHitNV;
-    break;
-  case vk::ShaderStageFlagBits::eClosestHitNV:
-    shader_type = EShLangClosestHitNV;
-    break;
-  case vk::ShaderStageFlagBits::eMissNV:
-    shader_type = EShLangMissNV;
-    break;
-  case vk::ShaderStageFlagBits::eIntersectionNV:
-    shader_type = EShLangIntersectNV;
-    break;
-  case vk::ShaderStageFlagBits::eCallableNV:
-    shader_type = EShLangCallableNV;
-    break;
-  case vk::ShaderStageFlagBits::eTaskNV:
-    shader_type = EShLangTaskNV;
-    break;
-  case vk::ShaderStageFlagBits::eMeshNV:
-    shader_type = EShLangMeshNV;
-    break;
-  default:
-    throw std::runtime_error("Invalid shader stage flag!");
+    case vk::ShaderStageFlagBits::eVertex:
+      shader_type = EShLangVertex;
+      break;
+    case vk::ShaderStageFlagBits::eTessellationControl:
+      shader_type = EShLangTessControl;
+      break;
+    case vk::ShaderStageFlagBits::eTessellationEvaluation:
+      shader_type = EShLangTessEvaluation;
+      break;
+    case vk::ShaderStageFlagBits::eGeometry:
+      shader_type = EShLangGeometry;
+      break;
+    case vk::ShaderStageFlagBits::eFragment:
+      shader_type = EShLangFragment;
+      break;
+    case vk::ShaderStageFlagBits::eCompute:
+      shader_type = EShLangCompute;
+      break;
+    case vk::ShaderStageFlagBits::eRaygenNV:
+      shader_type = EShLangRayGenNV;
+      break;
+    case vk::ShaderStageFlagBits::eAnyHitNV:
+      shader_type = EShLangAnyHitNV;
+      break;
+    case vk::ShaderStageFlagBits::eClosestHitNV:
+      shader_type = EShLangClosestHitNV;
+      break;
+    case vk::ShaderStageFlagBits::eMissNV:
+      shader_type = EShLangMissNV;
+      break;
+    case vk::ShaderStageFlagBits::eIntersectionNV:
+      shader_type = EShLangIntersectNV;
+      break;
+    case vk::ShaderStageFlagBits::eCallableNV:
+      shader_type = EShLangCallableNV;
+      break;
+    case vk::ShaderStageFlagBits::eTaskNV:
+      shader_type = EShLangTaskNV;
+      break;
+    case vk::ShaderStageFlagBits::eMeshNV:
+      shader_type = EShLangMeshNV;
+      break;
+    default:
+      throw std::runtime_error("Invalid shader stage flag!");
   }
 
   glslang::TShader tshader(shader_type);
-  const char *glsl_c_str = shader_string.c_str();
+  const char* glsl_c_str = shader_string.c_str();
   tshader.setStrings(&glsl_c_str, 1);
-  glslang::EshTargetClientVersion client_version =
-      glslang::EShTargetVulkan_1_0; // TODO
+  glslang::EshTargetClientVersion client_version = glslang::EShTargetVulkan_1_0;
   glslang::EShTargetLanguageVersion language_version =
       glslang::EShTargetSpv_1_0;
 
   tshader.setEnvInput(glslang::EShSourceGlsl, shader_type,
-                      glslang::EShClientVulkan,
-                      450); // TODO 100 means vulkan 1.0
+                      glslang::EShClientVulkan, 450);
   tshader.setEnvClient(glslang::EShClientVulkan, client_version);
   tshader.setEnvTarget(glslang::EShTargetSpv, language_version);
 
-  const TBuiltInResource *resources = GetDefaultResources();
+  const TBuiltInResource* resources = GetDefaultResources();
   EShMessages messages =
       static_cast<EShMessages>(EShMsgSpvRules | EShMsgVulkanRules);
-  glslang::TShader::ForbidIncluder
-      includer; /// TODO google has an includer in the source for glslang. Use
-                /// that? Write own?
+  glslang::TShader::ForbidIncluder includer;
 
   std::string preprocessed_glsl;
-  /// TODO 100 is default glsl version
   if (!tshader.preprocess(resources, 450, ENoProfile, false, false, messages,
                           &preprocessed_glsl, includer)) {
     std::cerr << "Preprocessing failed for shader " + name << std::endl;
@@ -178,7 +197,7 @@ std::vector<uint32_t> VulkanEngine::ShaderModule::glslToSPIRV(const std::string 
     throw std::runtime_error("Failed to preprocess shader.");
   }
 
-  const char *preprocessed_glsl_c_str = preprocessed_glsl.c_str();
+  const char* preprocessed_glsl_c_str = preprocessed_glsl.c_str();
   tshader.setStrings(&preprocessed_glsl_c_str, 1);
 
   /// TODO 100 is default glsl version

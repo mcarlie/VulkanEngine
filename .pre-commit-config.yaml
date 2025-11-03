@@ -1,17 +1,32 @@
 repos:
-  - repo: local
+  - repo: https://github.com/pre-commit/mirrors-clang-format
+    rev: v21.1.2
     hooks:
       - id: clang-format
-        name: Run clang-format
-        entry: clang-format
-        language: system
-        types: [c, c++]
         args: ["--style=google", "-i"]
         exclude: ^thirdparty/
+
+  - repo: https://github.com/google/addlicense
+    rev: v1.2.0
+    hooks:
+      - id: addlicense
+        args:
+          - -c
+          - "Michael Carlie"
+          - -l
+          - mit
+        files: \.(c|cpp|h|hpp)$
+        exclude: ^thirdparty/
+
+  - repo: https://github.com/cpplint/cpplint
+    rev: 2.0.2
+    hooks:
       - id: cpplint
-        name: Run cpplint
-        entry: cpplint
-        language: system
-        types: [c, c++]
-        args: []
+        args: ["--filter=-build/include_order"]
+        exclude: ^thirdparty/
+
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: end-of-file-fixer
         exclude: ^thirdparty/

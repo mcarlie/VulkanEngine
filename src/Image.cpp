@@ -1,9 +1,31 @@
+// Copyright (c) 2025 Michael Carlie
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+
 #ifndef IMAGE_CPP
 #define IMAGE_CPP
 
+#include <VulkanEngine/Device.h>
 #include <VulkanEngine/Image.h>
 #include <VulkanEngine/VulkanManager.h>
-#include <VulkanEngine/Device.h>
+
+#include <algorithm>
 
 template <vk::Format format, vk::ImageType image_type, vk::ImageTiling tiling,
           vk::SampleCountFlagBits sample_count_flags>
@@ -11,9 +33,14 @@ VulkanEngine::Image<format, image_type, tiling, sample_count_flags>::Image(
     vk::ImageLayout initial_layout, vk::ImageUsageFlags usage_flags,
     VmaMemoryUsage vma_memory_usage, uint32_t _width, uint32_t _height,
     uint32_t _depth, size_t pixel_size, bool generate_mip_maps)
-    : StagedBufferDestination(), ImageBase(), width(_width), height(_height),
-      depth(_depth), data_size(pixel_size * width * height * depth),
-      mipmap_levels(1), vk_image_layout(initial_layout) {
+    : StagedBufferDestination(),
+      ImageBase(),
+      width(_width),
+      height(_height),
+      depth(_depth),
+      data_size(pixel_size * width * height * depth),
+      mipmap_levels(1),
+      vk_image_layout(initial_layout) {
   if (generate_mip_maps) {
     mipmap_levels =
         static_cast<uint32_t>(std::floor(std::log2(std::max(width, height))));
@@ -24,15 +51,16 @@ VulkanEngine::Image<format, image_type, tiling, sample_count_flags>::Image(
 template <vk::Format format, vk::ImageType image_type, vk::ImageTiling tiling,
           vk::SampleCountFlagBits sample_count_flags>
 VulkanEngine::Image<format, image_type, tiling, sample_count_flags>::~Image() {
-  VulkanManager::getInstance().getDevice()->getVkDevice().destroyImageView(vk_image_view);
-  vmaDestroyImage(VulkanManager::getInstance().getDevice()->getVmaAllocator(), vk_image,
-                  vma_allocation);
+  VulkanManager::getInstance().getDevice()->getVkDevice().destroyImageView(
+      vk_image_view);
+  vmaDestroyImage(VulkanManager::getInstance().getDevice()->getVmaAllocator(),
+                  vk_image, vma_allocation);
 }
 
 template <vk::Format format, vk::ImageType image_type, vk::ImageTiling tiling,
           vk::SampleCountFlagBits sample_count_flags>
 void VulkanEngine::Image<format, image_type, tiling,
-                         sample_count_flags>::setImageData(const void *data) {
+                         sample_count_flags>::setImageData(const void* data) {
   updateBuffer(data, data_size);
 }
 
@@ -54,8 +82,9 @@ void VulkanEngine::Image<format, image_type, tiling, sample_count_flags>::
                                     .setViewType(image_view_type)
                                     .setSubresourceRange(subresource_range);
 
-  vk_image_view = VulkanManager::getInstance().getDevice()->getVkDevice().createImageView(
-      image_view_create_info);
+  vk_image_view =
+      VulkanManager::getInstance().getDevice()->getVkDevice().createImageView(
+          image_view_create_info);
   if (!vk_image_view) {
     throw std::runtime_error("Could not create image view for image!");
   }
@@ -65,8 +94,8 @@ template <vk::Format format, vk::ImageType image_type, vk::ImageTiling tiling,
           vk::SampleCountFlagBits sample_count_flags>
 void VulkanEngine::Image<format, image_type, tiling, sample_count_flags>::
     transitionImageLayout(vk::ImageLayout new_layout,
-                          const vk::CommandBuffer &command_buffer) {
-  const vk::CommandBuffer &command_buffer_to_use =
+                          const vk::CommandBuffer& command_buffer) {
+  const vk::CommandBuffer& command_buffer_to_use =
       command_buffer ? command_buffer : single_use_command_buffer;
   bool created_single_use_command_buffer = false;
   if (!command_buffer_to_use) {
@@ -181,8 +210,8 @@ vk::ImageView VulkanEngine::Image<format, image_type, tiling,
 template <vk::Format format, vk::ImageType image_type, vk::ImageTiling tiling,
           vk::SampleCountFlagBits sample_count_flags>
 void VulkanEngine::Image<format, image_type, tiling, sample_count_flags>::
-    insertTransferCommand(const vk::CommandBuffer &command_buffer,
-                          const vk::Buffer &source_buffer) {
+    insertTransferCommand(const vk::CommandBuffer& command_buffer,
+                          const vk::Buffer& source_buffer) {
   transitionImageLayout(vk::ImageLayout::eTransferDstOptimal, command_buffer);
 
   auto image_subresource = vk::ImageSubresourceLayers()
@@ -248,8 +277,9 @@ void VulkanEngine::Image<format, image_type, tiling, sample_count_flags>::
 
   VkImage c_image_handle;
   auto allocation_result = vmaCreateImage(
-      VulkanManager::getInstance().getDevice()->getVmaAllocator(), &image_create_info,
-      &allocate_info, &c_image_handle, &vma_allocation, nullptr);
+      VulkanManager::getInstance().getDevice()->getVmaAllocator(),
+      &image_create_info, &allocate_info, &c_image_handle, &vma_allocation,
+      nullptr);
   if (allocation_result != VK_SUCCESS) {
     throw std::runtime_error("Could not allocate Image memory!");
   }
@@ -260,8 +290,7 @@ void VulkanEngine::Image<format, image_type, tiling, sample_count_flags>::
 template <vk::Format format, vk::ImageType image_type, vk::ImageTiling tiling,
           vk::SampleCountFlagBits sample_count_flags>
 void VulkanEngine::Image<format, image_type, tiling, sample_count_flags>::
-    generateMipmaps(const vk::CommandBuffer &command_buffer) {
-
+    generateMipmaps(const vk::CommandBuffer& command_buffer) {
   auto subresource_range = vk::ImageSubresourceRange()
                                .setAspectMask(vk::ImageAspectFlagBits::eColor)
                                .setLevelCount(1)
@@ -288,9 +317,10 @@ void VulkanEngine::Image<format, image_type, tiling, sample_count_flags>::
         .setSrcAccessMask(vk::AccessFlagBits::eTransferWrite)
         .setDstAccessMask(vk::AccessFlagBits::eTransferRead);
 
-    command_buffer.pipelineBarrier(
-        vk::PipelineStageFlagBits::eTransfer, vk::PipelineStageFlagBits::eTransfer,
-        vk::DependencyFlags(), 0, nullptr, 0, nullptr, 1, &image_memory_barrier);
+    command_buffer.pipelineBarrier(vk::PipelineStageFlagBits::eTransfer,
+                                   vk::PipelineStageFlagBits::eTransfer,
+                                   vk::DependencyFlags(), 0, nullptr, 0,
+                                   nullptr, 1, &image_memory_barrier);
 
     auto blit_src_subresource =
         vk::ImageSubresourceLayers()
@@ -312,17 +342,15 @@ void VulkanEngine::Image<format, image_type, tiling, sample_count_flags>::
         vk::Offset3D(0, 0, 0),
         vk::Offset3D(mip_width > 1 ? mip_width / 2 : 1,
                      mip_height > 1 ? mip_height / 2 : 1, 1)};
-    auto image_blit =
-        vk::ImageBlit()
-            .setSrcOffsets(blit_src_offsets)
-            .setSrcSubresource(blit_src_subresource)
-            .setDstOffsets(blit_dst_offsets)
-            .setDstSubresource(blit_dst_subresource);
+    auto image_blit = vk::ImageBlit()
+                          .setSrcOffsets(blit_src_offsets)
+                          .setSrcSubresource(blit_src_subresource)
+                          .setDstOffsets(blit_dst_offsets)
+                          .setDstSubresource(blit_dst_subresource);
 
-    command_buffer.blitImage(
-        vk_image, vk::ImageLayout::eTransferSrcOptimal, vk_image,
-        vk::ImageLayout::eTransferDstOptimal, 1, &image_blit,
-        vk::Filter::eLinear);
+    command_buffer.blitImage(vk_image, vk::ImageLayout::eTransferSrcOptimal,
+                             vk_image, vk::ImageLayout::eTransferDstOptimal, 1,
+                             &image_blit, vk::Filter::eLinear);
 
     // Scale next mip map level.
     if (mip_width > 1) mip_width /= 2;
@@ -338,9 +366,10 @@ void VulkanEngine::Image<format, image_type, tiling, sample_count_flags>::
       .setSrcAccessMask(vk::AccessFlagBits::eTransferWrite)
       .setDstAccessMask(vk::AccessFlagBits::eShaderRead);
 
-  command_buffer.pipelineBarrier(
-      vk::PipelineStageFlagBits::eTransfer, vk::PipelineStageFlagBits::eFragmentShader,
-      vk::DependencyFlags(), 0, nullptr, 0, nullptr, 1, &image_memory_barrier);
+  command_buffer.pipelineBarrier(vk::PipelineStageFlagBits::eTransfer,
+                                 vk::PipelineStageFlagBits::eFragmentShader,
+                                 vk::DependencyFlags(), 0, nullptr, 0, nullptr,
+                                 1, &image_memory_barrier);
 
   // The last mip map level was never set to eTransferSrcOptimal
   subresource_range.setBaseMipLevel(mipmap_levels - 1);
@@ -351,9 +380,10 @@ void VulkanEngine::Image<format, image_type, tiling, sample_count_flags>::
       .setSrcAccessMask(vk::AccessFlagBits::eTransferWrite)
       .setDstAccessMask(vk::AccessFlagBits::eShaderRead);
 
-  command_buffer.pipelineBarrier(
-      vk::PipelineStageFlagBits::eTransfer, vk::PipelineStageFlagBits::eFragmentShader,
-      vk::DependencyFlags(), 0, nullptr, 0, nullptr, 1, &image_memory_barrier);
+  command_buffer.pipelineBarrier(vk::PipelineStageFlagBits::eTransfer,
+                                 vk::PipelineStageFlagBits::eFragmentShader,
+                                 vk::DependencyFlags(), 0, nullptr, 0, nullptr,
+                                 1, &image_memory_barrier);
 
   vk_image_layout = vk::ImageLayout::eShaderReadOnlyOptimal;
 }

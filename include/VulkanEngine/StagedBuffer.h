@@ -35,13 +35,13 @@ class StagedBuffer : public DestinationClass {
   /// transfer command in.
   ///                       If not specified an internal command buffer will be
   ///                       created and submitted to the appropriate queue.
-  void transferBuffer(const vk::CommandBuffer &command_buffer = nullptr);
+  void transferBuffer(const vk::CommandBuffer& command_buffer = nullptr);
 
   /// Copy the data to the buffer.
   /// Overridden to update the source buffer.
   /// \param _data Pointer to the data.
   /// \param _data_size The size of the data in bytes.
-  void updateBuffer(const void *_data, size_t _data_size) override;
+  void updateBuffer(const void* _data, size_t _data_size) override;
 
  protected:
   /// The source buffer. Data will be transferred from this buffer to the

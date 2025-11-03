@@ -48,7 +48,7 @@ class Image : public StagedBufferDestination, public ImageBase {
 
   /// Sets the image data from the given pointer.
   /// \param data Pointer to the image data.
-  void setImageData(const void *data);
+  void setImageData(const void* data);
 
   /// Create vk::ImageView.
   /// \param image_view_type The type of image view.
@@ -62,7 +62,7 @@ class Image : public StagedBufferDestination, public ImageBase {
   /// command buffer to add the command to. One will be created and added to the
   /// graphics queue if not specified.
   void transitionImageLayout(vk::ImageLayout new_layout,
-                             const vk::CommandBuffer &command_buffer = nullptr);
+                             const vk::CommandBuffer& command_buffer = nullptr);
 
   /// Get the vk::Format of the image.
   const vk::Format getVkFormat() const;
@@ -80,8 +80,8 @@ class Image : public StagedBufferDestination, public ImageBase {
   /// Overridden to handle tranferring data from a StagedBuffer to this Image.
   /// \param command_buffers The command buffer to insert the command into.
   /// \param source_buffer The source vk::Buffer in the StagedBuffer.
-  virtual void insertTransferCommand(const vk::CommandBuffer &command_buffer,
-                                     const vk::Buffer &source_buffer);
+  virtual void insertTransferCommand(const vk::CommandBuffer& command_buffer,
+                                     const vk::Buffer& source_buffer);
 
   /// \return The data size for the staging buffer.
   virtual size_t getStagingBufferSize() const;
@@ -96,7 +96,7 @@ class Image : public StagedBufferDestination, public ImageBase {
   /// Generate mipmap images for this image.
   /// \param command_buffer The command buffer to use for generating the
   /// mipmaps.
-  void generateMipmaps(const vk::CommandBuffer &command_buffer);
+  void generateMipmaps(const vk::CommandBuffer& command_buffer);
 
  protected:
   /// The width of the Image.

@@ -20,7 +20,7 @@ class Shader {
   /// Constructor.
   /// \param shader_modules ShaderModule instances to use in this shader.
   explicit Shader(
-      const std::vector<std::shared_ptr<ShaderModule>> &_shader_modules);
+      const std::vector<std::shared_ptr<ShaderModule>>& _shader_modules);
 
   /// Destructor.
   ~Shader();
@@ -28,17 +28,17 @@ class Shader {
   /// Set descriptors for this shader, such as images and buffers.
   /// \param _descriptors List of descriptors to set.
   void setDescriptors(
-      const std::vector<std::vector<std::shared_ptr<Descriptor>>>
-          &_descriptors);
+      const std::vector<std::vector<std::shared_ptr<Descriptor>>>&
+          _descriptors);
 
   /// Bind a set of descriptors to an index.
   /// \param command_buffer Command buffer used for binding.
   /// \param descriptor_set_index The index to bind to.
-  void bindDescriptorSet(const vk::CommandBuffer &command_buffer,
+  void bindDescriptorSet(const vk::CommandBuffer& command_buffer,
                          uint32_t descriptor_set_index);
 
   /// \return Vulkan PipelineShaderStageCreateInfo instances.
-  const std::vector<vk::PipelineShaderStageCreateInfo> &getVkShaderStages()
+  const std::vector<vk::PipelineShaderStageCreateInfo>& getVkShaderStages()
       const;
 
   /// \return Vulkan PipelineLayout instances.

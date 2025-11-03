@@ -24,12 +24,12 @@ class MeshBase {
 
   /// \return The vk::PipelineVertexInputStateCreateInfo instance describing the
   /// attributes that consitute the Mesh.
-  virtual const vk::PipelineVertexInputStateCreateInfo &
+  virtual const vk::PipelineVertexInputStateCreateInfo&
   createVkPipelineVertexInputStateCreateInfo() = 0;
 
   /// \return The vk::PipelineInputAssemblyStateCreateInfo describing how to
   /// handle the input assembly stage for the Mesh.
-  virtual const vk::PipelineInputAssemblyStateCreateInfo &
+  virtual const vk::PipelineInputAssemblyStateCreateInfo&
   createVkPipelineInputAssemblyStateCreateInfo() = 0;
 
   /// Start transfer of data belonging to all associated VertexAttribute
@@ -38,23 +38,23 @@ class MeshBase {
   ///                       If none is provided a vk::CommandBuffer
   ///                       will be allocated and executed automatically.
   virtual void transferBuffers(
-      const vk::CommandBuffer &command_buffer = nullptr) = 0;
+      const vk::CommandBuffer& command_buffer = nullptr) = 0;
 
   /// Bind VertexBuffers in this Mesh which will be used for rendering.
   /// \param command_buffer The vk::CommandBuffer to insert the commands into.
-  virtual void bindVertexBuffers(const vk::CommandBuffer &command_buffer) = 0;
+  virtual void bindVertexBuffers(const vk::CommandBuffer& command_buffer) = 0;
 
   /// Bind the index buffer of this Mesh.
   /// \param command_buffer The vk::CommandBuffer to insert the commands into.
-  virtual void bindIndexBuffer(const vk::CommandBuffer &command_buffer) = 0;
+  virtual void bindIndexBuffer(const vk::CommandBuffer& command_buffer) = 0;
 
   /// Insert drawing commands.
   /// \param command_buffer The vk::CommandBuffer to insert the commands into.
-  virtual void draw(const vk::CommandBuffer &command_buffer) = 0;
+  virtual void draw(const vk::CommandBuffer& command_buffer) = 0;
 
   template <typename PositionType>
-  const BoundingBox<PositionType> &getBoundingBox() const {
-    return *static_cast<const BoundingBox<PositionType> *>(bounding_box.get());
+  const BoundingBox<PositionType>& getBoundingBox() const {
+    return *static_cast<const BoundingBox<PositionType>*>(bounding_box.get());
   }
 
  protected:

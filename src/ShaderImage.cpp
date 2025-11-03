@@ -1,8 +1,30 @@
+// Copyright (c) 2025 Michael Carlie
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+
 #ifndef SHADERIMAGE_CPP
 #define SHADERIMAGE_CPP
 
 #include <VulkanEngine/Image.h>
 #include <VulkanEngine/ShaderImage.h>
+
+#include <memory>
 
 template <vk::Format format, vk::ImageType image_type, vk::ImageTiling tiling,
           vk::SampleCountFlagBits sample_count_flags>
@@ -23,7 +45,8 @@ template <vk::Format format, vk::ImageType image_type, vk::ImageTiling tiling,
           vk::SampleCountFlagBits sample_count_flags>
 VulkanEngine::ShaderImage<format, image_type, tiling,
                           sample_count_flags>::~ShaderImage() {
-  VulkanManager::getInstance().getDevice()->getVkDevice().destroySampler(vk_sampler);
+  VulkanManager::getInstance().getDevice()->getVkDevice().destroySampler(
+      vk_sampler);
 }
 
 template <vk::Format format, vk::ImageType image_type, vk::ImageTiling tiling,
@@ -48,8 +71,9 @@ void VulkanEngine::ShaderImage<format, image_type, tiling,
           .setMinLod(0.0f)
           .setMaxLod(static_cast<float>(this->mipmap_levels));
 
-  vk_sampler = VulkanManager::getInstance().getDevice()->getVkDevice().createSampler(
-      sampler_create_info);
+  vk_sampler =
+      VulkanManager::getInstance().getDevice()->getVkDevice().createSampler(
+          sampler_create_info);
   if (!vk_sampler) {
     throw std::runtime_error("Could not create sampler for image");
   }
@@ -57,9 +81,8 @@ void VulkanEngine::ShaderImage<format, image_type, tiling,
 
 template <vk::Format format, vk::ImageType image_type, vk::ImageTiling tiling,
           vk::SampleCountFlagBits sample_count_flags>
-vk::DescriptorImageInfo
-VulkanEngine::ShaderImage<format, image_type, tiling,
-                          sample_count_flags>::getVkDescriptorImageInfo()
+vk::DescriptorImageInfo VulkanEngine::ShaderImage<
+    format, image_type, tiling, sample_count_flags>::getVkDescriptorImageInfo()
     const {
   return vk::DescriptorImageInfo()
       .setSampler(vk_sampler)
@@ -70,10 +93,11 @@ VulkanEngine::ShaderImage<format, image_type, tiling,
 template <vk::Format format, vk::ImageType image_type, vk::ImageTiling tiling,
           vk::SampleCountFlagBits sample_count_flags>
 void VulkanEngine::ShaderImage<format, image_type, tiling, sample_count_flags>::
-    appendVkDescriptorSets(
-        std::shared_ptr<std::vector<vk::WriteDescriptorSet>> write_descriptor_sets,
-        std::shared_ptr<std::vector<vk::CopyDescriptorSet>> copy_descriptor_sets,
-        const vk::DescriptorSet &destination_set) {
+    appendVkDescriptorSets(std::shared_ptr<std::vector<vk::WriteDescriptorSet>>
+                               write_descriptor_sets,
+                           std::shared_ptr<std::vector<vk::CopyDescriptorSet>>
+                               copy_descriptor_sets,
+                           const vk::DescriptorSet& destination_set) {
   vk_descriptor_image_info = vk::DescriptorImageInfo()
                                  .setSampler(vk_sampler)
                                  .setImageView(this->vk_image_view)

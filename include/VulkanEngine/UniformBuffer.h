@@ -36,7 +36,7 @@ class UniformBuffer : public Buffer, public Descriptor {
       std::shared_ptr<std::vector<vk::WriteDescriptorSet>>
           write_descriptor_sets,
       std::shared_ptr<std::vector<vk::CopyDescriptorSet>> copy_descriptor_sets,
-      const vk::DescriptorSet &destination_set);
+      const vk::DescriptorSet& destination_set);
 
  private:
   /// For arrays, specifies the array size.

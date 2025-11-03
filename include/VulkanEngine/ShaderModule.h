@@ -21,7 +21,7 @@ class ShaderModule {
   /// \param shader_string Either the source path or raw shader string
   /// \param shader_stage_flag The vk::ShaderStageFlagBits which indicates the
   /// type of shader stage.
-  ShaderModule(const std::string &shader_string, bool is_filepath,
+  ShaderModule(const std::string& shader_string, bool is_filepath,
                vk::ShaderStageFlagBits shader_stage_flag);
 
   /// Destructor.
@@ -31,7 +31,7 @@ class ShaderModule {
   const vk::ShaderStageFlagBits getVkShaderStageFlag() const;
 
   /// \return The internal vk::ShaderModule instance.
-  const vk::ShaderModule &getVkShaderModule() const;
+  const vk::ShaderModule& getVkShaderModule() const;
 
  private:
   /// Read the source code file.
@@ -42,8 +42,8 @@ class ShaderModule {
   /// Convert a GLSL shader string to SPIRV bytecode
   /// \param shader_string The GLSL shader string
   /// \param [out] spirv The resulting SPIRV bytecode
-  std::vector<uint32_t> glslToSPIRV(const std::string &name,
-                                    const std::string &shader_string);
+  std::vector<uint32_t> glslToSPIRV(const std::string& name,
+                                    const std::string& shader_string);
 
   /// The internal vk::ShaderModule instance.
   vk::ShaderModule vk_shader_module;

@@ -1,3 +1,23 @@
+// Copyright (c) 2025 Michael Carlie
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+
 #ifndef CAMERA_CPP
 #define CAMERA_CPP
 
@@ -9,8 +29,13 @@ VulkanEngine::Camera::Camera(Eigen::Vector3f _look_at,
                              Eigen::Vector3f _up_vector, float _z_near,
                              float _z_far, float _fov, uint32_t _width,
                              uint32_t _height)
-    : look_at(_look_at), up_vector(_up_vector), z_near(_z_near), z_far(_z_far),
-      fov(_fov), width(_width), height(_height) {}
+    : look_at(_look_at),
+      up_vector(_up_vector),
+      z_near(_z_near),
+      z_far(_z_far),
+      fov(_fov),
+      width(_width),
+      height(_height) {}
 
 VulkanEngine::Camera::~Camera() {}
 
@@ -21,14 +46,14 @@ void VulkanEngine::Camera::update(std::shared_ptr<SceneState> scene_state) {
     setHeight(active_window->getFramebufferHeight());
 
     scene_state->setViewMatrix(scene_state->getTotalTransform() *
-                              getTransform().inverse() * getViewMatrix());
+                               getTransform().inverse() * getViewMatrix());
     scene_state->setProjectionMatrix(getPerspectiveProjectionMatrix());
   }
 
   SceneObject::update(scene_state);
 }
 
-void VulkanEngine::Camera::setLookAt(const Eigen::Vector3f &_look_at) {
+void VulkanEngine::Camera::setLookAt(const Eigen::Vector3f& _look_at) {
   look_at = _look_at;
 }
 
@@ -40,8 +65,8 @@ const Eigen::Vector3f VulkanEngine::Camera::getUpVector() const {
   return up_vector;
 }
 
-const Eigen::Matrix4f
-VulkanEngine::Camera::getPerspectiveProjectionMatrix() const {
+const Eigen::Matrix4f VulkanEngine::Camera::getPerspectiveProjectionMatrix()
+    const {
   const float tan_half_fov =
       std::tan(Constants::pi<float>() * fov / (2.0f * 180.0f));
   const float aspect = width / static_cast<float>(height);
@@ -68,9 +93,9 @@ VulkanEngine::Camera::getPerspectiveProjectionMatrix() const {
 const Eigen::Matrix4f VulkanEngine::Camera::getViewMatrix() const {
   Eigen::Vector3f position = Eigen::Affine3f(getTransform()).translation();
 
-  const auto &z_axis = (look_at - position).normalized();
-  const auto &x_axis = z_axis.cross(up_vector).normalized();
-  const auto &y_axis = x_axis.cross(z_axis);
+  const auto& z_axis = (look_at - position).normalized();
+  const auto& x_axis = z_axis.cross(up_vector).normalized();
+  const auto& y_axis = x_axis.cross(z_axis);
 
   Eigen::Matrix4f result = Eigen::Matrix4f::Identity();
   result(0, 0) = x_axis(0);

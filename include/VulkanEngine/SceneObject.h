@@ -21,7 +21,7 @@ class SceneObject {
 
   /// Add child SceneObject instances which will inherit the transformation of
   /// this SceneObject. \param _children The children to add.
-  void addChildren(const std::vector<std::shared_ptr<SceneObject>> &_children);
+  void addChildren(const std::vector<std::shared_ptr<SceneObject>>& _children);
 
   /// Get the current local transformation matrix.
   /// \return The current local transformation matrix
@@ -29,7 +29,7 @@ class SceneObject {
 
   /// Set the current local transformation matrix.
   /// \param _transform The desired local transformation matrix.
-  void setTransform(const Eigen::Matrix4f &_transform);
+  void setTransform(const Eigen::Matrix4f& _transform);
 
  protected:
   /// Update this scene object.

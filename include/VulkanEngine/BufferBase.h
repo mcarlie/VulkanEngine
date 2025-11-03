@@ -23,7 +23,7 @@ class BufferBase {
   /// Copy the data to the buffer.
   /// \param data Pointer to the data.
   /// \param data_size The size of the data in bytes.
-  virtual void updateBuffer(const void *_data, size_t _data_size);
+  virtual void updateBuffer(const void* _data, size_t _data_size);
 
  protected:
   /// VmaAllocation used to handle allocation with Vulkan Memory Allocator

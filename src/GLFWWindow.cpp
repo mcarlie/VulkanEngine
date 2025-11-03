@@ -1,12 +1,36 @@
+// Copyright (c) 2025 Michael Carlie
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+
 #include <VulkanEngine/GLFWWindow.h>
 #include <VulkanEngine/VulkanManager.h>
 
 #include <iostream>
+#include <string>
+#include <vector>
 
 VulkanEngine::GLFWWindow::GLFWWindow(int _width, int _height,
-                                     const std::string &_title,
+                                     const std::string& _title,
                                      bool _full_screen)
-    : Window(_width, _height, _title, _full_screen), glfw_window(nullptr), vk_surface(nullptr) {
+    : Window(_width, _height, _title, _full_screen),
+      glfw_window(nullptr),
+      vk_surface(nullptr) {
   glfwSetErrorCallback(errorCallback);
 }
 
@@ -71,12 +95,12 @@ bool VulkanEngine::GLFWWindow::initialize(bool invisible) {
   return true;
 }
 
-const std::vector<const char *>
+const std::vector<const char*>
 VulkanEngine::GLFWWindow::getRequiredVulkanInstanceExtensions() const {
   uint32_t num_extensions;
-  const char **extension_names;
+  const char** extension_names;
   extension_names = glfwGetRequiredInstanceExtensions(&num_extensions);
-  std::vector<const char *> extensions;
+  std::vector<const char*> extensions;
   for (uint32_t i = 0; i < num_extensions; ++i) {
     extensions.push_back(extension_names[i]);
   }
@@ -103,21 +127,21 @@ void VulkanEngine::GLFWWindow::setHeight(uint32_t _height) {
   }
 }
 
-void VulkanEngine::GLFWWindow::setTitle(const std::string &new_title) {
+void VulkanEngine::GLFWWindow::setTitle(const std::string& new_title) {
   VulkanEngine::Window::setTitle(new_title);
   glfwSetWindowTitle(glfw_window, new_title.c_str());
 }
 
 void VulkanEngine::GLFWWindow::errorCallback(int error,
-                                             const char *description) {
+                                             const char* description) {
   std::cerr << "GLFW error: " << description << " error code:" << error
             << std::endl;
 }
 
-void VulkanEngine::GLFWWindow::windowResizeCallback(GLFWwindow *_glfw_window,
+void VulkanEngine::GLFWWindow::windowResizeCallback(GLFWwindow* _glfw_window,
                                                     int _width, int _height) {
-  GLFWWindow *window =
-      static_cast<GLFWWindow *>(glfwGetWindowUserPointer(_glfw_window));
+  GLFWWindow* window =
+      static_cast<GLFWWindow*>(glfwGetWindowUserPointer(_glfw_window));
   if ((window->width != static_cast<uint32_t>(_width)) ||
       (window->height != static_cast<uint32_t>(_height))) {
     window->size_changed = true;
@@ -127,9 +151,9 @@ void VulkanEngine::GLFWWindow::windowResizeCallback(GLFWwindow *_glfw_window,
 }
 
 void VulkanEngine::GLFWWindow::framebufferResizeCallback(
-    GLFWwindow *_glfw_window, int _width, int _height) {
-  GLFWWindow *window =
-      static_cast<GLFWWindow *>(glfwGetWindowUserPointer(_glfw_window));
+    GLFWwindow* _glfw_window, int _width, int _height) {
+  GLFWWindow* window =
+      static_cast<GLFWWindow*>(glfwGetWindowUserPointer(_glfw_window));
   if ((window->framebuffer_width != static_cast<uint32_t>(_width)) ||
       (window->framebuffer_height != static_cast<uint32_t>(_height))) {
     window->size_changed = true;
@@ -138,27 +162,26 @@ void VulkanEngine::GLFWWindow::framebufferResizeCallback(
   window->framebuffer_height = static_cast<uint32_t>(_height);
 }
 
-void VulkanEngine::GLFWWindow::cursorPositionCallback(GLFWwindow *_glfw_window,
+void VulkanEngine::GLFWWindow::cursorPositionCallback(GLFWwindow* _glfw_window,
                                                       double xpos,
                                                       double ypos) {
-  GLFWWindow *window =
-      static_cast<GLFWWindow *>(glfwGetWindowUserPointer(_glfw_window));
+  GLFWWindow* window =
+      static_cast<GLFWWindow*>(glfwGetWindowUserPointer(_glfw_window));
   window->mousePositionCallback(xpos, ypos);
 }
 
-void VulkanEngine::GLFWWindow::scrollCallback(GLFWwindow *_glfw_window, 
-                                              double xoffset,
-                                              double yoffset) { 
-  GLFWWindow *window =
-      static_cast<GLFWWindow *>(glfwGetWindowUserPointer(_glfw_window));
+void VulkanEngine::GLFWWindow::scrollCallback(GLFWwindow* _glfw_window,
+                                              double xoffset, double yoffset) {
+  GLFWWindow* window =
+      static_cast<GLFWWindow*>(glfwGetWindowUserPointer(_glfw_window));
   window->mouseScrollCallback(xoffset, yoffset);
 }
 
-void VulkanEngine::GLFWWindow::mouseButtonCallback(GLFWwindow *_glfw_window,
+void VulkanEngine::GLFWWindow::mouseButtonCallback(GLFWwindow* _glfw_window,
                                                    int button, int action,
                                                    int mods) {
-  GLFWWindow *window =
-      static_cast<GLFWWindow *>(glfwGetWindowUserPointer(_glfw_window));
+  GLFWWindow* window =
+      static_cast<GLFWWindow*>(glfwGetWindowUserPointer(_glfw_window));
   bool left = false;
   bool right = false;
   bool middle = false;
@@ -193,10 +216,10 @@ void VulkanEngine::GLFWWindow::mouseButtonCallback(GLFWwindow *_glfw_window,
   window->mouseButtonPressedCallback(left, middle, right);
 }
 
-void VulkanEngine::GLFWWindow::keyCallback(GLFWwindow *_glfw_window, int key,
+void VulkanEngine::GLFWWindow::keyCallback(GLFWwindow* _glfw_window, int key,
                                            int scancode, int action, int mods) {
-  GLFWWindow *window =
-      static_cast<GLFWWindow *>(glfwGetWindowUserPointer(_glfw_window));
+  GLFWWindow* window =
+      static_cast<GLFWWindow*>(glfwGetWindowUserPointer(_glfw_window));
 
   KeyboardInput::KeyStatus key_status(KeyboardInput::KeyStatus::NO_STATUS);
   if (action == GLFW_PRESS) {

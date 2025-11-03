@@ -17,16 +17,16 @@ class Scene;
 class SceneState {
  public:
   /// Constructor.
-  explicit SceneState(const Scene &_scene);
+  explicit SceneState(const Scene& _scene);
 
-  const Scene &getScene() const;
+  const Scene& getScene() const;
 
   /// \return The current total transformation matrix.
   const Eigen::Matrix4f getTransform() const;
 
   /// Set the current total transformation matrix.
   /// \param transform The transform to set
-  void setTransform(const Eigen::Matrix4f &transform);
+  void setTransform(const Eigen::Matrix4f& transform);
 
   /// \return The current total transform.
   const Eigen::Matrix4f getTotalTransform() const;
@@ -35,16 +35,16 @@ class SceneState {
   const Eigen::Matrix4f getViewMatrix() const;
 
   /// Set the current view matrix.
-  void setViewMatrix(const Eigen::Matrix4f &_view_matrix);
+  void setViewMatrix(const Eigen::Matrix4f& _view_matrix);
 
   /// \return The current projection matrix.
   const Eigen::Matrix4f getProjectionMatrix() const;
 
   /// Set the current projection matrix.
-  void setProjectionMatrix(const Eigen::Matrix4f &_projection_matrix);
+  void setProjectionMatrix(const Eigen::Matrix4f& _projection_matrix);
 
  private:
-  const Scene &scene;
+  const Scene& scene;
 
   /// The current total transformation matrix.
   Eigen::Matrix4f total_transform;

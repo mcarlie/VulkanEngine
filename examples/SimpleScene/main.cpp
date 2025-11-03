@@ -1,3 +1,23 @@
+// Copyright (c) 2025 Michael Carlie
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+
 #include <VulkanEngine/Constants.h>
 #include <VulkanEngine/GLFWWindow.h>
 #include <VulkanEngine/OBJMesh.h>
@@ -7,78 +27,81 @@
 #include <VulkanEngine/UniformBuffer.h>
 #include <VulkanEngine/Utilities.h>
 
+#include <algorithm>
 #include <chrono>
 #include <cxxopts.hpp>
-#include <filesystem>
 #include <iostream>
 #include <memory>
+#include <string>
 #include <vector>
 
-cxxopts::ParseResult setupProgramOptions(int argc, char **argv) {
+cxxopts::ParseResult setupProgramOptions(int argc, char** argv) {
   cxxopts::Options options("SimpleScene",
                            "Load an OBJ file and render using VulkanEngine");
-  options.add_options()
-      ("o,obj", "Path to OBJ file", cxxopts::value<std::string>())
-      ("m,mtl", "Path where associated mtl file is", cxxopts::value<std::string>())
-      ("w,width", "Window width in pixels", cxxopts::value<unsigned>())
-      ("h,height", "Window height in pixels", cxxopts::value<unsigned>());
+  options.add_options()("o,obj", "Path to OBJ file",
+                        cxxopts::value<std::string>())(
+      "m,mtl", "Path where associated mtl file is",
+      cxxopts::value<std::string>())("w,width", "Window width in pixels",
+                                     cxxopts::value<unsigned>())(
+      "h,height", "Window height in pixels", cxxopts::value<unsigned>());
 
   return options.parse(argc, argv);
 }
 
-void moveCamera(std::shared_ptr<VulkanEngine::KeyboardInput> keyboard_input, std::shared_ptr<VulkanEngine::Camera> camera, float speed = 0.03) {
-    // A and D keys move the camera to the left and right
-    // W and S keys move the camera forwards and backwards. 
-    // Z and X keys move the camera up and down..
-    const auto key_w = keyboard_input->getLastKeyStatus(GLFW_KEY_W);
-    const auto key_a = keyboard_input->getLastKeyStatus(GLFW_KEY_A);
+void moveCamera(std::shared_ptr<VulkanEngine::KeyboardInput> keyboard_input,
+                std::shared_ptr<VulkanEngine::Camera> camera,
+                float speed = 0.03) {
+  // A and D keys move the camera to the left and right
+  // W and S keys move the camera forwards and backwards.
+  // Z and X keys move the camera up and down..
+  const auto key_w = keyboard_input->getLastKeyStatus(GLFW_KEY_W);
+  const auto key_a = keyboard_input->getLastKeyStatus(GLFW_KEY_A);
 
-    const auto key_s = keyboard_input->getLastKeyStatus(GLFW_KEY_S);
-    const auto key_d = keyboard_input->getLastKeyStatus(GLFW_KEY_D);
+  const auto key_s = keyboard_input->getLastKeyStatus(GLFW_KEY_S);
+  const auto key_d = keyboard_input->getLastKeyStatus(GLFW_KEY_D);
 
-    const auto key_z = keyboard_input->getLastKeyStatus(GLFW_KEY_Z);
-    const auto key_x = keyboard_input->getLastKeyStatus(GLFW_KEY_X);
+  const auto key_z = keyboard_input->getLastKeyStatus(GLFW_KEY_Z);
+  const auto key_x = keyboard_input->getLastKeyStatus(GLFW_KEY_X);
 
-    Eigen::Vector3f camera_movement = {0.0f, 0.0f, 0.0f};
+  Eigen::Vector3f camera_movement = {0.0f, 0.0f, 0.0f};
 
-    if (key_a == VulkanEngine::KeyboardInput::PRESSED ||
-        key_a == VulkanEngine::KeyboardInput::REPEAT) {
-      camera_movement(0) -= speed;
-    }
+  if (key_a == VulkanEngine::KeyboardInput::PRESSED ||
+      key_a == VulkanEngine::KeyboardInput::REPEAT) {
+    camera_movement(0) -= speed;
+  }
 
-    if (key_d == VulkanEngine::KeyboardInput::PRESSED ||
-        key_d == VulkanEngine::KeyboardInput::REPEAT) {
-      camera_movement(0) += speed;
-    }
+  if (key_d == VulkanEngine::KeyboardInput::PRESSED ||
+      key_d == VulkanEngine::KeyboardInput::REPEAT) {
+    camera_movement(0) += speed;
+  }
 
-    if (key_z == VulkanEngine::KeyboardInput::PRESSED ||
-        key_z == VulkanEngine::KeyboardInput::REPEAT) {
-      camera_movement(1) -= speed;
-    }
+  if (key_z == VulkanEngine::KeyboardInput::PRESSED ||
+      key_z == VulkanEngine::KeyboardInput::REPEAT) {
+    camera_movement(1) -= speed;
+  }
 
-    if (key_x == VulkanEngine::KeyboardInput::PRESSED ||
-        key_x == VulkanEngine::KeyboardInput::REPEAT) {
-      camera_movement(1) += speed;
-    }
+  if (key_x == VulkanEngine::KeyboardInput::PRESSED ||
+      key_x == VulkanEngine::KeyboardInput::REPEAT) {
+    camera_movement(1) += speed;
+  }
 
-    if (key_w == VulkanEngine::KeyboardInput::PRESSED ||
-        key_w == VulkanEngine::KeyboardInput::REPEAT) {
-      camera_movement(2) -= speed;
-    }
+  if (key_w == VulkanEngine::KeyboardInput::PRESSED ||
+      key_w == VulkanEngine::KeyboardInput::REPEAT) {
+    camera_movement(2) -= speed;
+  }
 
-    if (key_s == VulkanEngine::KeyboardInput::PRESSED ||
-        key_s == VulkanEngine::KeyboardInput::REPEAT) {
-      camera_movement(2) += speed;
-    }
+  if (key_s == VulkanEngine::KeyboardInput::PRESSED ||
+      key_s == VulkanEngine::KeyboardInput::REPEAT) {
+    camera_movement(2) += speed;
+  }
 
-    camera->setLookAt(camera->getLookAt() + camera_movement);
-    camera->setTransform(
-        Eigen::Affine3f(Eigen::Translation3f(camera_movement) *
-                        Eigen::Affine3f(camera->getTransform()))
-            .matrix());
+  camera->setLookAt(camera->getLookAt() + camera_movement);
+  camera->setTransform(Eigen::Affine3f(Eigen::Translation3f(camera_movement) *
+                                       Eigen::Affine3f(camera->getTransform()))
+                           .matrix());
 }
 
-int main(int argc, char **argv) {
+int main(int argc, char** argv) {
   auto option_result = setupProgramOptions(argc, argv);
 
   unsigned window_width = 1280;
@@ -93,7 +116,8 @@ int main(int argc, char **argv) {
   std::string title = "SimpleScene";
 
   // Create the GLFW window.
-  auto window = std::make_shared<VulkanEngine::GLFWWindow>(window_width, window_height, title, false);
+  auto window = std::make_shared<VulkanEngine::GLFWWindow>(
+      window_width, window_height, title, false);
   if (!window->initialize()) {
     return 1;
   }
@@ -110,14 +134,12 @@ int main(int argc, char **argv) {
 
   // Define a camera to view renderable objects.
   auto camera = std::make_shared<VulkanEngine::Camera>(
-    Eigen::Vector3f(0.0f, 0.0f, 0.1f), // look at
-    Eigen::Vector3f(0.0f, 1.0f, 0.0f), // up vector
-    0.1f,                              // z-near
-    10.0f,                             // z-far
-    45.0f,                             // fov
-    window->getFramebufferWidth(),     // width 
-    window->getFramebufferHeight()     // height
-    );
+      Eigen::Vector3f(0.0f, 0.0f, 0.1f),  // look at
+      Eigen::Vector3f(0.0f, 1.0f, 0.0f),  // up vector
+      0.1f,                               // z-near
+      10.0f,                              // z-far
+      45.0f,                              // fov
+      window->getFramebufferWidth(), window->getFramebufferHeight());
 
   // Set initial camera transform.
   camera->setTransform(
@@ -140,7 +162,7 @@ int main(int argc, char **argv) {
       obj_mesh.reset(new VulkanEngine::OBJMesh(
           obj_file_system_path, std::filesystem::path(mtl_path)));
       title += " (" + obj_file_system_path.filename().string() + ")";
-    } catch (const std::exception &e) {
+    } catch (const std::exception& e) {
       std::cerr << "Failed to load obj mesh: " << e.what() << std::endl;
       return 1;
     } catch (...) {
@@ -154,14 +176,14 @@ int main(int argc, char **argv) {
     auto bounding_box = obj_mesh->getBoundingBox();
     auto bbox_size = bounding_box.max - bounding_box.min;
     auto center = (bounding_box.max + bounding_box.min) * 0.5f;
-    auto mesh_scale = 1.5 / std::max({bbox_size(0), bbox_size(1), bbox_size(2)});
+    auto mesh_scale =
+        1.5 / std::max({bbox_size(0), bbox_size(1), bbox_size(2)});
     transform.scale(mesh_scale);
     transform.translation() -= center * mesh_scale;
     obj_mesh->setTransform(transform.matrix());
 
   } else {
-    std::cout << "No OBJ file specified. Running empty scene."
-              << std::endl;
+    std::cout << "No OBJ file specified. Running empty scene." << std::endl;
     title += " (Empty scene)";
   }
 
@@ -188,12 +210,16 @@ int main(int argc, char **argv) {
 
         start_time = std::chrono::steady_clock::now();
 
-        std::chrono::duration<double> frame_rate_elapsed_time = current_time - frame_rate_start_time;
+        std::chrono::duration<double> frame_rate_elapsed_time =
+            current_time - frame_rate_start_time;
         if (frame_rate_elapsed_time >= std::chrono::seconds(1)) {
-          double frame_rate = static_cast<double>(frame_count) / frame_rate_elapsed_time.count();
-          window->setTitle(title + " " + std::to_string(static_cast<int>(frame_rate)) + " fps");
+          double frame_rate = static_cast<double>(frame_count) /
+                              frame_rate_elapsed_time.count();
+          window->setTitle(title + " " +
+                           std::to_string(static_cast<int>(frame_rate)) +
+                           " fps");
           frame_count = 0;
-          frame_rate_start_time = std::chrono::steady_clock::now();;
+          frame_rate_start_time = std::chrono::steady_clock::now();
         }
 
         auto matrix = obj_mesh->getTransform();
@@ -203,27 +229,29 @@ int main(int argc, char **argv) {
         const auto mouse_position = mouse_input->getPosition();
 
         if (mouse_input->leftButtonPressed()) {
-
           auto mouse_movement = -(mouse_position - prev_mouse_position) * 0.01;
 
-          auto rotation_x = Eigen::AngleAxisf(mouse_movement.x(), Eigen::Vector3f::UnitY());
-          auto rotation_y = Eigen::AngleAxisf(mouse_movement.y(), Eigen::Vector3f::UnitX());
+          auto rotation_x =
+              Eigen::AngleAxisf(mouse_movement.x(), Eigen::Vector3f::UnitY());
+          auto rotation_y =
+              Eigen::AngleAxisf(mouse_movement.y(), Eigen::Vector3f::UnitX());
           auto rotation = rotation_x * rotation_y;
           transform = transform.inverse();
           transform.rotate(rotation);
           transform = transform.inverse();
-
         }
         prev_mouse_position = mouse_position;
 
         const auto scroll_offset_2d = mouse_input->getScrollOffset();
-        Eigen::Vector3d scroll_offset_3d = {scroll_offset_2d.x(), scroll_offset_2d.y(), 0.0};
+        Eigen::Vector3d scroll_offset_3d = {scroll_offset_2d.x(),
+                                            scroll_offset_2d.y(), 0.0};
         scroll_offset_3d *= 0.1;
         scroll_offset_3d.x() *= -1;
         camera->setLookAt(camera->getLookAt() + scroll_offset_3d.cast<float>());
         camera->setTransform(
-            Eigen::Affine3f(Eigen::Translation3f(scroll_offset_3d.cast<float>()) *
-                            Eigen::Affine3f(camera->getTransform()))
+            Eigen::Affine3f(
+                Eigen::Translation3f(scroll_offset_3d.cast<float>()) *
+                Eigen::Affine3f(camera->getTransform()))
                 .matrix());
 
         obj_mesh->setTransform(transform.matrix());

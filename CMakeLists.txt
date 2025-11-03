@@ -23,17 +23,6 @@ file(GLOB VULKAN_ENGINE_HEADERS "include/VulkanEngine/*.h")
 include_directories(${VULKAN_ENGINE_INCLUDE_DIR})
 add_library(VulkanEngine STATIC ${VULKAN_ENGINE_SOURCES} ${VULKAN_ENGINE_HEADERS})
 
-# Look for clang-format
-find_program(CLANG_FORMAT "clang-format")
-if(APPLE AND CLANG_FORMAT)
-  add_custom_target(format 
-    COMMAND ${CLANG_FORMAT} -i -style=file ${VULKAN_ENGINE_SOURCES} ${EXAMPLES_SOURCES})
-
-  add_dependencies(VulkanEngine format)
-else()
-  message(STATUS "clang-format not found, skipping format target")
-endif()
-
 target_include_directories(VulkanEngine PUBLIC ${VULKAN_ENGINE_INCLUDE_DIR})
 
 # Directory containing libraries
