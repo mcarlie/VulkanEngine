@@ -108,8 +108,7 @@ VulkanEngine::Device::Device() : graphics_queue_family_index(0) {
 
   auto device_info =
       vk::DeviceCreateInfo()
-          .setEnabledLayerCount(static_cast<uint32_t>(layers.size()))
-          .setPpEnabledLayerNames(layers.data())
+          .setPEnabledExtensionNames(layers)
           .setPQueueCreateInfos(&queue_info)
           .setQueueCreateInfoCount(1)
           .setPEnabledFeatures(&physical_device_features)
