@@ -61,14 +61,7 @@ class Device {
   vk::CommandPool vk_command_pool;
   std::vector<vk::CommandBuffer> vk_command_buffers;
   vk::CommandBuffer single_use_command_buffer;
-
-  /// Class which allows for dynamic loading of certain functions within Vulkan
-  /// classes.
-#ifdef __APPLE__
   vk::detail::DispatchLoaderDynamic vk_dispatch_loader_dynamic;
-#else
-  vk::DispatchLoaderDynamic vk_dispatch_loader_dynamic;
-#endif
 
 #ifdef ENABLE_VULKAN_VALIDATION
   vk::DebugUtilsMessengerEXT vk_debug_utils_messenger;

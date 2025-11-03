@@ -35,8 +35,12 @@ cd vcpkg
 call .\bootstrap-vcpkg.bat
 .\vcpkg integrate install
 .\vcpkg install glfw3 eigen3 glslang vulkan
+
+for /f "delims=" %%i in ('.\vcpkg.exe fetch cmake') do set "VCPKG_CMAKE=%%i"
+
 set "VULKAN_SDK=%cd%\installed\x64-windows"
 cd ..
 if not exist "build" mkdir build
-cmake -S . -B build -DCMAKE_BUILD_TYPE=%BUILD_TYPE% -DCMAKE_TOOLCHAIN_FILE=%cd%\vcpkg\scripts\buildsystems\vcpkg.cmake
-cmake --build build --config %BUILD_TYPE%
+
+"%VCPKG_CMAKE%" -S . -B build -DCMAKE_BUILD_TYPE=%BUILD_TYPE% -DCMAKE_TOOLCHAIN_FILE=%cd%\vcpkg\scripts\buildsystems\vcpkg.cmake
+"%VCPKG_CMAKE%" --build build --config %BUILD_TYPE%
