@@ -18,6 +18,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+#include <ExampleUtils.h>
 #include <VulkanEngine/Camera.h>
 #include <VulkanEngine/GLFWWindow.h>
 #include <VulkanEngine/GraphicsPipeline.h>
@@ -56,53 +57,6 @@ using TexturedQuadMesh =
 using RGBATexture2D = VulkanEngine::StagedBuffer<VulkanEngine::ShaderImage<
     vk::Format::eR8G8B8A8Unorm, vk::ImageType::e2D, vk::ImageTiling::eOptimal,
     vk::SampleCountFlagBits::e1>>;
-
-void moveCamera(std::shared_ptr<VulkanEngine::KeyboardInput> keyboard_input,
-                std::shared_ptr<VulkanEngine::Camera> camera,
-                float speed = 0.03) {
-  // Same controls as examples/SimpleScene:
-  // - W/S: forward/back
-  // - A/D: left/right
-  // - Z/X: up/down
-  const auto key_w = keyboard_input->getLastKeyStatus(GLFW_KEY_W);
-  const auto key_a = keyboard_input->getLastKeyStatus(GLFW_KEY_A);
-  const auto key_s = keyboard_input->getLastKeyStatus(GLFW_KEY_S);
-  const auto key_d = keyboard_input->getLastKeyStatus(GLFW_KEY_D);
-  const auto key_z = keyboard_input->getLastKeyStatus(GLFW_KEY_Z);
-  const auto key_x = keyboard_input->getLastKeyStatus(GLFW_KEY_X);
-
-  Eigen::Vector3f camera_movement = {0.0f, 0.0f, 0.0f};
-
-  if (key_a == VulkanEngine::KeyboardInput::PRESSED ||
-      key_a == VulkanEngine::KeyboardInput::REPEAT) {
-    camera_movement(0) -= speed;
-  }
-  if (key_d == VulkanEngine::KeyboardInput::PRESSED ||
-      key_d == VulkanEngine::KeyboardInput::REPEAT) {
-    camera_movement(0) += speed;
-  }
-  if (key_z == VulkanEngine::KeyboardInput::PRESSED ||
-      key_z == VulkanEngine::KeyboardInput::REPEAT) {
-    camera_movement(1) -= speed;
-  }
-  if (key_x == VulkanEngine::KeyboardInput::PRESSED ||
-      key_x == VulkanEngine::KeyboardInput::REPEAT) {
-    camera_movement(1) += speed;
-  }
-  if (key_w == VulkanEngine::KeyboardInput::PRESSED ||
-      key_w == VulkanEngine::KeyboardInput::REPEAT) {
-    camera_movement(2) -= speed;
-  }
-  if (key_s == VulkanEngine::KeyboardInput::PRESSED ||
-      key_s == VulkanEngine::KeyboardInput::REPEAT) {
-    camera_movement(2) += speed;
-  }
-
-  camera->setLookAt(camera->getLookAt() + camera_movement);
-  camera->setTransform(Eigen::Affine3f(Eigen::Translation3f(camera_movement) *
-                                       Eigen::Affine3f(camera->getTransform()))
-                           .matrix());
-}
 
 std::string getVertexShaderString() {
   return std::string{
