@@ -117,6 +117,8 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>bindPipeline</b> ()</
 <tr class="separator:a352665e5415db7c8da885c66032b9dfa"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5ac3dcceefedc6dc0f158405b2232670"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vulkan_engine_1_1_graphics_pipeline.html#a5ac3dcceefedc6dc0f158405b2232670">setScissor</a> (int32_t offset_x, int32_t offset_y, int32_t width, int32_t height)</td></tr>
 <tr class="separator:a5ac3dcceefedc6dc0f158405b2232670"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7683cb12849177e8e44620abb4239b25"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vulkan_engine_1_1_graphics_pipeline.html#a7683cb12849177e8e44620abb4239b25">setCullMode</a> (vk::CullModeFlagBits cull_mode)</td></tr>
+<tr class="separator:a7683cb12849177e8e44620abb4239b25"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac67c6d92ff5e961589c02a51d1830faf"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vulkan_engine_1_1_graphics_pipeline.html#ac67c6d92ff5e961589c02a51d1830faf">createGraphicsPipeline</a> (const std::shared_ptr&lt; <a class="el" href="class_vulkan_engine_1_1_mesh_base.html">MeshBase</a> &gt; mesh, const std::shared_ptr&lt; <a class="el" href="class_vulkan_engine_1_1_shader.html">Shader</a> &gt; shader)</td></tr>
 <tr class="separator:ac67c6d92ff5e961589c02a51d1830faf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
@@ -152,6 +154,30 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>bindPipeline</b> ()</
   <table class="params">
     <tr><td class="paramname">mesh</td><td>The mesh to render. </td></tr>
     <tr><td class="paramname">shader</td><td>The shader to render the mesh with. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a7683cb12849177e8e44620abb4239b25" name="a7683cb12849177e8e44620abb4239b25"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7683cb12849177e8e44620abb4239b25">&#9670;&#160;</a></span>setCullMode()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void VulkanEngine::GraphicsPipeline::setCullMode </td>
+          <td>(</td>
+          <td class="paramtype">vk::CullModeFlagBits&#160;</td>
+          <td class="paramname"><em>cull_mode</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Set the Vulkan cull mode for the rasterization stage. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cull_mode</td><td>The vk::CullModeFlagBits to use (e.g. eBack, eNone). </td></tr>
   </table>
   </dd>
 </dl>
