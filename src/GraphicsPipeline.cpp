@@ -64,6 +64,11 @@ void VulkanEngine::GraphicsPipeline::setScissor(int32_t offset_x,
                    .setExtent(vk::Extent2D(width, height));
 }
 
+void VulkanEngine::GraphicsPipeline::setCullMode(
+    vk::CullModeFlagBits cull_mode) {
+  vk_cull_mode = cull_mode;
+}
+
 void VulkanEngine::GraphicsPipeline::createGraphicsPipeline(
     const std::shared_ptr<MeshBase> mesh,
     const std::shared_ptr<Shader> shader) {
@@ -82,7 +87,7 @@ void VulkanEngine::GraphicsPipeline::createGraphicsPipeline(
                                 .setRasterizerDiscardEnable(VK_FALSE)
                                 .setLineWidth(1.0f)
                                 .setPolygonMode(vk::PolygonMode::eFill)
-                                .setCullMode(vk::CullModeFlagBits::eBack)
+                                .setCullMode(vk_cull_mode)
                                 .setFrontFace(vk::FrontFace::eCounterClockwise)
                                 .setDepthBiasEnable(VK_FALSE);
 

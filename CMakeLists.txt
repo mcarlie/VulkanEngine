@@ -5,6 +5,12 @@ project(VulkanEngine)
 set(VulkanEngine_VERSION_MAJOR 0)
 set(VulkanEngine_VERSION_MINOR 1)
 
+if(DEFINED CMAKE_TOOLCHAIN_FILE)
+  # Reference toolchain file to avoid CMake warning about unused manually-specified variables.
+  set(VULKAN_ENGINE_CMAKE_TOOLCHAIN_FILE "${CMAKE_TOOLCHAIN_FILE}")
+endif()
+
+
 set(CMAKE_CXX_STANDARD 17)
 
 option(BUILD_TESTS "Build the engine tests." OFF)

@@ -46,6 +46,10 @@ class GraphicsPipeline {
   void setScissor(int32_t offset_x, int32_t offset_y, int32_t width,
                   int32_t height);
 
+  /// Set the Vulkan cull mode for the rasterization stage.
+  /// \param cull_mode The vk::CullModeFlagBits to use (e.g. eBack, eNone).
+  void setCullMode(vk::CullModeFlagBits cull_mode);
+
   /// Create the graphics pipeline.
   /// \param mesh The mesh to render.
   /// \param shader The shader to render the mesh with.
@@ -61,6 +65,9 @@ class GraphicsPipeline {
 
   /// Internal vulkan instance of the scissor.
   vk::Rect2D vk_scissor;
+
+  /// Cull mode used when creating the graphics pipeline.
+  vk::CullModeFlagBits vk_cull_mode{vk::CullModeFlagBits::eBack};
 };
 
 }  // namespace VulkanEngine

@@ -42,5 +42,5 @@ set "VULKAN_SDK=%cd%\installed\x64-windows"
 cd ..
 if not exist "build" mkdir build
 
-"%VCPKG_CMAKE%" -S . -B build -DCMAKE_BUILD_TYPE=%BUILD_TYPE% -DCMAKE_TOOLCHAIN_FILE=%cd%\vcpkg\scripts\buildsystems\vcpkg.cmake
+"%VCPKG_CMAKE%" -G "Visual Studio 18 2026" -S . -B build -DCMAKE_BUILD_TYPE=%BUILD_TYPE% -DCMAKE_TOOLCHAIN_FILE=%cd%\vcpkg\scripts\buildsystems\vcpkg.cmake
 "%VCPKG_CMAKE%" --build build --config %BUILD_TYPE%

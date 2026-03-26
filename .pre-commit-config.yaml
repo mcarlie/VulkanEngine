@@ -22,7 +22,7 @@ repos:
     rev: 2.0.2
     hooks:
       - id: cpplint
-        args: ["--filter=-build/include_order"]
+        args: ["--filter=-build/include_order,-whitespace/indent_namespace"]
         exclude: ^thirdparty/
 
   - repo: https://github.com/pre-commit/pre-commit-hooks

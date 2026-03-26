@@ -145,47 +145,41 @@ int main(int argc, char** argv) {
   camera->setTransform(
       Eigen::Affine3f(Eigen::Translation3f(0.0f, 0.0f, 3.0f)).matrix());
 
-  double mesh_scale = 1.0;
-
   // Load an OBJ mesh and MTL file if configured.
-  // Without an OBJ file we still render an empty scene.
+  // Defaults to bunny.obj if no OBJ file specified.
   std::shared_ptr<VulkanEngine::OBJMesh> obj_mesh;
+  std::string obj_path = "assets/bunny.obj";
+  std::string mtl_path = "";
   if (option_result["obj"].count() > 0) {
-    std::string obj_path = option_result["obj"].as<std::string>();
-    std::string mtl_path;
-    if (option_result["mtl"].count() > 0) {
-      mtl_path = option_result["mtl"].as<std::string>();
-    }
-
-    try {
-      auto obj_file_system_path = std::filesystem::path(obj_path);
-      obj_mesh.reset(new VulkanEngine::OBJMesh(
-          obj_file_system_path, std::filesystem::path(mtl_path)));
-      title += " (" + obj_file_system_path.filename().string() + ")";
-    } catch (const std::exception& e) {
-      std::cerr << "Failed to load obj mesh: " << e.what() << std::endl;
-      return 1;
-    } catch (...) {
-      std::cerr << "An unknown exception occurred when loading obj mesh."
-                << std::endl;
-      return 1;
-    }
-
-    // Set initial transform at center and scale based on bounding box.
-    auto transform = Eigen::Affine3f::Identity();
-    auto bounding_box = obj_mesh->getBoundingBox();
-    auto bbox_size = bounding_box.max - bounding_box.min;
-    auto center = (bounding_box.max + bounding_box.min) * 0.5f;
-    auto mesh_scale =
-        1.5 / std::max({bbox_size(0), bbox_size(1), bbox_size(2)});
-    transform.scale(mesh_scale);
-    transform.translation() -= center * mesh_scale;
-    obj_mesh->setTransform(transform.matrix());
-
-  } else {
-    std::cout << "No OBJ file specified. Running empty scene." << std::endl;
-    title += " (Empty scene)";
+    obj_path = option_result["obj"].as<std::string>();
   }
+  if (option_result["mtl"].count() > 0) {
+    mtl_path = option_result["mtl"].as<std::string>();
+  }
+
+  try {
+    auto obj_file_system_path = std::filesystem::path(obj_path);
+    obj_mesh.reset(new VulkanEngine::OBJMesh(obj_file_system_path,
+                                             std::filesystem::path(mtl_path)));
+    title += " (" + obj_file_system_path.filename().string() + ")";
+  } catch (const std::exception& e) {
+    std::cerr << "Failed to load obj mesh: " << e.what() << std::endl;
+    return 1;
+  } catch (...) {
+    std::cerr << "An unknown exception occurred when loading obj mesh."
+              << std::endl;
+    return 1;
+  }
+
+  // Set initial transform at center and scale based on bounding box.
+  auto transform = Eigen::Affine3f::Identity();
+  auto bounding_box = obj_mesh->getBoundingBox();
+  auto bbox_size = bounding_box.max - bounding_box.min;
+  auto center = (bounding_box.max + bounding_box.min) * 0.5f;
+  auto mesh_scale = 1.5 / std::max({bbox_size(0), bbox_size(1), bbox_size(2)});
+  transform.scale(mesh_scale);
+  transform.translation() -= center * mesh_scale;
+  obj_mesh->setTransform(transform.matrix());
 
   // Add the Camera and OBJMesh to the scene.
   scene->addChildren({camera, obj_mesh});
@@ -243,16 +237,16 @@ int main(int argc, char** argv) {
         prev_mouse_position = mouse_position;
 
         const auto scroll_offset_2d = mouse_input->getScrollOffset();
-        Eigen::Vector3d scroll_offset_3d = {scroll_offset_2d.x(),
-                                            scroll_offset_2d.y(), 0.0};
-        scroll_offset_3d *= 0.1;
-        scroll_offset_3d.x() *= -1;
-        camera->setLookAt(camera->getLookAt() + scroll_offset_3d.cast<float>());
-        camera->setTransform(
-            Eigen::Affine3f(
-                Eigen::Translation3f(scroll_offset_3d.cast<float>()) *
-                Eigen::Affine3f(camera->getTransform()))
-                .matrix());
+        if (scroll_offset_2d.y() != 0.0) {
+          Eigen::Vector3f position = camera->getTransform().block<3, 1>(0, 3);
+          Eigen::Vector3f look_at = camera->getLookAt();
+          Eigen::Vector3f direction = (look_at - position).normalized();
+          float zoom_speed = 0.1f;
+          float zoom_amount = -scroll_offset_2d.y() * zoom_speed;
+          Eigen::Vector3f new_position = position + direction * zoom_amount;
+          camera->setTransform(
+              Eigen::Affine3f(Eigen::Translation3f(new_position)).matrix());
+        }
 
         obj_mesh->setTransform(transform.matrix());
 
